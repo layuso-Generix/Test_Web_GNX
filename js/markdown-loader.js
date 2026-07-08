@@ -88,17 +88,56 @@ async function loadTextFile(path) {
     return r.text();
 }
 async function renderReadme(section, container) {
-    container.innerHTML = `<p style="color:var(--gray-500)">${t("loading")}</p>`;
-    const path = section.readme && section.readme[LANG()];
+
+    const lang =
+        (typeof LANG === "function")
+            ? LANG()
+            : "es";
+
+    const path =
+        section.readme &&
+        section.readme[lang];
+
     if (!path) {
-        container.innerHTML = `<div class="info-box"><strong>${t("readme.missing")}</strong><br>${t("readme.missingHint")}</div>`;
+        container.innerHTML = `
+            <div class="info-box">
+                README no configurado.
+            </div>
+        `;
         return;
     }
+
     try {
-        const md = await loadTextFile(path);
-        container.innerHTML = simpleMarkdown(md, true);
-    } catch (e) {
-        container.innerHTML = `<div class="info-box"><strong>${t("readme.missing")}</strong><br>${t("readme.missingHint")}<br><code>${esc(path)}</code></div>`;
+
+        const response = await fetch(path);
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        const markdown =
+            await response.text();
+
+        container.innerHTML =
+            simpleMarkdown(markdown, true);
+
+    } catch (error) {
+
+        console.error(
+            "README ERROR:",
+            path,
+            error
+        );
+
+        container.innerHTML = `
+            <div class="info-box">
+                Error cargando README<br>
+                <strong>${path}</strong><br>
+                ${error.message}
+            </div>
+        `;
     }
 }
 window.esc = esc;
