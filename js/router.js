@@ -9,7 +9,7 @@ function handleRoute(){
   if (r === 'validator' || r === 'validacion') return showValidacion();
   if (r === 'versions') return showVersions();
   if (r === 'responses') return showRespuestas();
-  const section = SITE_CONFIG.sections.find(s => s.id === r);
+  const section = getAllCards().find(r);
   if (section) return openEndpoint(section.id);
 }
 window.addEventListener('hashchange', handleRoute);

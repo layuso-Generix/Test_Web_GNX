@@ -16,7 +16,7 @@ function setupValidator() {
   const dropzone = document.getElementById('dropzone');
   const input = document.getElementById('fileInput');
   if (!sel || !dropzone || !input) return;
-  const schemas = SITE_CONFIG.sections.filter(s => s.validatorSchema);
+  const schemas = getAllCards().filter(s => s.validatorSchema);
   sel.innerHTML = `<option value="">${t('val.selectPlaceholder')}</option>` + schemas.map(s => `<option value="${esc(s.validatorSchema)}">${esc(localizedSectionTitle(s))}</option>`).join('');
   sel.onchange = () => {
     const on = !!sel.value;

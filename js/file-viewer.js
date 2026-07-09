@@ -27,7 +27,11 @@ function downloadBlob(content, fileName, mime='application/octet-stream') {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-function localFilePath(section, fileName){ return `${section.dir}/${fileName}`; }
+function localFilePath(section, fileNameOrPath) {
+  if (!fileNameOrPath) return '';
+  if (String(fileNameOrPath).includes('/')) return fileNameOrPath;
+  return `${section.dir}/${fileNameOrPath}`;
+}
 function renderFileCard(file, idx, prefix='file') {
   const path = file.path || file.rawPath;
   const name = file.name || path.split('/').pop();

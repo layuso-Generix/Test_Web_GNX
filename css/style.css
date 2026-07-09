@@ -162,7 +162,7 @@
   }
   .card:hover .card-icon { background: var(--generix-orange); color: var(--white); transform: rotate(-5deg) scale(1.05); }
 
-  .card h3 { color: var(--generix-dark); font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; min-height: 57px; }
+  .card h3 { color: var(--generix-dark); font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; }
   .card p  { color: var(--gray-500); font-size: 0.9rem; flex-grow: 1; margin-bottom: 18px; line-height: 1.5; }
   .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
 
@@ -172,16 +172,20 @@
     font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.4px; text-transform: uppercase;
   }
-  .badge-post   { background:#dcfce7; color:#15803d; }
-  .badge-get    { background:#dbeafe; color:#1d4ed8; }
-  .badge-put    { background:#fef3c7; color:#92400e; }
-  .badge-patch  { background:#ede9fe; color:#6d28d9; }
-  .badge-delete { background:#fee2e2; color:#dc2626; }
-  .badge-json   { background:#fff7d6; color:#8a6100; }
-  .badge-xml    { background:#dbeafe; color:#1d4ed8; }
-  .badge-pdf    { background:#fee2e2; color:#dc2626; }
-  .badge-cat    { background: var(--gray-100); color: var(--gray-700); }
-  .badge-new    { background: #00A59A; color: var(--white); letter-spacing: 0.6px; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulseNew 1.8s infinite; }
+  .badge-post           { background:#dcfce7; color:#15803d; }
+  .badge-get            { background:#dbeafe; color:#1d4ed8; }
+  .badge-put            { background:#fef3c7; color:#92400e; }
+  .badge-patch          { background:#ede9fe; color:#6d28d9; }
+  .badge-delete         { background:#fee2e2; color:#dc2626; }
+  .badge-JSON           { background:#fff7d6; color:#8a6100; }
+  .badge-XML            { background:#dbeafe; color:#1d4ed8; }
+  .badge-PDF            { background:#fee2e2; color:#dc2626; }
+  .badge-Invoice        { background:#dcfce7; color:#15803d; }
+  .badge-Response       { background:#ede9fe; color:#6d28d9; }
+  .badge-Status         { background:#fef3c7; color:#92400e; }
+  .badge-Documentation  { background:#fce5fc; color:#d928d9; }
+  .badge-cat            { background: var(--gray-100); color: var(--gray-700); }
+  .badge-new            { background: #00A59A; color: var(--white); letter-spacing: 0.6px; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulseNew 1.8s infinite; }
   @keyframes pulseNew {
     0%   { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
     70%  { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
@@ -265,23 +269,22 @@
   .d-breadcrumb span { color:rgba(255,255,255,.6); font-size:.9rem; margin:0 8px; }
   .d-breadcrumb span.cur { color:rgba(255,255,255,.9); }
   .ep-badges { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
-  .method-badge, .version-pill, .cat-pill {
-    padding: 4px 12px; border-radius: 5px; font-size: .78rem; font-weight: 800; letter-spacing: 1px
-  }
   .method-badge {
-    padding:4px 12px; border-radius:5px;
-    font-size:.78rem; font-weight:800; letter-spacing:1px;
-    font-family:"SFMono-Regular",Consolas,monospace;
-    background: var(--generix-orange); color: var(--generix-dark)
+    padding: 4px 12px; border-radius: 5px; font-size: .78rem; font-weight: 700; letter-spacing: 1px
   }
-  .method-badge.POST    { background:#dcfce7; color:#15803d; }
-  .method-badge.GET     { background:#dbeafe; color:#1d4ed8; }
-  .method-badge.PUT     { background:#fef3c7; color:#92400e; }
-  .method-badge.PATCH   { background:#ede9fe; color:#6d28d9; }
-  .method-badge.DELETE  { background:#fee2e2; color:#dc2626; }
-  .method-badge.JSON    { background:#fff7d6; color:#8a6100; }
-  .method-badge.XML     { background:#dbeafe; color:#1d4ed8; }
-  .method-badge.PDF     { background:#fee2e2; color:#dc2626; }
+  .method-badge.POST           { background:#dcfce7; color:#15803d; }
+  .method-badge.GET            { background:#dbeafe; color:#1d4ed8; }
+  .method-badge.PUT            { background:#fef3c7; color:#92400e; }
+  .method-badge.PATCH          { background:#ede9fe; color:#6d28d9; }
+  .method-badge.DELETE         { background:#fee2e2; color:#dc2626; }
+  .method-badge.JSON           { color:rgba(255, 247, 214); background:#8a6100; }
+  .method-badge.XML            { color:rgba(219, 234, 254); background:#1d4ed8; }
+  .method-badge.PDF            { color:rgba(254, 226, 226); background:#dc2626; }
+  .method-badge.Invoice        { color:rgba(220, 252, 231); background:#15803d; }
+  .method-badge.Response       { color:rgba(237, 233, 254); background:#6d28d9; }
+  .method-badge.Status         { color:rgba(252, 229, 252); background:#d928d9; }
+  .method-badge.Documentation  { color:rgba(254, 243, 199); background:#92400e; }
+  .method-badge.category       { color:rgba(255, 255, 255); background:rgba(255,255,255,.1);}
   .ep-path {
     font-family:"SFMono-Regular",Consolas,monospace; font-size:.86rem;
     color:rgba(255,255,255,.8); background:rgba(255,255,255,.1); padding:4px 12px; border-radius:5px;

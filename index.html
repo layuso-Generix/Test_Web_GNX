@@ -61,34 +61,36 @@
         <h2 data-i18n="home.title">Estándares y recursos de integración</h2>
         <p data-i18n="home.subtitle">Selecciona una sección para consultar sus readmes, ejemplos, esquemas y documentación relacionada.</p>
       </div>
-      <div class="grid" id="sectionGrid"></div>
-    </section>
-
-    <section class="section" id="recursos-section">
-      <div class="grid">
-        <div class="card" onclick="showVersions()">
-          <div class="card-icon">↺</div>
-          <div class="card-meta"><span class="badge badge-cat" data-i18n="res.history.badge">Historial</span></div>
-          <h3 data-i18n="res.history.title">Versiones de esquemas</h3>
-          <p data-i18n="res.history.desc">Consulta y descarga las distintas versiones publicadas de los esquemas JSON.</p>
-          <span class="card-link" data-i18n="res.history.link">Ver versiones</span>
-        </div>
-        <div class="card" id="resp-card" style="display:none" onclick="showRespuestas()">
-          <div class="card-icon">↩</div>
-          <div class="card-meta"><span class="badge badge-cat" data-i18n="res.resp.badge">Schema</span></div>
-          <h3 data-i18n="res.resp.title">Respuestas</h3>
-          <p data-i18n="res.resp.desc">Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.</p>
-          <span class="card-link" data-i18n="res.resp.link">Ver respuestas</span>
-        </div>
-        <div class="card" onclick="showValidacion()">
-          <div class="card-icon">✓</div>
-          <div class="card-meta"><span class="badge badge-cat" data-i18n="res.val.badge">Herramienta</span></div>
-          <h3 data-i18n="res.val.title">Validaciones</h3>
-          <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
-          <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
+      <div id="sectionGrid"></div>
+    
+    <div class="folder-section" id="recursos-section">
+      <h3><span class="card-icon" style="margin-bottom: 0px; font-size: 1.2rem;">⚙</span> RECURSOS</h3>
+        <div class="file-grid">
+          <div class="card" onclick="showVersions()">
+            <div class="card-icon">↺</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.history.badge">Historial</span></div>
+            <h3 data-i18n="res.history.title">Versiones de esquemas</h3>
+            <p data-i18n="res.history.desc">Consulta y descarga las distintas versiones publicadas de los esquemas JSON.</p>
+            <span class="card-link" data-i18n="res.history.link">Ver versiones</span>
+          </div>
+          <div class="card" id="resp-card" style="display:none" onclick="showRespuestas()">
+            <div class="card-icon">↩</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.resp.badge">Schema</span></div>
+            <h3 data-i18n="res.resp.title">Respuestas</h3>
+            <p data-i18n="res.resp.desc">Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.</p>
+            <span class="card-link" data-i18n="res.resp.link">Ver respuestas</span>
+          </div>
+          <div class="card" onclick="showValidacion()">
+            <div class="card-icon">✓</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.val.badge">Herramienta</span></div>
+            <h3 data-i18n="res.val.title">Validaciones</h3>
+            <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
+            <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
+          </div>
         </div>
       </div>
-    </section>
+      </section>
+    
   </section>
 
 <!-- ═══ DETAIL VIEW ═════════════════════════════════════ -->

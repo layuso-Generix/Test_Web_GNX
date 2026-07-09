@@ -18,14 +18,30 @@ function showView(id) {
 function showIndex()  { _currentSection = null; showView('view-index'); document.title = 'Generix · E-Invoicing · Developer Documentation'; }
 function showDetail() { showView('view-detail'); }
 function showValidacion(){ showView('view-validacion'); setupValidator(); }
+function getSectionGroups() { return SITE_CONFIG.sections || []; }
+function getAllCards() {
+  return getSectionGroups().flatMap(group =>
+    (group.cards || []).map(card => ({
+      ...card,
+      sectionName: group.section
+    }))
+  );
+}
+function findCardById(id) { return getAllCards().find(card => card.id === id); }
+function isFullPath(value) { return typeof value === 'string' && value.includes('/'); }
+function resolveFilePath(section, fileNameOrPath) {
+  if (!fileNameOrPath) return '';
+  if (isFullPath(fileNameOrPath)) return fileNameOrPath;
+  return `${section.dir}/${fileNameOrPath}`;
+}
 
 function init() {
   applyStaticI18n();
   renderGrid(SITE_CONFIG.sections);
   const stat = document.getElementById('stat-sections');
-  if (stat) stat.textContent = SITE_CONFIG.sections.length;
+  if (stat) stat.textContent = getAllCards().length;
   const respCard = document.getElementById('resp-card');
-  if (respCard) respCard.style.display = SITE_CONFIG.sections.some(s => s.group === 'Response') ? '' : 'none';
+  if (respCard) respCard.style.display = getAllCards().some(s => s.group === 'Response') ? '' : 'none';
   showIndex();
 }
 function localizedSectionTitle(s){ return s['title_' + LANG] || s.title_es || s.title_en || s.id; }
@@ -33,20 +49,42 @@ function localizedSectionDesc(s){ return s['description_' + LANG] || s.descripti
 function renderGrid(sections) {
   const grid = document.getElementById('sectionGrid');
   if (!grid) return;
-  grid.innerHTML = sections.map(s => {
-    const nf = (s.files || []).length;
-    return `<div class="card" onclick="openEndpoint('${esc(s.id)}')">
-      <div class="card-icon">${esc(s.icon || s.format || '')}</div>
-      <div class="card-meta"><span class="badge badge-cat">${esc(s.category || s.group || '')}</span><span class="badge badge-ver">${esc(s.format || '')}</span></div>
-      <h3>${esc(localizedSectionTitle(s))}</h3>
-      <p>${esc(localizedSectionDesc(s))}</p>
-      <span class="card-link">${nf} ${nf !== 1 ? t('card.fields_pl') : t('card.fields_sg')} · ${t('card.viewDoc')}</span>
-    </div>`;
-  }).join('');
+  let html = '';
+  
+  sections.forEach(group => {
+    const groupName = group.section || '';
+    const groupId = _slug ? _slug(groupName) : groupName.replace(/[^A-Za-z0-9_-]/g, '-');
+      html += `
+        <div class="folder-section" id="grp-${esc(groupId)}">
+          <h3><span class="card-icon" style="margin-bottom: 0px; font-size: 1.2rem;">${esc(group.icon || '📦')}</span> ${esc(groupName)}</h3>
+          <div class="file-grid">
+      `;
+      (group.cards || []).forEach(card => {
+        const nf = (card.files || []).length;
+        html += `
+          <div class="card" onclick="openEndpoint('${esc(card.id)}')">
+            <div class="card-icon">${esc(card.icon || card.format || '')}</div>
+            <div class="card-meta">
+              <span class="badge badge-${esc(card.group)}">${esc(card.group || '')}</span>
+              <span class="badge badge-cat">${esc(card.category || '')}</span>
+              <span class="badge badge-${esc(card.format)}">${esc(card.format || '')}</span>
+            </div>
+            <h3>${esc(localizedSectionTitle(card))}</h3>
+            <p>${esc(localizedSectionDesc(card))}</p>
+            <span class="card-link">${nf} ${nf !== 1 ? t('card.fields_pl') : t('card.fields_sg')} · ${t('card.viewDoc')}</span>
+          </div>`;
+  });
+    html += `
+        </div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
 }
 
 async function openEndpoint(sectionId) {
-  const section = SITE_CONFIG.sections.find(s => s.id === sectionId);
+  const section = findCardById(sectionId);
   if (!section) return;
   _currentSection = section; window._currentSection = section;
   showDetail();
@@ -62,7 +100,7 @@ async function openEndpoint(sectionId) {
   ['snav-btns-estructura','snav-btns-enumeraciones'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
   _examples = []; _schemaRaw = '';
   try {
-    const schemaPath = section.schemaFile ? localFilePath(section, section.schemaFile) : null;
+    const schemaPath = section.schemaFile ? resolveFilePath(section, section.schemaFile) : null;
     const readmePath = section.readme ? (section.readme[LANG] || section.readme.es || section.readme.en) : null;
     const [sRes, rRes] = await Promise.allSettled([
       schemaPath ? rawFetch(schemaPath) : Promise.resolve(''),
@@ -73,16 +111,17 @@ async function openEndpoint(sectionId) {
     if (_schemaRaw && _ext(schemaPath) === 'json') schema = localizeNode(JSON.parse(_schemaRaw));
     else schema = { title: localizedSectionTitle(section), description: localizedSectionDesc(section) };
     const readmeRaw = rRes.status === 'fulfilled' ? rRes.value : null;
-    const exResults = await Promise.allSettled((section.exampleFiles || []).map(f => rawFetch(localFilePath(section, f))));
-    const examplesData = (section.exampleFiles || []).map((f, i) => ({ name: f, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: localFilePath(section, f) })).filter(e => e.raw !== null);
+    const exResults = await Promise.allSettled((section.exampleFiles || []).map(f => rawFetch(resolveFilePath(section, f))));
+    const examplesData = (section.exampleFiles || []).map((f, i) => ({ name: f, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: resolveFilePath(section, f) })).filter(e => e.raw !== null);
     document.title = `Generix · ${localizedSectionTitle(section)} · Developer Documentation`;
     document.getElementById('detailTitle').textContent = schema.title || localizedSectionTitle(section);
     document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
     document.getElementById('detailDescription').textContent  = schema.description || localizedSectionDesc(section);
     document.getElementById('detailBadges').innerHTML = [
-      `<span class="method-badge">${esc(section.format || '')}</span>`,
-      `<span class="version-pill">${esc(section.group || '')}</span>`,
-      `<span class="cat-pill">${esc(section.category || '')}</span>`
+      `<span class="method-badge ${esc(section.group)}">${esc(section.group || '')}</span>`,
+      `<span class="method-badge category">${esc(section.category || '')}</span>`,
+      `<span class="method-badge ${esc(section.format)}">${esc(section.format || '')}</span>`
+      
     ].join('');
     renderDescripcion(schema, readmeRaw, examplesData, section);
     renderEstructura(schema, section, section.schemaFile);
@@ -205,12 +244,13 @@ async function toggleExampleCode(pid, btn, path, idx) {
   const el=document.getElementById(pid); if(!el)return; const open=el.style.display!=='none'; el.style.display=open?'none':'block'; btn.textContent=open?t('btn.viewContent'):t('btn.hide'); const card=el.closest('.file-card'); if(card)card.classList.toggle('expanded',!open);
   if(!open&&!el.dataset.rendered){let raw=_examples[idx]; if(raw==null){raw=await rawFetch(path); if(_ext(path)==='json')raw=fmtJSON(raw); _examples[idx]=raw;} renderJsonMinimap(el, raw, [], `<span>${esc(path.split('/').pop())}</span><button class="copy-btn" onclick="copyExample(${idx}, this)">${t('btn.copy')}</button>`); el.dataset.rendered='1';}
 }
+function _slug(s) { return String(s || '').replace(/[^A-Za-z0-9_-]/g, '-'); }
 document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => { const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b===btn)); document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${tab}`)); }));
 function scrollToBlock(id, btn) { document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active'); const el=document.getElementById(id); if(el)el.scrollIntoView({behavior:'smooth',block:'start'}); }
 function downloadSchema(fileName){ downloadBlob(_schemaRaw, fileName, 'application/json'); }
 function downloadExample(i, fileName){ const content=_examples[i]; if(content!=null)downloadBlob(content,fileName); }
 function copyExample(i, btn){ const text=_examples[i]; if(!text)return; navigator.clipboard.writeText(text).then(()=>{btn.textContent=t('btn.copied');btn.classList.add('ok');setTimeout(()=>{btn.textContent=t('btn.copy');btn.classList.remove('ok');},2000);}); }
 async function showVersions(){ showView('view-versions'); const status=document.getElementById('versStatus'), cont=document.getElementById('versContainer'), quick=document.getElementById('versQuick'); status.textContent=t('loading'); quick.innerHTML=''; const files=SITE_CONFIG.versionFiles || []; if(!files.length){status.textContent=''; cont.innerHTML=`<div class="highlight-box"><strong>${t('versions.emptyTitle')}</strong><br>${t('versions.emptyBody')}</div>`; return;} status.textContent=t('versions.count',{n:files.length}); cont.innerHTML=`<div class="file-grid">${files.map((f,i)=>renderFileCard(f,i,'vers')).join('')}</div>`; }
-async function showRespuestas(){ showView('view-respuestas'); const body=document.getElementById('respuestas-body'); const sections=SITE_CONFIG.sections.filter(s=>s.group==='Response'); body.innerHTML=sections.map((s,i)=>`<div class="resp-block"><div class="resp-block-head"><h2>${esc(localizedSectionTitle(s))}</h2><p>${esc(localizedSectionDesc(s))}</p></div><div class="file-grid">${(s.files||[]).map((f,j)=>renderFileCard(f,j,`resp-${i}`)).join('')}</div></div>`).join('') || `<p style="color:var(--gray-500)">${t('versions.emptyTitle')}</p>`; }
+async function showRespuestas(){ showView('view-respuestas'); const body=document.getElementById('respuestas-body'); const sections=getAllCards().filter(s=>s.group==='Response'); body.innerHTML=sections.map((s,i)=>`<div class="resp-block"><div class="resp-block-head"><h2>${esc(localizedSectionTitle(s))}</h2><p>${esc(localizedSectionDesc(s))}</p></div><div class="file-grid">${(s.files||[]).map((f,j)=>renderFileCard(f,j,`resp-${i}`)).join('')}</div></div>`).join('') || `<p style="color:var(--gray-500)">${t('versions.emptyTitle')}</p>`; }
 (function(){ const btn=document.getElementById('goTop'); if(btn){ function toggle(){btn.classList.toggle('show',window.scrollY>400);} window.addEventListener('scroll',toggle,{passive:true}); toggle(); }})();
 document.addEventListener('DOMContentLoaded', init);
