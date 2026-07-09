@@ -116,7 +116,7 @@ function setupValidator() {
         drop = document.getElementById("dropzone"),
         input = document.getElementById("fileInput");
     if (!select) return;
-    const sections = SITE_CONFIG.sections.filter((s) => s.validatorSchema);
+    const sections = CONFIG.sections.filter((s) => s.validatorSchema);
     select.innerHTML =
         `<option value="">${t("validator.select")}</option>` +
         sections

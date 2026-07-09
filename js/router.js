@@ -26,7 +26,7 @@ function handleRoute() {
         setupValidator();
         return;
     }
-    const section = SITE_CONFIG.sections.find((s) => s.id === route);
+    const section = CONFIG.sections.find((s) => s.id === route);
     if (section) {
         showView("view-detail");
         APP.renderDetail(section);

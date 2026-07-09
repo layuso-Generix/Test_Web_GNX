@@ -109,7 +109,9 @@ async function renderReadme(section, container) {
 
     try {
 
-        const response = await fetch(path);
+        const response = await fetch(
+            encodeURI(path)
+        );
 
         if (!response.ok) {
             throw new Error(
