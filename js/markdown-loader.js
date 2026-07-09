@@ -1,10 +1,4 @@
-function esc(t) {
-    return String(t == null ? "" : t)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-}
+function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function inlineMd(text) {
     return esc(text)
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")

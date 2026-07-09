@@ -1,14 +1,5 @@
-const TEXT_TYPES = ["json", "xml", "xsd", "txt", "md", "csv"];
-const FILE_ICONS = {
-    json: "🟨",
-    xml: "📃",
-    xsd: "📐",
-    csv: "📊",
-    txt: "📄",
-    md: "📝",
-    pdf: "📕",
-    xlsx: "📗",
-};
+const TEXT_TYPES = ["json", "xml", "xsd", "txt", "md", "csv", "pdf", "xlsx"];
+const FILE_ICONS = { json: "🟨", xml: "📃", xsd: "📐", csv: "📊", txt: "📄", md: "📝", pdf: "📕", xlsx: "📗"};
 function extFromPath(path) {
     const i = path.lastIndexOf(".");
     return i >= 0 ? path.slice(i + 1).toLowerCase() : "";
