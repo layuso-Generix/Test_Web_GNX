@@ -1,0 +1,20 @@
+/* Variables CSS extraídas de :root */
+:root {
+    --generix-dark: #002333;
+    --generix-dark-soft: #0a3447;
+    --generix-orange: #F28A48;
+    --generix-orange-hover: #e07535;
+    --generix-orange-soft: #FDF0E7;
+    --generix-green:#00A59A;
+    --generix-green-soft:#DCF3F1;
+    --generix-blue:#CCEDEB;
+    --generix-blue-soft:#F8FDFC;
+    --white:#FFFFFF;
+    --gray-50:#FAFBFC;
+    --gray-100:#F2F5F8;
+    --gray-200:#E1E8EE;
+    --gray-300:#C5D2DC;
+    --gray-500:#6B7E8C;
+    --gray-700:#3A4A56;
+    --gray-900:#0F1B24;
+}

@@ -1,97 +1,10 @@
-const TEXT_TYPES = ["json", "xml", "xsd", "txt", "md", "csv", "pdf", "xlsx"];
-const FILE_ICONS = { json: "🟨", xml: "📃", xsd: "📐", csv: "📊", txt: "📄", md: "📝", pdf: "📕", xlsx: "📗"};
-function extFromPath(path) {
-    const i = path.lastIndexOf(".");
-    return i >= 0 ? path.slice(i + 1).toLowerCase() : "";
-}
-function iconForFile(f) {
-    return FILE_ICONS[f.type] || FILE_ICONS[extFromPath(f.path)] || "📄";
-}
-function isPreviewable(f) {
-    return TEXT_TYPES.includes((f.type || extFromPath(f.path)).toLowerCase());
-}
-function formatTextByType(text, type) {
-    if (type === "json") {
-        try {
-            return JSON.stringify(JSON.parse(text), null, 2);
-        } catch (e) {
-            return text;
-        }
-    }
-    return text;
-}
-function downloadText(content, fileName, type = "text/plain") {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-}
-async function toggleFilePreview(file, previewId, btn) {
-    const box = document.getElementById(previewId);
-    const card = box.closest(".file-card");
-    if (box.classList.contains("open")) {
-        box.classList.remove("open");
-        card.classList.remove("expanded");
-        btn.textContent = t("file.view");
-        return;
-    }
-    box.classList.add("open");
-    card.classList.add("expanded");
-    btn.textContent = t("file.hide");
-    if (box.dataset.loaded) return;
-    box.innerHTML = `<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${t("loading")}</pre>`;
-    try {
-        const raw = await loadTextFile(file.path);
-        const type = (file.type || extFromPath(file.path)).toLowerCase();
-        const formatted = formatTextByType(raw, type);
-        box.innerHTML = `<div class="file-preview-header"><span>${esc(file.label)}</span><button class="copy-btn">${t("file.copy")}</button></div><pre>${esc(formatted)}</pre>`;
-        box.querySelector(".copy-btn").onclick = () =>
-            navigator.clipboard.writeText(formatted).then(() => {
-                const b = box.querySelector(".copy-btn");
-                b.textContent = t("file.copied");
-                b.classList.add("ok");
-                setTimeout(() => {
-                b.textContent = t("file.copy");
-                b.classList.remove("ok");
-                }, 1800);
-            });
-            box.dataset.loaded = "1";
-    } catch (e) {
-        box.innerHTML = `<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${esc(e.message)}</pre>`;
-    }
-}
-function renderFiles(section, container) {
-    const files = section.files || [];
-    if (!files.length) {
-        container.innerHTML = `<div class="info-box">No files configured.</div>`;
-        return;
-    }
-    container.innerHTML = files
-    .map((f, i) => {
-        const type = (f.type || extFromPath(f.path) || "file").toUpperCase();
-        const pid = `file-preview-${section.id}-${i}`;
-        const previewButton = isPreviewable(f)
-            ? `<button class="file-btn" data-preview-id="${pid}" data-file-index="${i}">${t("file.view")}</button>`
-            : "";
-        return `<div class="file-card"><div class="file-card__head"><div class="file-card__icon">${iconForFile(f)}</div><div><div class="file-card__name">${esc(f.label)}</div><div class="file-card__meta">${esc(type)} · ${esc(f.path)}</div></div></div><div class="file-card__actions"><a class="file-btn file-btn--primary" href="${esc(f.path)}" download>${t("file.download")}</a><a class="file-btn" target="_blank" href="${esc(f.path)}">${t("file.open")}</a>${previewButton}</div><div class="file-preview" id="${pid}"></div></div>`;
-    })
-    .join("");
-    container
-    .querySelectorAll("[data-preview-id]")
-    .forEach( (btn) =>
-        (btn.onclick = () =>
-            toggleFilePreview(
-                files[Number(btn.dataset.fileIndex)],
-                btn.dataset.previewId,
-                btn,
-            )),
-    );
-}
-window.renderFiles = renderFiles;
-window.extFromPath = extFromPath;
-window.downloadText = downloadText;
+const TEXT_TYPES=["json","xml","xsd","txt","md","csv"];
+const FILE_ICONS={json:"🟨",xml:"📃",xsd:"📐",csv:"📊",txt:"📄",md:"📝",pdf:"📕",xlsx:"📗"};
+function extFromPath(path){const i=path.lastIndexOf(".");return i>=0?path.slice(i+1).toLowerCase():"";}
+function iconForFile(f){return FILE_ICONS[f.type]||FILE_ICONS[extFromPath(f.path)]||"📄";}
+function isPreviewable(f){return TEXT_TYPES.includes((f.type||extFromPath(f.path)).toLowerCase());}
+function formatTextByType(text,type){if(type==="json"){try{return JSON.stringify(JSON.parse(text),null,2)}catch(e){return text}}return text;}
+function downloadText(content,fileName,type="text/plain"){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
+async function toggleFilePreview(file, previewId, btn){const box=document.getElementById(previewId);const card=box.closest(".file-card");if(box.classList.contains("open")){box.classList.remove("open");card.classList.remove("expanded");btn.textContent=t("file.view");return;}box.classList.add("open");card.classList.add("expanded");btn.textContent=t("file.hide");if(box.dataset.loaded)return;box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${t("loading")}</pre>`;try{const raw=await loadTextFile(file.path);const type=(file.type||extFromPath(file.path)).toLowerCase();const formatted=formatTextByType(raw,type);box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span><button class="copy-btn">${t("file.copy")}</button></div><pre>${esc(formatted)}</pre>`;box.querySelector(".copy-btn").onclick=()=>navigator.clipboard.writeText(formatted).then(()=>{const b=box.querySelector(".copy-btn");b.textContent=t("file.copied");b.classList.add("ok");setTimeout(()=>{b.textContent=t("file.copy");b.classList.remove("ok")},1800)});box.dataset.loaded="1";}catch(e){box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${esc(e.message)}</pre>`;}}
+function renderFiles(section, container){const files=section.files||[];if(!files.length){container.innerHTML=`<div class="info-box">No files configured.</div>`;return;}container.innerHTML=files.map((f,i)=>{const type=(f.type||extFromPath(f.path)||"file").toUpperCase();const pid=`file-preview-${section.id}-${i}`;const previewButton=isPreviewable(f)?`<button class="file-btn" data-preview-id="${pid}" data-file-index="${i}">${t("file.view")}</button>`:"";return `<div class="file-card"><div class="file-card__head"><div class="file-card__icon">${iconForFile(f)}</div><div><div class="file-card__name">${esc(f.label)}</div><div class="file-card__meta">${esc(type)} · ${esc(f.path)}</div></div></div><div class="file-card__actions"><a class="file-btn file-btn--primary" href="${esc(f.path)}" download>${t("file.download")}</a><a class="file-btn" target="_blank" href="${esc(f.path)}">${t("file.open")}</a>${previewButton}</div><div class="file-preview" id="${pid}"></div></div>`}).join("");container.querySelectorAll("[data-preview-id]").forEach(btn=>btn.onclick=()=>toggleFilePreview(files[Number(btn.dataset.fileIndex)],btn.dataset.previewId,btn));}
+window.renderFiles=renderFiles;window.extFromPath=extFromPath;window.downloadText=downloadText;
