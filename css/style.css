@@ -177,13 +177,13 @@
   .badge-put            { background:#fef3c7; color:#92400e; }
   .badge-patch          { background:#ede9fe; color:#6d28d9; }
   .badge-delete         { background:#fee2e2; color:#dc2626; }
-  .badge-JSON           { background:#fff7d6; color:#8a6100; }
+  .badge-JSON           { background:#fce5fc; color:#d928d9; }
   .badge-XML            { background:#dbeafe; color:#1d4ed8; }
   .badge-PDF            { background:#fee2e2; color:#dc2626; }
   .badge-Invoice        { background:#dcfce7; color:#15803d; }
   .badge-Response       { background:#ede9fe; color:#6d28d9; }
   .badge-Status         { background:#fef3c7; color:#92400e; }
-  .badge-Documentation  { background:#fce5fc; color:#d928d9; }
+  .badge-Documentation  { background:#fff7d6; color:#8a6100; }
   .badge-cat            { background: var(--gray-100); color: var(--gray-700); }
   .badge-new            { background: #00A59A; color: var(--white); letter-spacing: 0.6px; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulseNew 1.8s infinite; }
   @keyframes pulseNew {
@@ -277,13 +277,13 @@
   .method-badge.PUT            { background:#fef3c7; color:#92400e; }
   .method-badge.PATCH          { background:#ede9fe; color:#6d28d9; }
   .method-badge.DELETE         { background:#fee2e2; color:#dc2626; }
-  .method-badge.JSON           { color:rgba(255, 247, 214); background:#8a6100; }
+  .method-badge.JSON           { color:rgba(252, 229, 252); background:#d928d9; }
   .method-badge.XML            { color:rgba(219, 234, 254); background:#1d4ed8; }
   .method-badge.PDF            { color:rgba(254, 226, 226); background:#dc2626; }
   .method-badge.Invoice        { color:rgba(220, 252, 231); background:#15803d; }
   .method-badge.Response       { color:rgba(237, 233, 254); background:#6d28d9; }
-  .method-badge.Status         { color:rgba(252, 229, 252); background:#d928d9; }
-  .method-badge.Documentation  { color:rgba(254, 243, 199); background:#92400e; }
+  .method-badge.Status         { color:rgba(254, 243, 199); background:#92400e; }
+  .method-badge.Documentation  { color:rgba(252, 229, 252); background:#d928d9; }
   .method-badge.category       { color:rgba(255, 255, 255); background:rgba(255,255,255,.1);}
   .ep-path {
     font-family:"SFMono-Regular",Consolas,monospace; font-size:.86rem;

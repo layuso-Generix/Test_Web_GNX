@@ -122,26 +122,6 @@ const SITE_CONFIG = {
       ]
         }
       ]
-    },
-    { section: 'DOCUMENTACIÓN',
-      icon: '📄', 
-      cards: [
-        { id: 'aeat',
-          folder: 'AEAT Documentation',
-          title_es: 'Documentación AEAT', title_en: 'AEAT Documentation',
-          description_es: 'Documentación oficial relacionada con Crea y Crece.',
-          description_en: 'Official documentation related to Crea y Crece.',
-          group: 'Documentation', format: 'PDF', icon: 'AEAT', category: 'AEAT',
-          dir: 'E-invoicing/AEAT-Documentation/Crea&Crece',
-          readme: null,
-          schemaFile: null,
-          exampleFiles: [],
-          files: [
-            { name: 'anexo1.pdf', label: 'Anexo 1', type: 'pdf', path: 'E-invoicing/AEAT-Documentation/Crea&Crece/anexo1.pdf' },
-            { name: 'anexo2.pdf', label: 'Anexo 2', type: 'pdf', path: 'E-invoicing/AEAT-Documentation/Crea&Crece/anexo2.pdf' }
-          ]
-        }
-      ]
     }
   ]
 };

@@ -18,6 +18,7 @@ const I18N = {
   'res.history.badge':'Historial','res.history.title':'Versiones de esquemas','res.history.desc':'Consulta y descarga las distintas versiones publicadas de los esquemas.','res.history.link':'Ver versiones',
   'res.resp.badge':'Schema','res.resp.title':'Respuestas','res.resp.desc':'Estructura de las respuestas: campos, validaciones y ejemplo.','res.resp.link':'Ver respuestas',
   'res.val.badge':'Herramienta','res.val.title':'Validaciones','res.val.desc':'Valida tu fichero JSON contra el esquema seleccionado.','res.val.link':'Abrir validador',
+  'res.aeat.badge':'Documentación','res.aeat.title':'Documentación AEAT','res.aeat.desc':'Documentación oficial relacionada con Crea y Crece.','res.aeat.link':'Abrir documentación',
   'crumb.docs':'Documentación','crumb.versions':'Versiones de esquemas','crumb.validation':'Validaciones','crumb.responses':'Respuestas',
   'tabs.desc':'Descripción General','tabs.struct':'Estructura','tabs.enums':'Enumeraciones','tabs.example':'Ejemplo',
   'sidebar.goto':'Ir a','example.title':'Ejemplos',
