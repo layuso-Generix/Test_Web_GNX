@@ -1,10 +1,80 @@
-const TEXT_TYPES=["json","xml","xsd","txt","md","csv"];
-const FILE_ICONS={json:"🟨",xml:"📃",xsd:"📐",csv:"📊",txt:"📄",md:"📝",pdf:"📕",xlsx:"📗"};
-function extFromPath(path){const i=path.lastIndexOf(".");return i>=0?path.slice(i+1).toLowerCase():"";}
-function iconForFile(f){return FILE_ICONS[f.type]||FILE_ICONS[extFromPath(f.path)]||"📄";}
-function isPreviewable(f){return TEXT_TYPES.includes((f.type||extFromPath(f.path)).toLowerCase());}
-function formatTextByType(text,type){if(type==="json"){try{return JSON.stringify(JSON.parse(text),null,2)}catch(e){return text}}return text;}
-function downloadText(content,fileName,type="text/plain"){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fileName;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
-async function toggleFilePreview(file, previewId, btn){const box=document.getElementById(previewId);const card=box.closest(".file-card");if(box.classList.contains("open")){box.classList.remove("open");card.classList.remove("expanded");btn.textContent=t("file.view");return;}box.classList.add("open");card.classList.add("expanded");btn.textContent=t("file.hide");if(box.dataset.loaded)return;box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${t("loading")}</pre>`;try{const raw=await loadTextFile(file.path);const type=(file.type||extFromPath(file.path)).toLowerCase();const formatted=formatTextByType(raw,type);box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span><button class="copy-btn">${t("file.copy")}</button></div><pre>${esc(formatted)}</pre>`;box.querySelector(".copy-btn").onclick=()=>navigator.clipboard.writeText(formatted).then(()=>{const b=box.querySelector(".copy-btn");b.textContent=t("file.copied");b.classList.add("ok");setTimeout(()=>{b.textContent=t("file.copy");b.classList.remove("ok")},1800)});box.dataset.loaded="1";}catch(e){box.innerHTML=`<div class="file-preview-header"><span>${esc(file.label)}</span></div><pre>${esc(e.message)}</pre>`;}}
-function renderFiles(section, container){const files=section.files||[];if(!files.length){container.innerHTML=`<div class="info-box">No files configured.</div>`;return;}container.innerHTML=files.map((f,i)=>{const type=(f.type||extFromPath(f.path)||"file").toUpperCase();const pid=`file-preview-${section.id}-${i}`;const previewButton=isPreviewable(f)?`<button class="file-btn" data-preview-id="${pid}" data-file-index="${i}">${t("file.view")}</button>`:"";return `<div class="file-card"><div class="file-card__head"><div class="file-card__icon">${iconForFile(f)}</div><div><div class="file-card__name">${esc(f.label)}</div><div class="file-card__meta">${esc(type)} · ${esc(f.path)}</div></div></div><div class="file-card__actions"><a class="file-btn file-btn--primary" href="${esc(f.path)}" download>${t("file.download")}</a><a class="file-btn" target="_blank" href="${esc(f.path)}">${t("file.open")}</a>${previewButton}</div><div class="file-preview" id="${pid}"></div></div>`}).join("");container.querySelectorAll("[data-preview-id]").forEach(btn=>btn.onclick=()=>toggleFilePreview(files[Number(btn.dataset.fileIndex)],btn.dataset.previewId,btn));}
-window.renderFiles=renderFiles;window.extFromPath=extFromPath;window.downloadText=downloadText;
+/* =========================================================
+   file-viewer.js - tarjetas, preview, descarga, JSON minimap simple
+   ========================================================= */
+const TEXT_EXT = ['json','xml','xsd','txt','md','csv','yaml','yml'];
+const FILE_ICONS = { json:'🟨', xml:'📃', xsd:'📐', csv:'📊', txt:'📄', md:'📝', pdf:'📕', zip:'🗜️', xlsx:'📗' };
+function _ext(n){ const i=String(n).lastIndexOf('.'); return i>=0?String(n).slice(i+1).toLowerCase():''; }
+function _fileIcon(n){ return FILE_ICONS[_ext(n)] || FILE_ICONS[String(n).toLowerCase()] || '📁'; }
+function _isText(n){ return TEXT_EXT.includes(_ext(n)); }
+function fmtJSON(t) { try { return JSON.stringify(JSON.parse(t), null, 2); } catch { return t; } }
+function hlJSON(json) {
+  return esc(json).replace(/("(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+    if (/^"/.test(m)) return /:$/.test(m) ? `<span class="jk">${m}</span>` : `<span class="js">${m}</span>`;
+    if (/true|false/.test(m)) return `<span class="jb">${m}</span>`;
+    if (m === 'null') return `<span class="jnull">${m}</span>`;
+    return `<span class="jn">${m}</span>`;
+  });
+}
+function downloadBlob(content, fileName, mime='application/octet-stream') {
+  if (content == null) return;
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function localFilePath(section, fileName){ return `${section.dir}/${fileName}`; }
+function renderFileCard(file, idx, prefix='file') {
+  const path = file.path || file.rawPath;
+  const name = file.name || path.split('/').pop();
+  const pid = `${prefix}-${idx}`.replace(/[^A-Za-z0-9_-]/g,'-');
+  const previewBtn = _isText(name) ? `<button class="file-btn" onclick="toggleFilePreview('${esc(path)}','${pid}',this)">${t('btn.viewContent')}</button>` : '';
+  return `<div class="file-card">
+    <div class="file-card__head">
+      <div class="file-card__icon">${_fileIcon(name)}</div>
+      <div><div class="file-card__name">${esc(file.label || name)}</div><div class="file-card__meta">${esc((_ext(name)||'file').toUpperCase())} · ${esc(path)}</div></div>
+    </div>
+    <div class="file-card__actions">
+      <a class="file-btn file-btn--primary" href="${esc(path)}" download>${t('btn.download')}</a>
+      <a class="file-btn" target="_blank" href="${esc(path)}">${t('btn.viewGithub')}</a>
+      ${previewBtn}
+    </div>
+    <div class="file-preview" id="${pid}"><pre></pre></div>
+  </div>`;
+}
+async function toggleFilePreview(path, pid, btn) {
+  const box = document.getElementById(pid);
+  if (!box) return;
+  const card = box.closest('.file-card');
+  if (box.classList.contains('open')) { box.classList.remove('open'); if(card) card.classList.remove('expanded'); btn.textContent = t('btn.viewContent'); return; }
+  box.classList.add('open'); if(card) card.classList.add('expanded'); btn.textContent = t('btn.hide');
+  const pre = box.querySelector('pre');
+  if (box.dataset.loaded) return;
+  pre.textContent = t('loading');
+  try {
+    let text = await rawFetch(path);
+    if (_ext(path) === 'json') text = fmtJSON(text);
+    if (text.length > 120000) text = text.slice(0,120000) + '\n\n…';
+    pre.textContent = text;
+    box.dataset.loaded = '1';
+  } catch(e) { pre.textContent = e.message; }
+}
+function renderJsonMinimap(container, jsonText, errorLineNumbers, headerHtml) {
+  const text = (jsonText || '').trim();
+  if (!text) { container.innerHTML = ''; return; }
+  const formatted = fmtJSON(text);
+  container.innerHTML = `<div class="validator-code-shell"><div class="validator-code-panel">
+    ${headerHtml ? `<div class="validator-code-header">${headerHtml}</div>` : ''}
+    <div class="validator-code-body" style="display:block"><div class="validator-code-scroll"><pre class="validator-line-code" style="white-space:pre;display:block;padding:18px;overflow:auto;max-height:70vh">${hlJSON(formatted)}</pre></div></div>
+  </div></div>`;
+}
+window.fmtJSON = fmtJSON;
+window.hlJSON = hlJSON;
+window.downloadBlob = downloadBlob;
+window.renderFileCard = renderFileCard;
+window.toggleFilePreview = toggleFilePreview;
+window.renderJsonMinimap = renderJsonMinimap;
