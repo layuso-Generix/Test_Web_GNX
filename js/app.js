@@ -196,9 +196,9 @@ function renderDescripcion(schema, readmeText, examplesData, section) {
   if (section.category) specs.push({ label:t('spec.category'),     value: section.category });
   if (ep.method)        specs.push({ label:t('spec.method'),       value: ep.method });
   if (ep.comunication)  specs.push({ label:t('spec.comunication'), value: ep.comunication });
-  if (ep.path)          specs.push({ label:t('spec.path'),         value: ep.path });
   if (ep.version)       specs.push({ label:t('spec.version'),      value: ep.version });
   if (ep.releaseDate)   specs.push({ label:t('spec.releaseDate'),  value: ep.releaseDate });
+  if (ep.path)          specs.push({ label:t('spec.path'),         value: ep.path });
   (examplesData || []).forEach((ex, i) => specs.push({ label: examplesData.length > 1 ? t('spec.exampleN',{n:i+1}) : t('spec.example'), value: ex.name, dlIdx: i }));
 
   if (specs.length) 
