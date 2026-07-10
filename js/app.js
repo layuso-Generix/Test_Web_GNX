@@ -85,6 +85,25 @@ function renderGrid(sections) {
 
 async function openEndpoint(sectionId) {
   const section = findCardById(sectionId);
+
+  console.log('section:',                section);
+  console.log('section.id:',             section.id);
+  console.log('section.title_es:',       section.title_es);
+  console.log('section.title_en:',       section.title_en);
+  console.log('section.description_es:', section.description_es);
+  console.log('section.description_en:', section.description_en);
+  console.log('section.group:',          section.group);
+  console.log('section.format:',         section.format);
+  console.log('section.icon:',           section.icon);
+  console.log('section.category:',       section.category);
+  console.log('section.dir:',            section.dir);
+
+
+  console.log('section.folder:',         section.folder);
+  console.log('section.schemaFile:',     section.schemaFile);
+  console.log('section.readme:',         section.readme);
+  console.log('section.exampleFiles:',   section.exampleFiles);
+
   if (!section) return;
   _currentSection = section; window._currentSection = section;
   showDetail();
@@ -100,8 +119,11 @@ async function openEndpoint(sectionId) {
   ['snav-btns-estructura','snav-btns-enumeraciones'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
   _examples = []; _schemaRaw = '';
   try {
-    const schemaPath = section.schemaFile ? resolveFilePath(section, section.schemaFile) : null;
-    const readmePath = section.readme ? (section.readme[LANG] || section.readme.es || section.readme.en) : null;
+    const assets = await getDirectoryAssets(section.dir);
+    console.log('assets', assets);
+    const readmePath = assets.readmes[LANG]?.path;
+    const schemaPath = assets.schemas.length ? assets.schemas[0].path : null;
+
     const [sRes, rRes] = await Promise.allSettled([
       schemaPath ? rawFetch(schemaPath) : Promise.resolve(''),
       readmePath ? rawFetch(readmePath) : Promise.resolve(null)
@@ -111,8 +133,8 @@ async function openEndpoint(sectionId) {
     if (_schemaRaw && _ext(schemaPath) === 'json') schema = localizeNode(JSON.parse(_schemaRaw));
     else schema = { title: localizedSectionTitle(section), description: localizedSectionDesc(section) };
     const readmeRaw = rRes.status === 'fulfilled' ? rRes.value : null;
-    const exResults = await Promise.allSettled((section.exampleFiles || []).map(f => rawFetch(resolveFilePath(section, f))));
-    const examplesData = (section.exampleFiles || []).map((f, i) => ({ name: f, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: resolveFilePath(section, f) })).filter(e => e.raw !== null);
+    const exResults = await Promise.allSettled(assets.examples.map(f =>rawFetch(f.path)));
+    const examplesData = (assets.examples || []).map((f, i) => ({ name: f.name, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: f.path })).filter(e => e.raw !== null);
     document.title = `Generix · ${localizedSectionTitle(section)} · Developer Documentation`;
     document.getElementById('detailTitle').textContent = schema.title || localizedSectionTitle(section);
     document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
@@ -132,6 +154,35 @@ async function openEndpoint(sectionId) {
     document.getElementById('detailDescription').textContent = err.message;
     document.getElementById('desc-body').innerHTML = `<p style="color:#cf1322">${esc(err.message)}</p>`;
   }
+}
+async function listFolder(folder) {
+  const url =
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${folder}?ref=${CONFIG.branch}`;
+  const res = await fetch(url);
+  if (!res.ok) {throw new Error(`Error cargando carpeta ${folder}`);}
+  return await res.json();
+}
+async function getDirectoryAssets(folder) {
+  const files = await listFolder(folder);
+    const result = {
+        schemas: [],
+        examples: [],
+        readmes: {},
+        others: []
+    };
+    files.forEach(file => {
+        const name = file.name;
+        const lower = name.toLowerCase();
+        // README
+        const readmeMatch = lower.match(/^readme\.([a-z]{2})\.md$/);
+        if (readmeMatch) { result.readmes[readmeMatch[1]] = file; return; }
+        // SCHEMA
+        if ( lower.includes('schema') || lower.endsWith('.xsd') ) { result.schemas.push(file); return;}
+        // EJEMPLOS
+        if (lower.includes('ejemplo') ||  lower.includes('example') ) { result.examples.push(file); return; }
+        result.others.push(file);
+    });
+    return result;
 }
 function renderDescripcion(schema, readmeText, examplesData, section) {
   let html = '';

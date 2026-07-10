@@ -122,6 +122,57 @@ const SITE_CONFIG = {
       ]
         }
       ]
+    },
+    { section: 'UBL',
+      icon: '</>', 
+      cards: [
+        { id: 'invoice-xml',
+          folder: 'Invoice / Xml',
+          title_es: 'Factura XML', title_en: 'Invoice XML',
+          description_es: 'Documentación técnica del estándar XML de factura.',
+          description_en: 'Technical documentation for the invoice XML standard.',
+          group: 'Invoice', format: 'UBL', icon: 'INV', category: 'Standard',
+          dir: 'E-invoicing/Standard/Invoice/Xml',
+          readme: { es: 'E-invoicing/Standard/Invoice/Xml/readme.es.md', en: 'E-invoicing/Standard/Invoice/Xml/readme.en.md' },
+          schemaFile: 'GNX_Schema_xml.xsd',
+          exampleFiles: ['GNX_Invoice_xml.xml'],
+          files: [
+            { name: 'GNX_Invoice_xml.xml', label: 'Invoice XML example', type: 'xml', path: 'E-invoicing/Standard/Invoice/Xml/GNX_Invoice_xml.xml' },
+            { name: 'GNX_Schema_xml.xsd', label: 'Invoice XSD schema', type: 'xsd', path: 'E-invoicing/Standard/Invoice/Xml/GNX_Schema_xml.xsd' }
+          ]
+        },
+        { id: 'response-xml',
+      folder: 'Response / Xml',
+      title_es: 'Respuesta XML', title_en: 'Response XML',
+      description_es: 'Documentación de respuestas y errores en formato XML.',
+      description_en: 'XML response and error documentation.',
+      group: 'Response', format: 'UBL', icon: 'RESP', category: 'Standard',
+      dir: 'E-invoicing/Standard/Response/Xml',
+      readme: { es: 'E-invoicing/Standard/Response/Xml/readme.es.md', en: 'E-invoicing/Standard/Response/Xml/readme.en.md' },
+      schemaFile: 'schema-errores.xsd',
+      exampleFiles: ['error-invoice.xml', 'error-partner.xml'],
+      files: [
+        { name: 'error-invoice.xml', label: 'Error invoice XML', type: 'xml', path: 'E-invoicing/Standard/Response/Xml/error-invoice.xml' },
+        { name: 'error-partner.xml', label: 'Error partner XML', type: 'xml', path: 'E-invoicing/Standard/Response/Xml/error-partner.xml' },
+        { name: 'schema-errores.xsd', label: 'Error XSD schema', type: 'xsd', path: 'E-invoicing/Standard/Response/Xml/schema-errores.xsd' }
+      ]
+        },
+        { id: 'status-xml',
+      folder: 'Status / Xml',
+      title_es: 'Estados XML', title_en: 'Status XML',
+      description_es: 'Documentación de estados en formato XML.',
+      description_en: 'XML status documentation.',
+      group: 'Status', format: 'UBL', icon: 'STAT', category: 'Standard',
+      dir: 'E-invoicing/Standard/Status/Xml',
+      readme: { es: 'E-invoicing/Standard/Status/Xml/readme.es.md', en: 'E-invoicing/Standard/Status/Xml/readme.en.md' },
+      schemaFile: 'GNX_Schema_Status_xml.xsd',
+      exampleFiles: ['GNX_Status_xml.xml'],
+      files: [
+        { name: 'GNX_Status_xml.xml', label: 'Status XML example', type: 'xml', path: 'E-invoicing/Standard/Status/Xml/GNX_Status_xml.xml' },
+        { name: 'GNX_Schema_Status_xml.xsd', label: 'Status XSD schema', type: 'xsd', path: 'E-invoicing/Standard/Status/Xml/GNX_Schema_Status_xml.xsd' }
+      ]
+        }
+      ]
     }
   ]
 };
