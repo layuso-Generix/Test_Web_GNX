@@ -43,8 +43,8 @@ function renderFileCard(file, idx, prefix='file') {
       <div><div class="file-card__name">${esc(file.label || name)}</div><div class="file-card__meta">${esc((_ext(name)||'file').toUpperCase())} · ${esc(path)}</div></div>
     </div>
     <div class="file-card__actions">
-      <a class="file-btn file-btn--primary" href="${esc(path)}" download>${t('btn.download')}</a>
-      <a class="file-btn" target="_blank" href="${esc(path)}">${t('btn.viewGithub')}</a>
+      <a class="file-btn file-btn--primary" href="${esc(rawUrl(path))}" download>${t('btn.download')}</a>
+      <a class="file-btn" target="_blank" href="${esc(rawUrl(path))}">${t('btn.viewGithub')}</a>
       ${previewBtn}
     </div>
     <div class="file-preview" id="${pid}"><pre></pre></div>
