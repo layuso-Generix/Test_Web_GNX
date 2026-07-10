@@ -130,9 +130,9 @@ async function openEndpoint(sectionId) {
     const exResults = await Promise.allSettled(assets.examples.map(f =>rawFetch(f.path)));
     const examplesData = (assets.examples || []).map((f, i) => ({ name: f.name, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: f.path })).filter(e => e.raw !== null);
     document.title = `Generix · ${localizedSectionTitle(section)} · Developer Documentation`;
-    document.getElementById('detailTitle').textContent = localizedSectionTitle(section) || schema.title;
+    document.getElementById('detailTitle').textContent = schema.title || localizedSectionTitle(section);
     document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
-    document.getElementById('detailDescription').textContent  = schema.description || localizedSectionDesc(section);
+    document.getElementById('detailDescription').textContent  = schema['x-cyc-author'] || "GENERIX Group Spain";
     document.getElementById('detailBadges').innerHTML = [
       `<span class="method-badge ${esc(section.group)}">${esc(section.group || '')}</span>`,
       `<span class="method-badge category">${esc(section.category || '')}</span>`,
@@ -180,17 +180,22 @@ async function getDirectoryAssets(folder) {
 }
 function renderDescripcion(schema, readmeText, examplesData, section) {
   console.log('renderDescripcion.schema:', schema);
+  console.log('renderDescripcion.schema:', schema['x-cyc-endpoint'].version);
+  console.log('renderDescripcion.schema:', schema['x-cyc-endpoint'].releaseDate);
   // console.log('renderDescripcion.readmeText:', readmeText);
   // console.log('renderDescripcion.examplesData:', examplesData);
   console.log('renderDescripcion.section:', section);
+
+
   let html = '';
-  html += `<h2>${esc(localizedSectionTitle(section) || schema.title || t('desc.overview'))}</h2>`;
+  html += `<h2>${esc(schema.title || localizedSectionTitle(section) || t('desc.overview'))}</h2>`;
   if (schema.description) html += `<p>${esc(schema.description)}</p>`;
   const specs = [];
-  if (section.format) specs.push({ label:t('spec.format'), value: section.format });
-  if (section.category) specs.push({ label:t('spec.category'), value: section.category });
-  if (section.dir) specs.push({ label:t('spec.folder'), value: section.dir });
-  if (section.schemaFile) specs.push({ label:t('spec.schema'), value: section.schemaFile });
+  if (section.format)     specs.push({ label:t('spec.format'),    value: section.format });
+  if (section.category)   specs.push({ label:t('spec.category'),  value: section.category });
+  if (schema['x-cyc-endpoint'].version)     specs.push({ label:t('spec.version'),    value: schema['x-cyc-endpoint'].version });
+  if (schema['x-cyc-endpoint'].releaseDate) specs.push({ label:t('spec.releaseDate'),    value: schema['x-cyc-endpoint'].releaseDate });
+
   (examplesData || []).forEach((ex, i) => specs.push({ label: examplesData.length > 1 ? t('spec.exampleN',{n:i+1}) : t('spec.example'), value: ex.name, dlIdx: i }));
   if (specs.length) html += `<div class="spec-card">${specs.map(s => `<div class="spec-item"><span class="spec-label">${esc(s.label)}</span><span class="spec-value">${s.dlIdx !== undefined ? `<a href="#" onclick="downloadExample(${s.dlIdx},'${esc(s.value)}');return false;" class="download-link" style="font-family:monospace;font-size:.85rem">${esc(s.value)}</a>` : esc(s.value)}</span></div>`).join('')}</div>`;
   if (readmeText) html += simpleMarkdown(readmeText, true);
