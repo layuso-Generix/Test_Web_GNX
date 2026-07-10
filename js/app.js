@@ -98,12 +98,6 @@ async function openEndpoint(sectionId) {
   console.log('section.category:',       section.category);
   console.log('section.dir:',            section.dir);
 
-
-  console.log('section.folder:',         section.folder);
-  console.log('section.schemaFile:',     section.schemaFile);
-  console.log('section.readme:',         section.readme);
-  console.log('section.exampleFiles:',   section.exampleFiles);
-
   if (!section) return;
   _currentSection = section; window._currentSection = section;
   showDetail();
@@ -136,7 +130,7 @@ async function openEndpoint(sectionId) {
     const exResults = await Promise.allSettled(assets.examples.map(f =>rawFetch(f.path)));
     const examplesData = (assets.examples || []).map((f, i) => ({ name: f.name, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: f.path })).filter(e => e.raw !== null);
     document.title = `Generix · ${localizedSectionTitle(section)} · Developer Documentation`;
-    document.getElementById('detailTitle').textContent = schema.title || localizedSectionTitle(section);
+    document.getElementById('detailTitle').textContent = localizedSectionTitle(section) || schema.title;
     document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
     document.getElementById('detailDescription').textContent  = schema.description || localizedSectionDesc(section);
     document.getElementById('detailBadges').innerHTML = [
@@ -185,8 +179,12 @@ async function getDirectoryAssets(folder) {
     return result;
 }
 function renderDescripcion(schema, readmeText, examplesData, section) {
+  console.log('renderDescripcion.schema:', schema);
+  // console.log('renderDescripcion.readmeText:', readmeText);
+  // console.log('renderDescripcion.examplesData:', examplesData);
+  console.log('renderDescripcion.section:', section);
   let html = '';
-  html += `<h2>${esc(schema.title || localizedSectionTitle(section) || t('desc.overview'))}</h2>`;
+  html += `<h2>${esc(localizedSectionTitle(section) || schema.title || t('desc.overview'))}</h2>`;
   if (schema.description) html += `<p>${esc(schema.description)}</p>`;
   const specs = [];
   if (section.format) specs.push({ label:t('spec.format'), value: section.format });
@@ -208,14 +206,14 @@ function renderEstructura(schema, section, schemaFileName) {
     return;
   }
   if (_ext(schemaFileName) !== 'json') {
-    body.innerHTML = `<p style="margin-bottom:28px"><a href="${esc(localFilePath(section,schemaFileName))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p><div class="file-grid">${(section.files||[]).map((f,i)=>renderFileCard(f,i,'struct')).join('')}</div>`;
+    body.innerHTML = `<p style="margin-bottom:28px"><a href="${esc(rawUrl(localFilePath(section,schemaFileName)))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p><div class="file-grid">${(section.files||[]).map((f,i)=>renderFileCard(f,i,'struct')).join('')}</div>`;
     nav.innerHTML = '';
     return;
   }
   const defs = schema.$defs || schema.definitions || {};
   const blocks = extractBlocks(schema, defs);
   if (!blocks.length) { body.innerHTML = `<p style="color:var(--gray-500)">${t('struct.none')}</p>`; return; }
-  let bodyHtml = `<p style="margin-bottom:28px"><a href="#" onclick="downloadSchema('${esc(schemaFileName)}'); return false;" class="download-link">${t('struct.download',{file:schemaFileName})}</a><br/><a href="${esc(localFilePath(section,schemaFileName))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p>`;
+  let bodyHtml = `<p style="margin-bottom:28px"><a href="#" onclick="downloadSchema('${esc(schemaFileName)}'); return false;" class="download-link">${t('struct.download',{file:schemaFileName})}</a><br/><a href="${esc(rawUrl(localFilePath(section,schemaFileName)))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p>`;
   let navHtml = '';
   blocks.forEach((blk, i) => {
     const id = `blk-${i}`;
@@ -287,7 +285,21 @@ function renderEjemplo(examples, section) {
   allExamples.forEach((ex,i)=>{
     if(ex.raw!=null)_examples.push(_ext(ex.name)==='json'?fmtJSON(ex.raw):ex.raw); else _examples.push(null);
     const pid=`ex-code-${i}`;
-    html+=`<div class="file-card" style="margin-bottom:18px"><div class="file-card__head"><div class="file-card__icon">${_fileIcon(ex.name)}</div><div><div class="file-card__name">${esc(ex.name)}</div><div class="file-card__meta">${esc((_ext(ex.name)||'file').toUpperCase())}</div></div></div><div class="file-card__actions"><a class="file-btn file-btn--primary" href="${esc(ex.path || localFilePath(section, ex.name))}" download>${t('btn.download')}</a><a class="file-btn" target="_blank" href="${esc(ex.path || localFilePath(section, ex.name))}">${t('btn.viewGithub')}</a><button class="file-btn" onclick="toggleExampleCode('${pid}', this, '${esc(ex.path || localFilePath(section, ex.name))}', ${i})">${t('btn.viewContent')}</button></div><div class="ejemplo-cp" id="${pid}" style="display:none;margin-top:6px"></div></div>`;
+    html+=`<div class="file-card" style="margin-bottom:18px">
+    <div class="file-card__head">
+      <div class="file-card__icon">${_fileIcon(ex.name)}</div>
+      <div>
+        <div class="file-card__name">${esc(ex.name)}</div>
+        <div class="file-card__meta">${esc((_ext(ex.name)||'file').toUpperCase())}</div>
+      </div>
+    </div>
+    <div class="file-card__actions">
+      <a class="file-btn file-btn--primary" href="${esc(rawUrl(ex.path || localFilePath(section, ex.name)))}" download>${t('btn.download')}</a>
+      <a class="file-btn" target="_blank" href="${esc(rawUrl(ex.path || localFilePath(section, ex.name)))}">${t('btn.viewGithub')}</a>
+      <button class="file-btn" onclick="toggleExampleCode('${pid}', this, '${esc(ex.path || localFilePath(section, ex.name))}', ${i})">
+        ${t('btn.viewContent')}</button>
+    </div>
+    <div class="ejemplo-cp" id="${pid}" style="display:none;margin-top:6px"></div></div>`;
   });
   html+='</div>'; inner.innerHTML=html;
 }

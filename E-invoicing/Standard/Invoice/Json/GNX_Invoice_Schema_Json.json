@@ -1,6 +1,16 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"title": "Json_Standard",
+	"title_es": "Estándar JSON",
+	"title_en": "JSON Standard",
+	"x-cyc-icon": "",
+	"x-cyc-author": "GENERIX Group Spain",
+	"x-cyc-endpoint": {
+		"version": "v1.2",
+		"releaseDate": "2026-07-03"
+	},
+	"description_es": "Documentación técnica del estándar JSON de factura.",
+	"description_en": "",
 	"type": "object",
 	"properties": {
 		"InvoiceGNX": {

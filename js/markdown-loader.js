@@ -34,9 +34,12 @@ function simpleMarkdown(md, skipFirstH = false) {
   closeUl(); closeCode();
   return html;
 }
+function rawUrl(path) {
+  const url = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${path}`;
+  return encodeURI(url).replace(/#/g, '%23');
+}
 async function rawFetch(path) {
-  const safePath = encodeURI(path).replace(/#/g, '%23');
-  const r = await fetch(safePath);
+  const r = await fetch(rawUrl(path));
   if (!r.ok) throw new Error(`HTTP ${r.status}: ${path}`);
   return r.text();
 }
@@ -44,3 +47,4 @@ window.esc = esc;
 window.inlineMd = inlineMd;
 window.simpleMarkdown = simpleMarkdown;
 window.rawFetch = rawFetch;
+window.rawUrl = rawUrl;
