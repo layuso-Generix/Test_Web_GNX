@@ -6,6 +6,9 @@
 	"x-cyc-icon": "",
 	"x-cyc-author": "GENERIX Group Spain",
 	"x-cyc-endpoint": {
+		"method": "POST",
+		"comunication": "ASYNC",
+		"path": "https://[URL_Client_Environment].generix.biz/m08_tables?uuid=[Value]",
 		"version": "v1.2",
 		"releaseDate": "2026-07-03"
 	},

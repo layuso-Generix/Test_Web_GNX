@@ -191,15 +191,30 @@ function renderDescripcion(schema, readmeText, examplesData, section) {
   html += `<h2>${esc(schema.title || localizedSectionTitle(section) || t('desc.overview'))}</h2>`;
   if (schema.description) html += `<p>${esc(schema.description)}</p>`;
   const specs = [];
-  if (section.format)     specs.push({ label:t('spec.format'),    value: section.format });
-  if (section.category)   specs.push({ label:t('spec.category'),  value: section.category });
-  if (schema['x-cyc-endpoint'].version)     specs.push({ label:t('spec.version'),    value: schema['x-cyc-endpoint'].version });
-  if (schema['x-cyc-endpoint'].releaseDate) specs.push({ label:t('spec.releaseDate'),    value: schema['x-cyc-endpoint'].releaseDate });
-
+  const ep     = schema['x-cyc-endpoint'] || {};
+  if (section.format)   specs.push({ label:t('spec.format'),       value: section.format });
+  if (section.category) specs.push({ label:t('spec.category'),     value: section.category });
+  if (ep.method)        specs.push({ label:t('spec.method'),       value: ep.method });
+  if (ep.comunication)  specs.push({ label:t('spec.comunication'), value: ep.comunication });
+  if (ep.path)          specs.push({ label:t('spec.path'),         value: ep.path });
+  if (ep.version)       specs.push({ label:t('spec.version'),      value: ep.version });
+  if (ep.releaseDate)   specs.push({ label:t('spec.releaseDate'),  value: ep.releaseDate });
   (examplesData || []).forEach((ex, i) => specs.push({ label: examplesData.length > 1 ? t('spec.exampleN',{n:i+1}) : t('spec.example'), value: ex.name, dlIdx: i }));
-  if (specs.length) html += `<div class="spec-card">${specs.map(s => `<div class="spec-item"><span class="spec-label">${esc(s.label)}</span><span class="spec-value">${s.dlIdx !== undefined ? `<a href="#" onclick="downloadExample(${s.dlIdx},'${esc(s.value)}');return false;" class="download-link" style="font-family:monospace;font-size:.85rem">${esc(s.value)}</a>` : esc(s.value)}</span></div>`).join('')}</div>`;
+
+  if (specs.length) 
+    html += `<div class="spec-card">${specs.map(s =>
+        `${s.dlIdx === 0 ? '<div style="flex-basis:100%;height:0;margin:0"></div>' : ''}<div class="spec-item">
+          <span class="spec-label">${esc(s.label)}</span>
+          ${s.dlIdx !== undefined
+            ? `<span class="spec-value">
+                <a href="#" onclick="downloadExample(${s.dlIdx},'${esc(s.value)}');return false;" 
+                class="download-link" style="font-family:monospace;font-size:.85rem">${esc(s.value)}</a>
+                </span>`
+            : `<span class="spec-value">${esc(s.value)}</span>`}
+        </div>`
+      ).join('')}</div>`;
   if (readmeText) html += simpleMarkdown(readmeText, true);
-  else html += `<div class="info-box"><strong>${t('desc.noCustom.title')}</strong><br>${t('desc.noCustom.body')}</div>`;
+  else html += `<div class="info-box"><strong>${t('desc.noCustom.title')}</strong>${t('desc.noCustom.body', { name: esc(schema.title || t('desc.thisEndpoint')) })}</div>`;
   document.getElementById('desc-body').innerHTML = html;
 }
 function renderEstructura(schema, section, schemaFileName) {
@@ -222,10 +237,10 @@ function renderEstructura(schema, section, schemaFileName) {
   let navHtml = '';
   blocks.forEach((blk, i) => {
     const id = `blk-${i}`;
-    const snippet = JSON.stringify({ [blk.jsonKey || blk.label]: blk.schemaSnippet }, null, 2);
-    const fieldTbl = buildFieldTable(blk.properties, blk.required);
+    const snippet = JSON.stringify({ [blk.jsonKey || blk.label]: blk.schemaSnippet }, null, 2);    
+    const fieldTbl = buildResponseFieldTable(blk);
     navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(blk.label.replace(/Wrapper$/i, ''))}</button>`;
-    bodyHtml += `<div class="block-wrap" id="${id}" data-label="${esc(blk.label)}"><div class="block-grid"><div class="code-panel"><div class="cp-header">${esc(blk.label)}</div><pre class="cp-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(blk.description || t('noDesc'))}</p></div><div class="tech-details"><h4>${t('tech.title')}</h4><p><strong>${t('tech.type')}</strong> <span class="tag-type">${esc(blk.type || 'object')}</span></p>${blk.required && blk.required.length ? `<p><strong>${t('tech.required')}</strong> <span class="tag-req">${esc(blk.required.join(', '))}</span></p>` : ''}${blk.constraints ? `<p><strong>${t('tech.constraints')}</strong> ${esc(blk.constraints)}</p>` : ''}</div></div></div>${fieldTbl}<div class="block-divider"></div></div>`;
+    bodyHtml += `<div class="block-wrap" id="${id}" data-label="${esc(blk.label)}"><div class="block-grid"><div class="code-panel"><div class="code-header">${esc(blk.label)}</div><pre class="code-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(blk.description || t('noDesc'))}</p></div><div class="tech-details"><h4>${t('tech.title')}</h4><p><strong>${t('tech.type')}</strong> <span class="tag-type">${esc(blk.type || 'object')}</span></p>${blk.required && blk.required.length ? `<p><strong>${t('tech.required')}</strong> <span class="tag-req">${esc(blk.required.join(', '))}</span></p>` : ''}${blk.constraints ? `<p><strong>${t('tech.constraints')}</strong> ${esc(blk.constraints)}</p>` : ''}</div></div></div>${fieldTbl}<div class="block-divider"></div></div>`;
   });
   body.innerHTML = bodyHtml;
   nav.innerHTML = navHtml;
@@ -253,16 +268,62 @@ function extractBlocks(schema, defs) {
 function resolvePointer(ref, schema) { if (!ref || !ref.startsWith('#/')) return null; return ref.slice(2).split('/').reduce((n,p)=>n&&n[p], schema) || null; }
 function resolveRef(prop, defs) { if (!prop || !prop.$ref) return prop || {}; const name = prop.$ref.replace(/^#\/(\$defs|definitions)\//, ''); return (defs && defs[name]) || prop; }
 function trimSchema(prop, trimEnums) { const clone = JSON.parse(JSON.stringify(prop)); if (!trimEnums) return clone; (function trim(obj){ if(!obj||typeof obj!=='object')return; if(Array.isArray(obj.enum)&&obj.enum.length>12)obj.enum=obj.enum.slice(0,5).concat([`... +${obj.enum.length-5} values`]); Object.values(obj).forEach(v=>{if(typeof v==='object')trim(v);}); })(clone); return clone; }
-function buildFieldTable(props, req) {
-  if (!props || !Object.keys(props).length) return '';
+function buildResponseFieldTable(schema) {
   const dash = '<span style="color:var(--gray-300)">—</span>';
-  let rows = '';
-  for (const [field, def] of Object.entries(props)) {
-    const type = getFieldType(def); const cons = getFieldCons(def); const isReq = (req || []).includes(field);
-    rows += `<tr><td><span class="tag-req">${esc(field)}</span></td><td>${def && def.description ? esc(def.description) : dash}</td><td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td><td>${isReq ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td><td>${cons || dash}</td></tr>`;
+  const rows = [];
+  function resolve(p){ return (p && p.$ref) ? (resolvePointer(p.$ref, schema) || p) : (p || {}); }
+
+  function walk(props, required, depth) {
+    required = required || [];
+    for (const [field, raw] of Object.entries(props || {})) {
+      const def  = resolve(raw);
+      const type = getFieldType(raw);
+      const cons = getFieldCons(raw);
+      const isReq = required.includes(field);
+
+      let refTarget = '';
+      if (raw && raw.$ref) refTarget = raw.$ref;
+      else if (raw && raw.items && raw.items.$ref) refTarget = raw.items.$ref;
+
+      let refLink = '';
+      if (refTarget && refTarget.includes('/Enums/')) {
+        const displayName = refTarget.split('/').pop().replace(/^Enum/, '');
+        const estilo = 'background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem';
+        refLink = `<span style="${estilo}">enum: ${esc(displayName)}</span>`;
+      }
+
+      const restrParts = [cons, refLink].filter(Boolean);
+      const restrHtml = restrParts.length ? restrParts.join('<div style="height:6px"></div>') : dash;
+
+      const desc = (raw && raw.description) || def.description || '';
+      const indent = 8 + depth * 22;
+      const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>' : '';
+
+      rows.push(`<tr>
+        <td style="padding-left:${indent}px"><span class="rf-name-wrap">${arrow}<span class="tag-req">${esc(field)}</span></span></td>
+        <td>${desc ? esc(desc) : dash}</td>
+        <td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td>
+        <td>${isReq ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+        <td>${restrHtml}</td>
+      </tr>`);
+
+      if (def.type === 'object' && def.properties) {
+        walk(def.properties, def.required, depth + 1);
+      } else if (def.type === 'array' && def.items) {
+        const items = resolve(def.items);
+        if (items.properties) walk(items.properties, items.required, depth + 1);
+      }
+    }
   }
-  return `<div class="field-tbl-wrap"><p class="field-tbl-title">${t('table.fieldsTitle')}</p><table class="field-tbl"><thead><tr><th>${t('table.field')}</th><th>${t('table.desc')}</th><th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  walk(schema.properties, schema.required, 0);
+  if (!rows.length) return '';
+  return `<div class="field-tbl-wrap">
+    <table class="field-tbl">
+      <thead><tr><th>${t('table.field')}</th><th>${t('table.desc')}</th><th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th></tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table></div>`;
 }
+
 function getFieldType(def) { if(!def)return''; if(def.$ref)return def.$ref.split('/').pop(); let typ=def.type; if(Array.isArray(typ))typ=typ.join(' | '); if(typ==='array'&&def.items){const it=def.items.$ref?def.items.$ref.split('/').pop():(def.items.type||''); return it?`array<${it}>`:'array';} if(!typ&&Array.isArray(def.enum))return'enum'; return typ||''; }
 function getFieldCons(def) { if(!def)return''; const c=[]; ['minLength','maxLength','minimum','maximum','minItems','maxItems','format','pattern'].forEach(k=>{ if(def[k]!=null)c.push(`${k}: ${def[k]}`); }); if(def.default!==undefined)c.push(`default: ${JSON.stringify(def.default)}`); return c.map(esc).join('<br>'); }
 function renderEnumeraciones(schema) {
@@ -272,7 +333,7 @@ function renderEnumeraciones(schema) {
   enums.forEach((en, i) => {
     const id = `enum-${i}`; const snippet = JSON.stringify({ [en.defName]: en.raw }, null, 2);
     navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(en.field)}</button>`;
-    bodyHtml += `<div class="block-wrap" id="${id}"><div class="block-grid"><div class="code-panel"><div class="cp-header">${esc(en.field)}</div><pre class="cp-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(en.description || t('noDesc'))}</p></div><div class="tech-details"><p><strong>${t('enums.usedIn')}</strong> <code>${esc(en.path)}</code></p><h4>${t('enums.allowed',{n:en.values.length})}</h4><div class="enum-val-wrap">${en.values.map(v=>`<span class="ev-pill">${esc(String(v))}</span>`).join('')}</div></div></div></div><div class="block-divider"></div></div>`;
+    bodyHtml += `<div class="block-wrap" id="${id}"><div class="block-grid"><div class="code-panel"><div class="code-header">${esc(en.field)}</div><pre class="code-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(en.description || t('noDesc'))}</p></div><div class="tech-details"><p><strong>${t('enums.usedIn')}</strong> <code>${esc(en.path)}</code></p><h4>${t('enums.allowed',{n:en.values.length})}</h4><div class="enum-val-wrap">${en.values.map(v=>`<span class="ev-pill">${esc(String(v))}</span>`).join('')}</div></div></div></div><div class="block-divider"></div></div>`;
   });
   document.getElementById('enumeraciones-body').innerHTML = bodyHtml;
   document.getElementById('snav-btns-enumeraciones').innerHTML = navHtml;
