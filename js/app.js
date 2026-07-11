@@ -86,18 +86,6 @@ function renderGrid(sections) {
 async function openEndpoint(sectionId) {
   const section = findCardById(sectionId);
 
-  console.log('section:',                section);
-  console.log('section.id:',             section.id);
-  console.log('section.title_es:',       section.title_es);
-  console.log('section.title_en:',       section.title_en);
-  console.log('section.description_es:', section.description_es);
-  console.log('section.description_en:', section.description_en);
-  console.log('section.group:',          section.group);
-  console.log('section.format:',         section.format);
-  console.log('section.icon:',           section.icon);
-  console.log('section.category:',       section.category);
-  console.log('section.dir:',            section.dir);
-
   if (!section) return;
   _currentSection = section; window._currentSection = section;
   showDetail();
@@ -136,7 +124,8 @@ async function openEndpoint(sectionId) {
     document.getElementById('detailBadges').innerHTML = [
       `<span class="method-badge ${esc(section.group)}">${esc(section.group || '')}</span>`,
       `<span class="method-badge category">${esc(section.category || '')}</span>`,
-      `<span class="method-badge ${esc(section.format)}">${esc(section.format || '')}</span>`
+      `<span class="method-badge ${esc(section.format)}">${esc(section.format || '')}</span>`,
+      `<span class="method-badge category">${esc(schema['x-cyc-endpoint'].releaseDate || '')}</span>`
       
     ].join('');
     renderDescripcion(schema, readmeRaw, examplesData, section);
@@ -179,14 +168,6 @@ async function getDirectoryAssets(folder) {
     return result;
 }
 function renderDescripcion(schema, readmeText, examplesData, section) {
-  console.log('renderDescripcion.schema:', schema);
-  console.log('renderDescripcion.schema:', schema['x-cyc-endpoint'].version);
-  console.log('renderDescripcion.schema:', schema['x-cyc-endpoint'].releaseDate);
-  // console.log('renderDescripcion.readmeText:', readmeText);
-  // console.log('renderDescripcion.examplesData:', examplesData);
-  console.log('renderDescripcion.section:', section);
-
-
   let html = '';
   html += `<h2>${esc(schema.title || localizedSectionTitle(section) || t('desc.overview'))}</h2>`;
   if (schema.description) html += `<p>${esc(schema.description)}</p>`;
@@ -340,7 +321,16 @@ function renderEnumeraciones(schema) {
 }
 function extractEnums(schema) {
   const results=[]; const seen=new Set();
-  function walk(obj,path,refName){ if(!obj||typeof obj!=='object')return; if(obj.$ref){const r=resolvePointer(obj.$ref,schema); if(r)walk(r,path,obj.$ref.split('/').pop()); return;} if(Array.isArray(obj.enum)){const key=path.split('.').pop().replace('[]',''); if(!seen.has(path)){seen.add(path); results.push({field:key,path,type:obj.type||'string',description:obj.description||'',values:obj.enum,default:obj.default,raw:obj,defName:refName||key});} return;} if(obj.properties)for(const[k,v]of Object.entries(obj.properties))walk(v,path?`${path}.${k}`:k); if(obj.items)walk(obj.items,`${path}[]`); if(obj.$defs)for(const[k,v]of Object.entries(obj.$defs))walk(v,k); if(obj.definitions)for(const[k,v]of Object.entries(obj.definitions))walk(v,k); }
+  function walk(obj,path,refName){ 
+    if(!obj||typeof obj!=='object')return; 
+    if(obj.$ref){const r=resolvePointer(obj.$ref,schema); 
+    if(r)walk(r,path,obj.$ref.split('/').pop()); return;} 
+    if(Array.isArray(obj.enum)){const key=path.split('.').pop().replace('[]',''); 
+    if(!seen.has(path)){seen.add(path);results.push({field:key,path,type:obj.type||'string',description:obj.description||'',values:obj.enum,default:obj.default,raw:obj,defName:refName||key});} return;} 
+    if(obj.properties)for(const[k,v]of Object.entries(obj.properties))walk(v,path?`${path}.${k}`:k); 
+    if(obj.items)walk(obj.items,`${path}[]`); 
+    if(obj.$defs)for(const[k,v]of Object.entries(obj.$defs))walk(v,k); 
+    if(obj.definitions)for(const[k,v]of Object.entries(obj.definitions))walk(v,k); }
   walk(schema,''); return results;
 }
 function renderEjemplo(examples, section) {
