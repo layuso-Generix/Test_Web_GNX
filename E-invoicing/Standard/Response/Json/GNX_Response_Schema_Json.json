@@ -5,6 +5,14 @@
   "title_es": "Callback de validación",
   "title_en": "Validation callback",
   "x-cyc-author": "GENERIX Group Spain",
+  "x-cyc-endpoint": {
+    "kind": "callback",
+    "transport": "HTTP POST al endpoint del cliente (asíncrono)",
+    "transport_es": "HTTP POST al endpoint del cliente (asíncrono)",
+    "transport_en": "HTTP POST to the client endpoint (asynchronous)",
+    "version": "v1.0",
+    "releaseDate": "2026-06-25"
+  },
   "x-cyc-response": {
     "kind": "callback",
     "transport": "HTTP POST al endpoint del cliente (asíncrono)",
