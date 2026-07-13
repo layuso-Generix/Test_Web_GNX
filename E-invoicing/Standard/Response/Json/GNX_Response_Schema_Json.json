@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Generix-b2b/API_JSON_WMS/raw/main/Responses/SchemaResponseCallback.json",
+  "title": "Callback de validación",
+  "title_es": "Callback de validación",
+  "title_en": "Validation callback",
+  "x-wms-author": "GENERIX Group Spain",
+  "x-wms-response": {
+    "kind": "callback",
+    "transport": "HTTP POST al endpoint del cliente (asíncrono)",
+    "transport_es": "HTTP POST al endpoint del cliente (asíncrono)",
+    "transport_en": "HTTP POST to the client endpoint (asynchronous)",
+    "version": "v1.0",
+    "releaseDate": "2026-06-25"
+  },
+  "description": "Respuesta que el WMS envía de forma asíncrona al endpoint que el cliente expone, cuando detecta errores de coherencia y cohesión en el fichero (campos obligatorios ausentes, enums mal cumplimentados, formatos incorrectos, etc.). Solo se envía si el cliente ha configurado un endpoint de recepción.",
+  "description_es": "Respuesta que el WMS envía de forma asíncrona al endpoint que el cliente expone, cuando detecta errores de coherencia y cohesión en el fichero (campos obligatorios ausentes, enums mal cumplimentados, formatos incorrectos, etc.). Solo se envía si el cliente ha configurado un endpoint de recepción.",
+  "description_en": "Response that the WMS sends asynchronously to the endpoint the client exposes when it detects consistency and cohesion errors in the file (missing required fields, incorrectly filled enums, wrong formats, etc.). It is only sent if the client has configured a reception endpoint.",
+  "type": "object",
+  "properties": {
+    "response": {
+      "description": "Envoltorio raíz del callback de validación.",
+      "description_es": "Envoltorio raíz del callback de validación.",
+      "description_en": "Root wrapper of the validation callback.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "validationResult": {
+          "description": "Resultado de la validación con el detalle de los errores detectados.",
+          "description_es": "Resultado de la validación con el detalle de los errores detectados.",
+          "description_en": "Validation result with the detail of the detected errors.",
+          "$ref": "#/$defs/ValidationResult"
+        }
+      },
+      "required": ["validationResult"]
+    }
+  },
+  "required": ["response"],
+
+  "$defs": {
+    "ValidationResult": {
+      "description": "Resultado de validación enviado al endpoint del cliente.",
+      "description_es": "Resultado de validación enviado al endpoint del cliente.",
+      "description_en": "Validation result sent to the client endpoint.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uuid": {
+          "description": "Identificador único de la transacción (coincide con el uuid del acuse de recibo inicial).",
+          "description_es": "Identificador único de la transacción (coincide con el uuid del acuse de recibo inicial).",
+          "description_en": "Unique transaction identifier (matches the uuid of the initial reception acknowledgement).",
+          "type": "string",
+          "format": "uuid",
+          "examples": ["7c9e6679-7425-40de-944b-e07fc1f90ae7"]
+        },
+        "message": {
+          "description": "Código del tipo de mensaje WMS que generó los errores (M20, M30, M40...).",
+          "description_es": "Código del tipo de mensaje WMS que generó los errores (M20, M30, M40...).",
+          "description_en": "Code of the WMS message type that generated the errors (M20, M30, M40...).",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10,
+          "examples": ["M30"]
+        },
+        "timestamp": {
+          "description": "Fecha y hora de la validación / formato YYYYMMDDHHmmss.",
+          "description_es": "Fecha y hora de la validación / formato YYYYMMDDHHmmss.",
+          "description_en": "Validation date and time / format YYYYMMDDHHmmss.",
+          "type": "string",
+          "pattern": "^[0-9]{14}$",
+          "examples": ["20260504135235"]
+        },
+        "errors": {
+          "description": "Lista de errores de validación detectados en el mensaje original. Un elemento por error.",
+          "description_es": "Lista de errores de validación detectados en el mensaje original. Un elemento por error.",
+          "description_en": "List of validation errors detected in the original message. One element per error.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ValidationError" }
+        }
+      },
+      "required": ["uuid", "message", "timestamp", "errors"]
+    },
+    "ValidationError": {
+      "description": "Error de validación individual sobre un campo del mensaje original.",
+      "description_es": "Error de validación individual sobre un campo del mensaje original.",
+      "description_en": "Individual validation error on a field of the original message.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "description": "Número de línea del registro en el mensaje original donde se detectó el error.",
+          "description_es": "Número de línea del registro en el mensaje original donde se detectó el error.",
+          "description_en": "Line number of the record in the original message where the error was detected.",
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "examples": ["1"]
+        },
+        "type": {
+          "description": "Tipo de dato del campo que falló la validación.",
+          "description_es": "Tipo de dato del campo que falló la validación.",
+          "description_en": "Data type of the field that failed validation.",
+          "$ref": "#/$defs/Enums/EnumErrorType"
+        },
+        "field": {
+          "description": "Nombre del campo WMS que contiene el error.",
+          "description_es": "Nombre del campo WMS que contiene el error.",
+          "description_en": "Name of the WMS field that contains the error.",
+          "type": "string",
+          "examples": ["INDPRO"]
+        },
+        "receivedValue": {
+          "description": "Valor recibido que provocó el error.",
+          "description_es": "Valor recibido que provocó el error.",
+          "description_en": "Received value that caused the error.",
+          "type": "string",
+          "examples": ["[\"S\", \"N\", \"S\", \"N\", \"S\"]"]
+        },
+        "error": {
+          "description": "Descripción legible de la regla de validación incumplida.",
+          "description_es": "Descripción legible de la regla de validación incumplida.",
+          "description_en": "Human-readable description of the validation rule that was not met.",
+          "type": "string",
+          "examples": ["Maximum allowed value : 1 Value specified in : INDPRO = [\"S\", \"N\", \"S\", \"N\", \"S\"]"]
+        }
+      },
+      "required": ["line", "type", "field", "receivedValue", "error"]
+    },
+    "Enums": {
+      "EnumErrorType": {
+        "description": "Tipo de dato del campo que falló la validación / string = texto, integer = entero, string_double = decimal, date = fecha YYYYMMDD, boolean = true/false",
+        "description_es": "Tipo de dato del campo que falló la validación / string = texto, integer = entero, string_double = decimal, date = fecha YYYYMMDD, boolean = true/false",
+        "description_en": "Data type of the field that failed validation / string = text, integer = integer number, string_double = decimal number, date = date YYYYMMDD, boolean = true/false",
+        "type": "string",
+        "enum": ["string", "integer", "string_double", "date", "boolean"]
+      }
+    }
+  }
+}
