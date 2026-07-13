@@ -71,7 +71,7 @@ function renderGrid(sections) {
             </div>
             <h3>${esc(localizedSectionTitle(card))}</h3>
             <p>${esc(localizedSectionDesc(card))}</p>
-            <span class="card-link">${nf} ${nf !== 1 ? t('card.fields_pl') : t('card.fields_sg')} · ${t('card.viewDoc')}</span>
+            <span class="card-link">${t('card.viewDoc')}</span>
           </div>`;
   });
     html += `

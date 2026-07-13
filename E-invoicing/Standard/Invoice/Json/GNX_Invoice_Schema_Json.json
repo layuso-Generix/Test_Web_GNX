@@ -8,7 +8,6 @@
 	"x-cyc-endpoint": {
 		"method": "POST",
 		"comunication": "ASYNC",
-		"path": "https://[URL_Client_Environment].generix.biz/einvoicing",
 		"version": "v1.2",
 		"releaseDate": "2026-07-03"
 	},
