@@ -4,8 +4,8 @@
   "title": "Callback de validación",
   "title_es": "Callback de validación",
   "title_en": "Validation callback",
-  "x-wms-author": "GENERIX Group Spain",
-  "x-wms-response": {
+  "x-cyc-author": "GENERIX Group Spain",
+  "x-cyc-response": {
     "kind": "callback",
     "transport": "HTTP POST al endpoint del cliente (asíncrono)",
     "transport_es": "HTTP POST al endpoint del cliente (asíncrono)",
