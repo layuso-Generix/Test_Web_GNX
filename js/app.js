@@ -1,375 +1,574 @@
-/* =========================================================
-   app.js - lógica principal al estilo web1, adaptada a SITE_CONFIG
-   ========================================================= */
-const _VIEWS = ['view-index','view-detail','view-versions','view-validacion','view-respuestas'];
-let _currentSection = null;
-let _schemaRaw = '';
-let _examples = [];
-let _respSchemas = {};
-let _respSections = {};
 
-function showView(id) {
-  _VIEWS.forEach(v => {
-    const el = document.getElementById(v);
-    if (el) el.style.display = (v === id) ? 'block' : 'none';
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-function showIndex()  { _currentSection = null; showView('view-index'); document.title = 'Generix · E-Invoicing · Developer Documentation'; }
-function showDetail() { showView('view-detail'); }
-function showValidacion(){ showView('view-validacion'); setupValidator(); }
-function getSectionGroups() { return SITE_CONFIG.sections || []; }
-function getAllCards() {
-  return getSectionGroups().flatMap(group =>
-    (group.cards || []).map(card => ({
-      ...card,
-      sectionName: group.section
-    }))
-  );
-}
-function findCardById(id) { return getAllCards().find(card => card.id === id); }
-function isFullPath(value) { return typeof value === 'string' && value.includes('/'); }
-function resolveFilePath(section, fileNameOrPath) {
-  if (!fileNameOrPath) return '';
-  if (isFullPath(fileNameOrPath)) return fileNameOrPath;
-  return `${section.dir}/${fileNameOrPath}`;
-}
+/* ═══════════════════════════════════════════════════════════════════
+   MÓDULO XSD — Renderizado para cards de formato XML / UBL
+   
+   Cómo funciona:
+   · openDocumentation detecta section.format === 'XML' | 'UBL'
+   · En vez de parsear JSON Schema, descarga el .xsd con rawFetch
+   · Lo parsea con DOMParser (API nativa del navegador)
+   · renderEstructuraXsd / renderEnumeracionesXsd usan el DOM del XSD
+     para generar los mismos bloques visuales que la versión JSON
 
-function init() {
-  applyStaticI18n();
-  renderGrid(SITE_CONFIG.sections);
-  const stat = document.getElementById('stat-sections');
-  if (stat) stat.textContent = getAllCards().length;
-  const respCard = document.getElementById('resp-card');
-  if (respCard) respCard.style.display = getAllCards().some(s => s.group === 'Response') ? '' : 'none';
-  showIndex();
-}
-function localizedSectionTitle(s){ return s['title_' + LANG] || s.title_es || s.title_en || s.id; }
-function localizedSectionDesc(s){ return s['description_' + LANG] || s.description_es || s.description_en || ''; }
-function renderGrid(sections) {
-  const grid = document.getElementById('sectionGrid');
-  if (!grid) return;
-  let html = '';
-  
-  sections.forEach(group => {
-    const groupName = group.section || '';
-    const groupId = _slug ? _slug(groupName) : groupName.replace(/[^A-Za-z0-9_-]/g, '-');
-      html += `
-        <div class="folder-section" id="grp-${esc(groupId)}">
-          <h3><span class="card-icon" style="margin-bottom: 0px; font-size: 1.2rem;">${esc(group.icon || '📦')}</span> ${esc(groupName)}</h3>
-          <div class="file-grid">
-      `;
-      (group.cards || []).forEach(card => {
-        const nf = (card.files || []).length;
-        html += `
-          <div class="card" onclick="openEndpoint('${esc(card.id)}')">
-            <div class="card-icon">${esc(card.icon || card.format || '')}</div>
-            <div class="card-meta">
-              <span class="badge badge-${esc(card.group)}">${esc(card.group || '')}</span>
-              <span class="badge badge-cat">${esc(card.category || '')}</span>
-              <span class="badge badge-${esc(card.format)}">${esc(card.format || '')}</span>
-            </div>
-            <h3>${esc(localizedSectionTitle(card))}</h3>
-            <p>${esc(localizedSectionDesc(card))}</p>
-            <span class="card-link">${t('card.viewDoc')}</span>
-          </div>`;
-  });
-    html += `
-        </div>
-      </div>
-    `;
-  });
+   Diferencias respecto al motor JSON:
+   · Los "bloques" son xs:complexType y xs:simpleType (no properties JSON)
+   · Las "enumeraciones" son xs:simpleType con xs:enumeration
+   · Los campos de cada tipo son xs:element hijos del complexType
+   · Las descripciones y el orden de tipos vienen de xsdMeta[card.id]
+     (diccionario en config.js o aquí abajo) — sin eso se muestra
+     todo lo que haya en el XSD, ordenado alfabéticamente
+   ═══════════════════════════════════════════════════════════════════ */
 
-  grid.innerHTML = html;
-}
+  /* ── Estado global ──────────────────────────────────────── */
+const XSD_NS = 'http://www.w3.org/2001/XMLSchema';
 
-async function openEndpoint(sectionId) {
-  const section = findCardById(sectionId);
+/* ── Estado del módulo XSD (se resetea con cada apertura de card) ── */
+let _xsdDoc  = null;   // Document parseado por DOMParser
+let _xsdText = '';     // Texto crudo del XSD (para extraer snippets literales)
+let _xsdMeta = {};     // Descripciones por nombre de tipo: { TypeName: { title, es, en } }
+let _xsdBlockOrder = [];  // Orden de tipos a mostrar (array de strings con nombres)
+let _xsdEnumOrder  = [];  // Orden de enumeraciones a mostrar
 
-  if (!section) return;
-  _currentSection = section; window._currentSection = section;
-  showDetail();
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'descripcion'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-descripcion'));
-  document.getElementById('detailTitle').textContent = t('loading');
-  document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
-  document.getElementById('detailDescription').textContent  = '';
-  document.getElementById('detailBadges').innerHTML = '';
-  ['desc-body','estructura-body','enumeraciones-body','ejemplo-inner'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.innerHTML = `<p style="color:var(--gray-500)">${t('loading')}</p>`;
-  });
-  ['snav-btns-estructura','snav-btns-enumeraciones'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
-  _examples = []; _schemaRaw = '';
-  try {
-    const assets = await getDirectoryAssets(section.dir);
-    console.log('assets', assets);
-    const readmePath = assets.readmes[LANG]?.path;
-    const schemaPath = assets.schemas.length ? assets.schemas[0].path : null;
+/* ── Punto de entrada XSD ────────────────────────────────────────── */
 
-    const [sRes, rRes] = await Promise.allSettled([
-      schemaPath ? rawFetch(schemaPath) : Promise.resolve(''),
-      readmePath ? rawFetch(readmePath) : Promise.resolve(null)
-    ]);
-    _schemaRaw = sRes.status === 'fulfilled' ? sRes.value : '';
-    let schema = {};
-    if (_schemaRaw && _ext(schemaPath) === 'json') schema = localizeNode(JSON.parse(_schemaRaw));
-    else schema = { title: localizedSectionTitle(section), description: localizedSectionDesc(section) };
-    const readmeRaw = rRes.status === 'fulfilled' ? rRes.value : null;
-    const exResults = await Promise.allSettled(assets.examples.map(f =>rawFetch(f.path)));
-    const examplesData = (assets.examples || []).map((f, i) => ({ name: f.name, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null, path: f.path })).filter(e => e.raw !== null);
-    document.title = `Generix · ${localizedSectionTitle(section)} · Developer Documentation`;
-    document.getElementById('detailTitle').textContent = schema.title || localizedSectionTitle(section);
-    document.getElementById('d-breadcrumb-name').textContent = localizedSectionTitle(section);
-    document.getElementById('detailDescription').textContent  = schema['x-cyc-author'] || "GENERIX Group Spain";
-    document.getElementById('detailBadges').innerHTML = [
-      `<span class="method-badge ${esc(section.group)}">${esc(section.group || '')}</span>`,
-      `<span class="method-badge category">${esc(section.category || '')}</span>`,
-      `<span class="method-badge ${esc(section.format)}">${esc(section.format || '')}</span>`,
-      `<span class="method-badge category">${esc(schema['x-cyc-endpoint'].releaseDate || '')}</span>`
-      
-    ].join('');
-    renderDescripcion(schema, readmeRaw, examplesData, section);
-    renderEstructura(schema, section, section.schemaFile);
-    renderEnumeraciones(schema);
-    renderEjemplo(examplesData, section);
-  } catch (err) {
-    document.getElementById('detailTitle').textContent = t('detail.errorLoad');
-    document.getElementById('detailDescription').textContent = err.message;
-    document.getElementById('desc-body').innerHTML = `<p style="color:#cf1322">${esc(err.message)}</p>`;
-  }
-}
-async function listFolder(folder) {
-  const url =
-    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${folder}?ref=${CONFIG.branch}`;
-  const res = await fetch(url);
-  if (!res.ok) {throw new Error(`Error cargando carpeta ${folder}`);}
-  return await res.json();
-}
-async function getDirectoryAssets(folder) {
-  const files = await listFolder(folder);
-    const result = {
-        schemas: [],
-        examples: [],
-        readmes: {},
-        others: []
-    };
-    files.forEach(file => {
-        const name = file.name;
-        const lower = name.toLowerCase();
-        // README
-        const readmeMatch = lower.match(/^readme\.([a-z]{2})\.md$/);
-        if (readmeMatch) { result.readmes[readmeMatch[1]] = file; return; }
-        // SCHEMA
-        if ( lower.includes('schema') || lower.endsWith('.xsd') ) { result.schemas.push(file); return;}
-        // EJEMPLOS
-        if (lower.includes('ejemplo') ||  lower.includes('example') ) { result.examples.push(file); return; }
-        result.others.push(file);
+/**
+ * Carga el XSD de la card, lo parsea e inyecta en las tabs.
+ * Se llama desde openDocumentation cuando section.format es 'XML' o 'UBL'.
+ *
+ * @param {object} section     - card de SITE_CONFIG
+ * @param {object} schemaFile  - { name, path, raw } del primer schema encontrado
+ * @param {Array}  examplesData - ejemplos ya cargados
+ * @param {string} readmeRaw   - texto del readme (ya cargado)
+ */
+async function openDocumentationXsd(section, schemaFile, examplesData, readmeRaw) {
+  // Reset de estado XSD
+  _xsdDoc  = null;
+  _xsdText = '';
+
+  // Recuperamos las descripciones registradas para esta card (si las hay)
+  const meta = (typeof XSD_META !== 'undefined' && XSD_META[section.id]) || {};
+  _xsdMeta       = meta.descriptions  || {};
+  _xsdBlockOrder = meta.blockOrder    || [];
+  _xsdEnumOrder  = meta.enumOrder     || [];
+
+  if (!schemaFile?.raw) {
+    const msg = `No se encontró ningún fichero .xsd en ${section.dir}`;
+    ['estructura-body','enumeraciones-body'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<p style="color:#cf1322">${msg}</p>`;
     });
-    return result;
-}
-function renderDescripcion(schema, readmeText, examplesData, section) {
-  let html = '';
-  html += `<h2>${esc(schema.title || localizedSectionTitle(section) || t('desc.overview'))}</h2>`;
-  if (schema.description) html += `<p>${esc(schema.description)}</p>`;
-  const specs = [];
-  const ep     = schema['x-cyc-endpoint'] || {};
-  if (section.format)   specs.push({ label:t('spec.format'),       value: section.format });
-  if (section.category) specs.push({ label:t('spec.category'),     value: section.category });
-  if (ep.method)        specs.push({ label:t('spec.method'),       value: ep.method });
-  if (ep.comunication)  specs.push({ label:t('spec.comunication'), value: ep.comunication });
-  if (ep.version)       specs.push({ label:t('spec.version'),      value: ep.version });
-  if (ep.releaseDate)   specs.push({ label:t('spec.releaseDate'),  value: ep.releaseDate });
-  if (ep.path)          specs.push({ label:t('spec.path'),         value: ep.path });
-  (examplesData || []).forEach((ex, i) => specs.push({ label: examplesData.length > 1 ? t('spec.exampleN',{n:i+1}) : t('spec.example'), value: ex.name, dlIdx: i }));
+    renderDescripcion({
+      title: localizedSectionTitle(section),
+      description: localizedSectionDesc(section)
+    }, readmeRaw, examplesData, section);
+    renderEjemplo(examplesData, section);
+    return;
+  }
 
-  if (specs.length) 
-    html += `<div class="spec-card">${specs.map(s =>
-        `${s.dlIdx === 0 ? '<div style="flex-basis:100%;height:0;margin:0"></div>' : ''}<div class="spec-item">
-          <span class="spec-label">${esc(s.label)}</span>
-          ${s.dlIdx !== undefined
-            ? `<span class="spec-value">
-                <a href="#" onclick="downloadExample(${s.dlIdx},'${esc(s.value)}');return false;" 
-                class="download-link" style="font-family:monospace;font-size:.85rem">${esc(s.value)}</a>
-                </span>`
-            : `<span class="spec-value">${esc(s.value)}</span>`}
-        </div>`
-      ).join('')}</div>`;
-  if (readmeText) html += simpleMarkdown(readmeText, true);
-  else html += `<div class="info-box"><strong>${t('desc.noCustom.title')}</strong>${t('desc.noCustom.body', { name: esc(schema.title || t('desc.thisEndpoint')) })}</div>`;
-  document.getElementById('desc-body').innerHTML = html;
+  _xsdText = schemaFile.raw;
+  const parser = new DOMParser();
+  _xsdDoc = parser.parseFromString(_xsdText, 'application/xml');
+
+  // Comprobación de error de parseo del XSD
+  const parseErrors = _xsdDoc.getElementsByTagName('parsererror');
+  if (parseErrors.length) {
+    const errMsg = parseErrors[0].textContent || 'Error desconocido al parsear el XSD';
+    document.getElementById('estructura-body').innerHTML =
+      `<p style="color:#cf1322">Error al parsear ${schemaFile.name}: ${esc(errMsg)}</p>`;
+    return;
+  }
+
+  // Descripción general: usamos el schema raíz como fuente de título/desc
+  // ya que los XSD no tienen el mismo objeto raíz que un JSON Schema
+  const syntheticSchema = {
+    title:       localizedSectionTitle(section),
+    description: localizedSectionDesc(section),
+    'x-cyc-author': 'GENERIX Group Spain'
+  };
+  renderDescripcion(syntheticSchema, readmeRaw, examplesData, section);
+  renderEstructuraXsd(section, schemaFile);
+  renderEnumeracionesXsd();
+  renderEjemplo(examplesData, section);
 }
-function renderEstructura(schema, section, schemaFileName) {
+
+/* ── Tab Estructura (XSD) ────────────────────────────────────────── */
+
+/**
+ * Renderiza la tab "Estructura" para un XSD.
+ * - Un bloque por cada xs:complexType / xs:simpleType (excluye enums)
+ * - Si hay _xsdBlockOrder, respeta ese orden; si no, orden del fichero
+ * - Genera el sidebar de navegación (#snav-btns-estructura)
+ */
+function renderEstructuraXsd(section, schemaFile) {
   const body = document.getElementById('estructura-body');
-  const nav = document.getElementById('snav-btns-estructura');
-  if (!schemaFileName) {
-    body.innerHTML = `<div class="file-grid">${(section.files||[]).map((f,i)=>renderFileCard(f,i,'struct')).join('')}</div>`;
-    nav.innerHTML = '';
-    return;
-  }
-  if (_ext(schemaFileName) !== 'json') {
-    body.innerHTML = `<p style="margin-bottom:28px"><a href="${esc(rawUrl(localFilePath(section,schemaFileName)))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p><div class="file-grid">${(section.files||[]).map((f,i)=>renderFileCard(f,i,'struct')).join('')}</div>`;
-    nav.innerHTML = '';
-    return;
-  }
-  const defs = schema.$defs || schema.definitions || {};
-  const blocks = extractBlocks(schema, defs);
-  if (!blocks.length) { body.innerHTML = `<p style="color:var(--gray-500)">${t('struct.none')}</p>`; return; }
-  let bodyHtml = `<p style="margin-bottom:28px"><a href="#" onclick="downloadSchema('${esc(schemaFileName)}'); return false;" class="download-link">${t('struct.download',{file:schemaFileName})}</a><br/><a href="${esc(rawUrl(localFilePath(section,schemaFileName)))}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a></p>`;
+  const nav  = document.getElementById('snav-btns-estructura');
+
+  // Encabezado: enlace de descarga del XSD
+  const schemaUrl = rawUrl(schemaFile.path);
+  let bodyHtml = `
+    <p style="margin-bottom:28px">
+      <a href="#" onclick="downloadSchema('${esc(schemaFile.name)}'); return false;" class="download-link">
+        📥 ${t('struct.download', { file: schemaFile.name })}
+      </a><br/>
+      <a href="${esc(schemaUrl)}" target="_blank" class="download-link">
+        🔗 ${t('struct.view', { file: schemaFile.name })}
+      </a>
+    </p>`;
   let navHtml = '';
-  blocks.forEach((blk, i) => {
-    const id = `blk-${i}`;
-    const snippet = JSON.stringify({ [blk.jsonKey || blk.label]: blk.schemaSnippet }, null, 2);    
-    const fieldTbl = buildResponseFieldTable(blk);
-    navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(blk.label.replace(/Wrapper$/i, ''))}</button>`;
-    bodyHtml += `<div class="block-wrap" id="${id}" data-label="${esc(blk.label)}"><div class="block-grid"><div class="code-panel"><div class="code-header">${esc(blk.label)}</div><pre class="code-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(blk.description || t('noDesc'))}</p></div><div class="tech-details"><h4>${t('tech.title')}</h4><p><strong>${t('tech.type')}</strong> <span class="tag-type">${esc(blk.type || 'object')}</span></p>${blk.required && blk.required.length ? `<p><strong>${t('tech.required')}</strong> <span class="tag-req">${esc(blk.required.join(', '))}</span></p>` : ''}${blk.constraints ? `<p><strong>${t('tech.constraints')}</strong> ${esc(blk.constraints)}</p>` : ''}</div></div></div>${fieldTbl}<div class="block-divider"></div></div>`;
+
+  // Recopilamos todos los complexType y simpleType del documento
+  const allTypes = xsdGetAllTypes();
+
+  // Si hay orden definido, lo usamos; si no, todos los tipos excepto enums
+  const enumNames = new Set(xsdGetEnumTypeNames());
+  const blockNames = _xsdBlockOrder.length
+    ? _xsdBlockOrder.filter(n => allTypes.has(n) && !enumNames.has(n))
+    : [...allTypes.keys()].filter(n => !enumNames.has(n));
+
+  if (!blockNames.length) {
+    body.innerHTML = bodyHtml + `<p style="color:var(--gray-500)">${t('struct.none')}</p>`;
+    nav.innerHTML  = '';
+    return;
+  }
+
+  blockNames.forEach(typeName => {
+    const node    = xsdGetTypeNode(typeName);
+    if (!node) return;
+    const desc    = _xsdMeta[typeName] || {};
+    const id      = `xsd-blk-${typeName}`;
+    const snippet = xsdExtractSnippet(typeName);
+    const kind    = node.localName; // complexType | simpleType
+
+    // Panel derecho: descripción
+    const titleText = desc.title || typeName;
+    const descEs    = LANG === 'es' ? (desc.es || desc.eng || '') : (desc.eng || desc.es || '');
+
+    // Tech details: tipo, propiedades, requeridos o restricciones
+    const techHtml = xsdBuildTechDetails(node, kind);
+
+    // Tabla de campos (solo para complexType)
+    const fieldTbl = kind === 'complexType' ? xsdBuildFieldTable(node) : '';
+
+    navHtml  += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(typeName)}</button>`;
+    bodyHtml += `
+      <div class="block-wrap" id="${id}" data-label="${esc(typeName)}">
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="code-header">${esc(titleText)}</div>
+            <pre class="code-pre">${esc(snippet)}</pre>
+          </div>
+          <div>
+            <div class="explanation-box">
+              <p>${descEs ? esc(descEs) : `<em style="color:var(--gray-400)">${t('noDesc')}</em>`}</p>
+            </div>
+            ${techHtml}
+          </div>
+        </div>
+        ${fieldTbl}
+        <div class="block-divider"></div>
+      </div>`;
   });
+
   body.innerHTML = bodyHtml;
-  nav.innerHTML = navHtml;
+  nav.innerHTML  = navHtml;
 }
-function extractBlocks(schema, defs) {
-  const blocks = [];
-  for (const [key, raw] of Object.entries(schema.properties || {})) {
-    const prop = resolveRef(raw, defs);
-    const type = prop.type || 'object';
-    if (type === 'array' && prop.items) {
-      const cons = [prop.minItems != null ? `minItems: ${prop.minItems}` : '', prop.maxItems != null ? `maxItems: ${prop.maxItems}` : ''].filter(Boolean).join(' · ');
-      blocks.push({ label:key, type:'array', description:prop.description || '', schemaSnippet:trimSchema(prop, false), properties:{}, required:[], constraints:cons });
-      const items = resolveRef(prop.items, defs);
-      if (items.properties) blocks.push({ label:`${key}[ ] — campos principales`, jsonKey:key, type:'object', description:items.description || '', schemaSnippet:trimSchema(items, true), properties:items.properties, required:items.required || [] });
-    } else if (type === 'object' && prop.properties) {
-      blocks.push({ label:key, type:'object', description:prop.description || '', schemaSnippet:trimSchema(prop, true), properties:prop.properties, required:prop.required || [] });
-    } else {
-      blocks.push({ label:key, type:type, description:prop.description || '', schemaSnippet:trimSchema(prop, true), properties:{ [key]: prop }, required:(schema.required||[]).includes(key)?[key]:[] });
+
+/* ── Tab Enumeraciones (XSD) ─────────────────────────────────────── */
+
+/**
+ * Renderiza la tab "Enumeraciones" para un XSD.
+ * - Un bloque por cada xs:simpleType con xs:enumeration
+ * - Si hay _xsdEnumOrder, respeta ese orden; si no, todos los encontrados
+ */
+function renderEnumeracionesXsd() {
+  const body = document.getElementById('enumeraciones-body');
+  const nav  = document.getElementById('snav-btns-enumeraciones');
+
+  const allEnumNames = xsdGetEnumTypeNames();
+  const enumNames    = _xsdEnumOrder.length
+    ? _xsdEnumOrder.filter(n => allEnumNames.includes(n))
+    : allEnumNames;
+
+  if (!enumNames.length) {
+    body.innerHTML = `<p style="color:var(--gray-500)">${t('enums.none')}</p>`;
+    nav.innerHTML  = '';
+    return;
+  }
+
+  let bodyHtml = '', navHtml = '';
+
+  enumNames.forEach(enumName => {
+    const node = xsdGetTypeNode(enumName);
+    if (!node) return;
+
+    const desc    = _xsdMeta[enumName] || {};
+    const id      = `xsd-enum-${enumName}`;
+    const snippet = xsdExtractSnippet(enumName);
+    const values  = xsdGetEnumValues(node);
+    const usedIn  = xsdGetEnumUsage(enumName);
+    const titleText = desc.title || enumName;
+    const descEs    = LANG === 'es' ? (desc.es || desc.eng || '') : (desc.eng || desc.es || '');
+
+    // Si la desc tiene formato "A=significado|B=significado", construimos tabla
+    const enumTableHtml = xsdBuildEnumTable(desc.enumEs, desc.enumEn, values);
+
+    navHtml  += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(enumName)}</button>`;
+    bodyHtml += `
+      <div class="block-wrap" id="${id}">
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="code-header">${esc(titleText)}</div>
+            <pre class="code-pre">${esc(snippet)}</pre>
+          </div>
+          <div>
+            <div class="explanation-box">
+              <p>${descEs ? esc(descEs) : `<em style="color:var(--gray-400)">${t('noDesc')}</em>`}</p>
+            </div>
+            <div class="tech-details">
+              <h4>${t('tech.title')}</h4>
+              <p><strong>${t('tech.type')}</strong> <span class="tag-type">xs:simpleType (enum)</span></p>
+              ${usedIn.length ? `<p><strong>${t('enums.usedIn')}</strong> ${usedIn.map(u => `<code>${esc(u)}</code>`).join(' ')}</p>` : ''}
+              <h4>${t('enums.allowed', { n: values.length })}</h4>
+              ${enumTableHtml || values.map(v => `<span class="ev-pill">${esc(v)}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="block-divider"></div>
+      </div>`;
+  });
+
+  body.innerHTML = bodyHtml;
+  nav.innerHTML  = navHtml;
+}
+
+/* ── Helpers de parseo del XSD ───────────────────────────────────── */
+
+/** Devuelve un Map<nombre, nodo> con todos los complexType y simpleType del documento */
+function xsdGetAllTypes() {
+  const map = new Map();
+  if (!_xsdDoc) return map;
+  ['complexType', 'simpleType'].forEach(tag => {
+    const nodes = _xsdDoc.getElementsByTagNameNS(XSD_NS, tag);
+    for (let i = 0; i < nodes.length; i++) {
+      const name = nodes[i].getAttribute('name');
+      if (name) map.set(name, nodes[i]);
+    }
+  });
+  return map;
+}
+
+/** Busca y devuelve el nodo (complexType o simpleType) por nombre */
+function xsdGetTypeNode(name) {
+  if (!_xsdDoc) return null;
+  for (const tag of ['complexType', 'simpleType']) {
+    const nodes = _xsdDoc.getElementsByTagNameNS(XSD_NS, tag);
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].getAttribute('name') === name) return nodes[i];
     }
   }
-  const added = new Set(blocks.map(b=>b.label));
-  for (const [name, def] of Object.entries(defs)) if (def && def.type === 'object' && def.properties && !added.has(name)) blocks.push({ label:name, type:'object', description:def.description || '', schemaSnippet:trimSchema(def,true), properties:def.properties, required:def.required || [] });
-  return blocks;
+  return null;
 }
-function resolvePointer(ref, schema) { if (!ref || !ref.startsWith('#/')) return null; return ref.slice(2).split('/').reduce((n,p)=>n&&n[p], schema) || null; }
-function resolveRef(prop, defs) { if (!prop || !prop.$ref) return prop || {}; const name = prop.$ref.replace(/^#\/(\$defs|definitions)\//, ''); return (defs && defs[name]) || prop; }
-function trimSchema(prop, trimEnums) { const clone = JSON.parse(JSON.stringify(prop)); if (!trimEnums) return clone; (function trim(obj){ if(!obj||typeof obj!=='object')return; if(Array.isArray(obj.enum)&&obj.enum.length>12)obj.enum=obj.enum.slice(0,5).concat([`... +${obj.enum.length-5} values`]); Object.values(obj).forEach(v=>{if(typeof v==='object')trim(v);}); })(clone); return clone; }
-function buildResponseFieldTable(schema) {
-  const dash = '<span style="color:var(--gray-300)">—</span>';
-  const rows = [];
-  function resolve(p){ return (p && p.$ref) ? (resolvePointer(p.$ref, schema) || p) : (p || {}); }
 
-  function walk(props, required, depth) {
-    required = required || [];
-    for (const [field, raw] of Object.entries(props || {})) {
-      const def  = resolve(raw);
-      const type = getFieldType(raw);
-      const cons = getFieldCons(raw);
-      const isReq = required.includes(field);
-
-      let refTarget = '';
-      if (raw && raw.$ref) refTarget = raw.$ref;
-      else if (raw && raw.items && raw.items.$ref) refTarget = raw.items.$ref;
-
-      let refLink = '';
-      if (refTarget && refTarget.includes('/Enums/')) {
-        const displayName = refTarget.split('/').pop().replace(/^Enum/, '');
-        const estilo = 'background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem';
-        refLink = `<span style="${estilo}">enum: ${esc(displayName)}</span>`;
-      }
-
-      const restrParts = [cons, refLink].filter(Boolean);
-      const restrHtml = restrParts.length ? restrParts.join('<div style="height:6px"></div>') : dash;
-
-      const desc = (raw && raw.description) || def.description || '';
-      const indent = 8 + depth * 22;
-      const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>' : '';
-
-      rows.push(`<tr>
-        <td style="padding-left:${indent}px"><span class="rf-name-wrap">${arrow}<span class="tag-req">${esc(field)}</span></span></td>
-        <td>${desc ? esc(desc) : dash}</td>
-        <td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td>
-        <td>${isReq ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
-        <td>${restrHtml}</td>
-      </tr>`);
-
-      if (def.type === 'object' && def.properties) {
-        walk(def.properties, def.required, depth + 1);
-      } else if (def.type === 'array' && def.items) {
-        const items = resolve(def.items);
-        if (items.properties) walk(items.properties, items.required, depth + 1);
-      }
+/** Devuelve los nombres de todos los simpleType que contienen xs:enumeration */
+function xsdGetEnumTypeNames() {
+  if (!_xsdDoc) return [];
+  const result = [];
+  const simples = _xsdDoc.getElementsByTagNameNS(XSD_NS, 'simpleType');
+  for (let i = 0; i < simples.length; i++) {
+    const name = simples[i].getAttribute('name');
+    if (!name) continue;
+    if (simples[i].getElementsByTagNameNS(XSD_NS, 'enumeration').length > 0) {
+      result.push(name);
     }
   }
-  walk(schema.properties, schema.required, 0);
-  if (!rows.length) return '';
+  return result;
+}
+
+/** Extrae los valores de enumeración de un simpleType */
+function xsdGetEnumValues(node) {
+  const values = [];
+  const enNodes = node.getElementsByTagNameNS(XSD_NS, 'enumeration');
+  for (let i = 0; i < enNodes.length; i++) {
+    values.push(enNodes[i].getAttribute('value') || '');
+  }
+  return values;
+}
+
+/**
+ * Extrae el fragmento literal del XSD para un tipo dado (texto verbatim).
+ * Lo saca del texto crudo para preservar el formato original.
+ */
+function xsdExtractSnippet(name) {
+  if (!_xsdText) return '';
+  for (const tag of ['complexType', 'simpleType']) {
+    // Regex que captura el bloque entero <xs:TAG name="NAME" ...>...</xs:TAG>
+    const re = new RegExp(
+      `[ \\t]*<xs:${tag}\\s+name="${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"[\\s\\S]*?</xs:${tag}>`,
+      ''
+    );
+    const m = _xsdText.match(re);
+    if (m) return xsdDedent(m[0]);
+  }
+  return `<!-- ${name} no encontrado -->`;
+}
+
+/** Elimina la indentación común de un bloque de texto (como dedent en Python) */
+function xsdDedent(s) {
+  const lines = s.replace(/\t/g, '    ').split('\n');
+  let min = Infinity;
+  lines.forEach(l => { if (l.trim()) min = Math.min(min, l.match(/^ */)[0].length); });
+  if (!isFinite(min)) min = 0;
+  return lines.map(l => l.slice(min)).join('\n').trim();
+}
+
+/**
+ * Construye el bloque "Detalles Técnicos" para un tipo XSD:
+ * - complexType: tipo, propiedades, requeridos
+ * - simpleType:  tipo, base xs:, facetas (pattern, length, etc.)
+ */
+function xsdBuildTechDetails(node, kind) {
+  let rows = `<div class="tech-details"><h4>${t('tech.title')}</h4>`;
+  rows += `<p><strong>${t('tech.type')}</strong> <span class="tag-type">${kind === 'simpleType' ? 'xs:simpleType' : 'xs:complexType'}</span></p>`;
+
+  if (kind === 'complexType') {
+    const elements = xsdGetElements(node);
+    const hasAny   = node.getElementsByTagNameNS(XSD_NS, 'any').length > 0;
+    if (elements.length) {
+      rows += `<p><strong>${t('tech.properties') || 'Propiedades'}</strong> <span class="tag-type">${esc(elements.map(e => e.name).join(', '))}</span></p>`;
+      const req = elements.filter(e => e.min !== '0').map(e => e.name);
+      rows += req.length
+        ? `<p><strong>${t('tech.required')}</strong> <span class="tag-req">${esc(req.join(', '))}</span></p>`
+        : `<p><strong>${t('tech.required')}</strong> <span style="color:var(--gray-400);font-size:.85rem">—</span></p>`;
+    } else if (hasAny) {
+      rows += `<p><strong>${t('tech.properties') || 'Propiedades'}</strong> <span class="tag-type">xs:any (contenido libre)</span></p>`;
+    }
+  } else {
+    // simpleType: base + facetas
+    const restriction = node.getElementsByTagNameNS(XSD_NS, 'restriction')[0];
+    if (restriction) {
+      const base = restriction.getAttribute('base') || '';
+      if (base) rows += `<p><strong>Base</strong> <span class="tag-type">${esc(base)}</span></p>`;
+      const facetTags = ['length', 'pattern', 'minLength', 'maxLength', 'minInclusive', 'maxInclusive'];
+      facetTags.forEach(ft => {
+        const nodes = restriction.getElementsByTagNameNS(XSD_NS, ft);
+        for (let i = 0; i < nodes.length; i++) {
+          rows += `<p><strong>${esc(ft)}</strong> <span class="tag-type">${esc(nodes[i].getAttribute('value') || '')}</span></p>`;
+        }
+      });
+    }
+  }
+
+  rows += '</div>';
+  return rows;
+}
+
+/**
+ * Construye la tabla de campos de un xs:complexType.
+ * - Columnas: Campo / Descripción / Tipo / Requerido / Restricciones
+ * - Lee xs:documentation de cada xs:element como descripción
+ * - Detecta si el tipo es enum o bloque conocido para añadir enlace
+ */
+function xsdBuildFieldTable(node) {
+  if (!node || node.localName !== 'complexType') return '';
+  const elements = xsdGetElementsDetailed(node);
+  if (!elements.length) return '';
+
+  const dash   = '<span style="color:var(--gray-300)">—</span>';
+  const enumNs = new Set(xsdGetEnumTypeNames());
+  const rows   = elements.map(e => {
+    const req  = e.min !== '0';
+    const type = e.type || '';
+    let restrHtml = dash;
+
+    if (type) {
+      if (enumNs.has(type)) {
+        // Enlace a la tab Enumeraciones
+        restrHtml = `<a href="#" onclick="scrollToBlock('xsd-enum-${esc(type)}', null); return false;"
+          style="background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem;text-decoration:none">
+          enum: ${esc(type)}</a>`;
+      } else if (xsdGetTypeNode(type)) {
+        // Enlace al bloque de estructura
+        restrHtml = `<a href="#" onclick="scrollToBlock('xsd-blk-${esc(type)}', null); return false;"
+          style="background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem;text-decoration:none">
+          → ${esc(type)}</a>`;
+      } else {
+        // Facetas inline (para tipos simples primitivos)
+        const tn = xsdGetTypeNode(type);
+        if (tn) {
+          const restriction = tn.getElementsByTagNameNS(XSD_NS, 'restriction')[0];
+          if (restriction) {
+            const parts = [];
+            ['pattern', 'length', 'minLength', 'maxLength'].forEach(ft => {
+              const fn = restriction.getElementsByTagNameNS(XSD_NS, ft);
+              for (let i = 0; i < fn.length; i++) parts.push(`${ft}: ${fn[i].getAttribute('value')}`);
+            });
+            if (parts.length) restrHtml = esc(parts.join(' · '));
+          }
+        }
+      }
+    }
+
+    return `<tr>
+      <td><span class="tag-req">${esc(e.name)}</span></td>
+      <td>${e.doc ? esc(e.doc) : dash}</td>
+      <td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td>
+      <td>${req ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+      <td>${restrHtml}</td>
+    </tr>`;
+  }).join('');
+
   return `<div class="field-tbl-wrap">
     <table class="field-tbl">
-      <thead><tr><th>${t('table.field')}</th><th>${t('table.desc')}</th><th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th></tr></thead>
-      <tbody>${rows.join('')}</tbody>
+      <thead><tr>
+        <th>${t('table.field')}</th><th>${t('table.desc')}</th>
+        <th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
     </table></div>`;
 }
 
-function getFieldType(def) { if(!def)return''; if(def.$ref)return def.$ref.split('/').pop(); let typ=def.type; if(Array.isArray(typ))typ=typ.join(' | '); if(typ==='array'&&def.items){const it=def.items.$ref?def.items.$ref.split('/').pop():(def.items.type||''); return it?`array<${it}>`:'array';} if(!typ&&Array.isArray(def.enum))return'enum'; return typ||''; }
-function getFieldCons(def) { if(!def)return''; const c=[]; ['minLength','maxLength','minimum','maximum','minItems','maxItems','format','pattern'].forEach(k=>{ if(def[k]!=null)c.push(`${k}: ${def[k]}`); }); if(def.default!==undefined)c.push(`default: ${JSON.stringify(def.default)}`); return c.map(esc).join('<br>'); }
-function renderEnumeraciones(schema) {
-  const enums = extractEnums(schema);
-  if (!enums.length) { document.getElementById('enumeraciones-body').innerHTML = `<p style="color:var(--gray-500)">${t('enums.none')}</p>`; return; }
-  let bodyHtml = '', navHtml = '';
-  enums.forEach((en, i) => {
-    const id = `enum-${i}`; const snippet = JSON.stringify({ [en.defName]: en.raw }, null, 2);
-    navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(en.field)}</button>`;
-    bodyHtml += `<div class="block-wrap" id="${id}"><div class="block-grid"><div class="code-panel"><div class="code-header">${esc(en.field)}</div><pre class="code-pre">${esc(snippet)}</pre></div><div><div class="explanation-box"><p>${esc(en.description || t('noDesc'))}</p></div><div class="tech-details"><p><strong>${t('enums.usedIn')}</strong> <code>${esc(en.path)}</code></p><h4>${t('enums.allowed',{n:en.values.length})}</h4><div class="enum-val-wrap">${en.values.map(v=>`<span class="ev-pill">${esc(String(v))}</span>`).join('')}</div></div></div></div><div class="block-divider"></div></div>`;
-  });
-  document.getElementById('enumeraciones-body').innerHTML = bodyHtml;
-  document.getElementById('snav-btns-enumeraciones').innerHTML = navHtml;
+/** Lista los xs:element hijos directos de un complexType (solo nombre, tipo, minOccurs, maxOccurs) */
+function xsdGetElements(node) {
+  const result = [];
+  const els = node.getElementsByTagNameNS(XSD_NS, 'element');
+  for (let i = 0; i < els.length; i++) {
+    const name = els[i].getAttribute('name');
+    if (name) result.push({
+      name,
+      type: els[i].getAttribute('type') || '',
+      min:  els[i].getAttribute('minOccurs'),
+      max:  els[i].getAttribute('maxOccurs')
+    });
+  }
+  return result;
 }
-function extractEnums(schema) {
-  const results=[]; const seen=new Set();
-  function walk(obj,path,refName){ 
-    if(!obj||typeof obj!=='object')return; 
-    if(obj.$ref){const r=resolvePointer(obj.$ref,schema); 
-    if(r)walk(r,path,obj.$ref.split('/').pop()); return;} 
-    if(Array.isArray(obj.enum)){const key=path.split('.').pop().replace('[]',''); 
-    if(!seen.has(path)){seen.add(path);results.push({field:key,path,type:obj.type||'string',description:obj.description||'',values:obj.enum,default:obj.default,raw:obj,defName:refName||key});} return;} 
-    if(obj.properties)for(const[k,v]of Object.entries(obj.properties))walk(v,path?`${path}.${k}`:k); 
-    if(obj.items)walk(obj.items,`${path}[]`); 
-    if(obj.$defs)for(const[k,v]of Object.entries(obj.$defs))walk(v,k); 
-    if(obj.definitions)for(const[k,v]of Object.entries(obj.definitions))walk(v,k); }
-  walk(schema,''); return results;
+
+/** Como xsdGetElements pero también extrae xs:documentation de cada elemento */
+function xsdGetElementsDetailed(node) {
+  const result = [];
+  const els    = node.getElementsByTagNameNS(XSD_NS, 'element');
+  for (let i = 0; i < els.length; i++) {
+    const el   = els[i];
+    const name = el.getAttribute('name');
+    if (!name) continue;
+    let doc = '';
+    for (let k = 0; k < el.childNodes.length; k++) {
+      const c = el.childNodes[k];
+      if (c.nodeType === 1 && c.localName === 'annotation') {
+        const d = c.getElementsByTagNameNS(XSD_NS, 'documentation');
+        if (d.length) { doc = d[0].textContent.trim(); break; }
+      }
+    }
+    result.push({ name, type: el.getAttribute('type') || '', min: el.getAttribute('minOccurs'), max: el.getAttribute('maxOccurs'), doc });
+  }
+  return result;
 }
-function renderEjemplo(examples, section) {
-  _examples=[]; const inner=document.getElementById('ejemplo-inner');
-  const allExamples = examples && examples.length ? examples : (section.files || []).map(f => ({name:f.name, path:f.path, raw:null, file:f}));
-  if (!allExamples.length) { inner.innerHTML = `<p style="color:var(--gray-500)">${t('example.none')}</p>`; return; }
-  let html='<div class="ejemplo-grid">';
-  allExamples.forEach((ex,i)=>{
-    if(ex.raw!=null)_examples.push(_ext(ex.name)==='json'?fmtJSON(ex.raw):ex.raw); else _examples.push(null);
-    const pid=`ex-code-${i}`;
-    html+=`<div class="file-card" style="margin-bottom:18px">
-    <div class="file-card__head">
-      <div class="file-card__icon">${_fileIcon(ex.name)}</div>
-      <div>
-        <div class="file-card__name">${esc(ex.name)}</div>
-        <div class="file-card__meta">${esc((_ext(ex.name)||'file').toUpperCase())}</div>
-      </div>
-    </div>
-    <div class="file-card__actions">
-      <a class="file-btn file-btn--primary" href="${esc(rawUrl(ex.path || localFilePath(section, ex.name)))}" download>${t('btn.download')}</a>
-      <a class="file-btn" target="_blank" href="${esc(rawUrl(ex.path || localFilePath(section, ex.name)))}">${t('btn.viewGithub')}</a>
-      <button class="file-btn" onclick="toggleExampleCode('${pid}', this, '${esc(ex.path || localFilePath(section, ex.name))}', ${i})">
-        ${t('btn.viewContent')}</button>
-    </div>
-    <div class="ejemplo-cp" id="${pid}" style="display:none;margin-top:6px"></div></div>`;
-  });
-  html+='</div>'; inner.innerHTML=html;
+
+/**
+ * Determina en qué complexTypes se usa una enumeración.
+ * Recorre xs:element con @type === enumName y sube al complexType ancestro.
+ * Devuelve array de strings "NombreComplexType.NombreElement".
+ */
+function xsdGetEnumUsage(enumName) {
+  if (!_xsdDoc) return [];
+  const usage = [];
+  const els   = _xsdDoc.getElementsByTagNameNS(XSD_NS, 'element');
+  for (let i = 0; i < els.length; i++) {
+    if (els[i].getAttribute('type') !== enumName) continue;
+    const elName = els[i].getAttribute('name') || '';
+    let ancestor = els[i].parentNode;
+    let ctName   = '';
+    while (ancestor && ancestor.nodeType === 1) {
+      if (ancestor.localName === 'complexType' && ancestor.getAttribute('name')) {
+        ctName = ancestor.getAttribute('name');
+        break;
+      }
+      ancestor = ancestor.parentNode;
+    }
+    usage.push(ctName ? `${ctName}.${elName}` : elName);
+  }
+  return usage;
 }
-async function toggleExampleCode(pid, btn, path, idx) {
-  const el=document.getElementById(pid); if(!el)return; const open=el.style.display!=='none'; el.style.display=open?'none':'block'; btn.textContent=open?t('btn.viewContent'):t('btn.hide'); const card=el.closest('.file-card'); if(card)card.classList.toggle('expanded',!open);
-  if(!open&&!el.dataset.rendered){let raw=_examples[idx]; if(raw==null){raw=await rawFetch(path); if(_ext(path)==='json')raw=fmtJSON(raw); _examples[idx]=raw;} renderJsonMinimap(el, raw, [], `<span>${esc(path.split('/').pop())}</span><button class="copy-btn" onclick="copyExample(${idx}, this)">${t('btn.copy')}</button>`); el.dataset.rendered='1';}
+
+/**
+ * Construye la tabla de valores de una enumeración.
+ * Espera strings en formato "A=descripción es|B=descripción" separados por |
+ * Si no hay ese formato, devuelve '' y el llamador muestra las píldoras simples.
+ */
+function xsdBuildEnumTable(enumEs, enumEn, values) {
+  function parse(str) {
+    if (!str) return [];
+    return str.replace(/\.\s*$/, '').split('|').map(item => {
+      const [code, ...rest] = item.split('=');
+      return { code: (code || '').trim(), desc: rest.join('=').trim() };
+    }).filter(it => it.code || it.desc);
+  }
+  const itemsEs = parse(enumEs);
+  const itemsEn = parse(enumEn);
+  const rows    = LANG === 'es' ? itemsEs : itemsEn;
+  if (!rows.length) return '';
+
+  return `<table class="field-tbl" style="margin-top:8px">
+    <thead><tr>
+      <th style="width:120px">${t('enums.code') || 'Código'}</th>
+      <th>${t('enums.meaning') || 'Significado'}</th>
+    </tr></thead>
+    <tbody>${rows.map(r =>
+      `<tr>
+        <td><span class="tag-req">${esc(r.code)}</span></td>
+        <td>${esc(r.desc)}</td>
+      </tr>`
+    ).join('')}</tbody>
+  </table>`;
 }
-function _slug(s) { return String(s || '').replace(/[^A-Za-z0-9_-]/g, '-'); }
-document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => { const tab=btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b===btn)); document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${tab}`)); }));
-function scrollToBlock(id, btn) { document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active'); const el=document.getElementById(id); if(el)el.scrollIntoView({behavior:'smooth',block:'start'}); }
-function downloadSchema(fileName){ downloadBlob(_schemaRaw, fileName, 'application/json'); }
-function downloadExample(i, fileName){ const content=_examples[i]; if(content!=null)downloadBlob(content,fileName); }
-function copyExample(i, btn){ const text=_examples[i]; if(!text)return; navigator.clipboard.writeText(text).then(()=>{btn.textContent=t('btn.copied');btn.classList.add('ok');setTimeout(()=>{btn.textContent=t('btn.copy');btn.classList.remove('ok');},2000);}); }
-async function showVersions(){ showView('view-versions'); const status=document.getElementById('versStatus'), cont=document.getElementById('versContainer'), quick=document.getElementById('versQuick'); status.textContent=t('loading'); quick.innerHTML=''; const files=SITE_CONFIG.versionFiles || []; if(!files.length){status.textContent=''; cont.innerHTML=`<div class="highlight-box"><strong>${t('versions.emptyTitle')}</strong><br>${t('versions.emptyBody')}</div>`; return;} status.textContent=t('versions.count',{n:files.length}); cont.innerHTML=`<div class="file-grid">${files.map((f,i)=>renderFileCard(f,i,'vers')).join('')}</div>`; }
-async function showRespuestas(){ showView('view-respuestas'); const body=document.getElementById('respuestas-body'); const sections=getAllCards().filter(s=>s.group==='Response'); body.innerHTML=sections.map((s,i)=>`<div class="resp-block"><div class="resp-block-head"><h2>${esc(localizedSectionTitle(s))}</h2><p>${esc(localizedSectionDesc(s))}</p></div><div class="file-grid">${(s.files||[]).map((f,j)=>renderFileCard(f,j,`resp-${i}`)).join('')}</div></div>`).join('') || `<p style="color:var(--gray-500)">${t('versions.emptyTitle')}</p>`; }
-(function(){ const btn=document.getElementById('goTop'); if(btn){ function toggle(){btn.classList.toggle('show',window.scrollY>400);} window.addEventListener('scroll',toggle,{passive:true}); toggle(); }})();
-document.addEventListener('DOMContentLoaded', init);
+
+/* ── Integración en openDocumentation ───────────────────────────── */
+/*
+   INSTRUCCIONES DE USO:
+   
+   En la función openDocumentation, dentro del bloque try{}, sustituye
+   la sección de renderizado por esta:
+
+   const isXml = ['XML','UBL'].includes(section.format?.toUpperCase());
+   if (renderType === 'Response') {
+     renderResponseDocumentation(section, schemasData, examplesData);
+   } else if (isXml) {
+     await openDocumentationXsd(section, schemasData[0] || null, examplesData, readmeRaw);
+   } else if (renderType === 'Status') {
+     renderDescripcionStatus(schema, readmeRaw, examplesData, section);
+     renderEstructuraStatus(schema, section, schemasData[0]?.name);
+     renderEnumeracionesStatus(schema);
+     renderEjemploStatus(examplesData, section);
+   } else {
+     renderDescripcion(schema, readmeRaw, examplesData, section);
+     renderEstructura(schema, section, schemasData[0]?.name);
+     renderEnumeraciones(schema);
+     renderEjemplo(examplesData, section);
+   }
+*/
+
+/* ── XSD_META: diccionario de descripciones (puedes moverlo a config.js) ──
+   
+   Estructura:
+   window.XSD_META = {
+     'invoice-xml': {          // ← id de la card en SITE_CONFIG
+       descriptions: {
+         InvoiceGNXType: {
+           title: '📄 InvoiceGNXType - Raíz del Documento',
+           es: 'Tipo raíz del esquema...',
+           en: 'Root type of the schema...',
+           enumEs: '',         // solo para simpleType con enumeraciones
+           enumEn: ''
+         },
+         InvoiceIssuerTypeEnum: {
+           title: '🪪 InvoiceIssuerType - Tipo de Emisor',
+           es: 'Identifica quién emite la factura',
+           en: 'Identifies who issues the invoice',
+           enumEs: 'EM=emisor|RE=receptor|TE=tercero',
+           enumEn: 'EM=issuer|RE=recipient|TE=third party'
+         }
+       },
+       blockOrder: ['InvoiceGNXType', 'InvoicesType', ...],   // orden de tipos
+       enumOrder:  ['InvoiceIssuerTypeEnum', ...]              // orden de enums
+     }
+   };
+*/
