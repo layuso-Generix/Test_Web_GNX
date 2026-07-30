@@ -1,5 +1,11 @@
 /* =========================================================
-   CONFIG - Web e-Invoicing
+  CONFIG - Web e-Invoicing
+  
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  -Configuración del repositorio GitHub (CONFIG)                 │
+  │  -Configuración funcional de la aplicación (SITE_CONFIG)        │ 
+  │  -Todas las cards de documentación que aparecen en la UI        │
+  └─────────────────────────────────────────────────────────────────┘
    ========================================================= */
 const CONFIG = {
   owner:              'layuso-generix',
@@ -111,3 +117,4 @@ const SITE_CONFIG = {
 
 window.CONFIG = CONFIG;
 window.SITE_CONFIG = SITE_CONFIG;
+
