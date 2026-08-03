@@ -15,7 +15,7 @@ const CONFIG = {
   contentPath:        'Invoice',
   responsesPath:      'Responses',
   statusPath:         'Status',
-  versionsPath:       'Versions',
+  versionsPath:       'E-invoicing/Standard/Versions',
   docuAeatPath:       'E-invoicing/AEAT-Documentation',
   token:              '',
   mode: 'local'

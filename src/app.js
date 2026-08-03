@@ -31,6 +31,10 @@ function showView(id) {
 function showIndex()     { _currentSection = null; showView('view-index'); document.title = 'Generix · E-Invoicing · Developer Documentation'; }
 function showDetail()    { showView('view-detail'); }
 function showValidacion(){ showView('view-validacion'); setupValidator(); }
+async function showVersions() {
+  showView('view-versions');
+  await window.VersionsRenderer.render();
+}
 
 /* ── Acceso a datos de configuración ────────────────────── */
 function getSectionGroups() { return SITE_CONFIG.sections || []; }
@@ -49,10 +53,9 @@ function renderGrid(sections) {
   
   sections.forEach(group => {
     const groupName = group.section || '';
-    const groupId   = _slug(groupName);
 
       html += `
-        <div class="folder-section" id="grp-${esc(groupId)}">
+        <div class="folder-section">
         <h3>
           <span class="card-icon" style="margin-bottom:0;font-size:1.2rem">${esc(group.icon || '📦')}</span>
           ${esc(groupName)}
@@ -61,7 +64,7 @@ function renderGrid(sections) {
 
       (group.cards || []).forEach(card => {
         html += `
-          <div class="card" onclick="openByGroup('${esc(card.id)}')">
+          <div class="card" data-card-id="${esc(card.id)}">
             <div class="card-icon">${esc(card.icon || card.format || '')}</div>
             <div class="card-meta">
               <span class="badge badge-${esc(card.group)}">${esc(card.group || '')}</span>
@@ -183,7 +186,13 @@ async function openCard(cardId) {
 window.showIndex = showIndex;
 window.showDetail = showDetail;
 window.showValidacion = showValidacion;
+window.showVersions = showVersions;
 window.getSectionGroups = getSectionGroups;
 window.getAllCards = getAllCards;
 window.findCardById = findCardById;
 window.openCard = openCard;
+
+document.addEventListener(
+  'DOMContentLoaded',
+  init
+);

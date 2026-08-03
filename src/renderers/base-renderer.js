@@ -90,59 +90,38 @@ class BaseRenderer {
        ===================================================== */
 
     showLoading(card) {
-
-        this.showDetailView();
-        this.clearView();
-
-        const title =
-            document.getElementById('detailTitle');
-
-        const breadcrumb =
-            document.getElementById('d-breadcrumb-name');
-
-        const description =
-            document.getElementById('detailDescription');
-
-        if (title) {
-            title.textContent =
-                typeof t === 'function'
-                    ? t('loading')
-                    : 'Loading...';
-        }
-
-        if (breadcrumb) {
-            breadcrumb.textContent =
-                this.getCardTitle(card);
-        }
-
-        if (description) {
-            description.textContent = '';
-        }
-
-        [
-            'desc-body',
-            'estructura-body',
-            'enumeraciones-body',
-            'ejemplo-inner'
-        ].forEach(id => {
-
-            const el =
-                document.getElementById(id);
-
-            if (!el) {
-                return;
+      this.showDetailView();
+      this.clearView();
+      const title = document.getElementById('detailTitle');
+      const breadcrumb = document.getElementById('d-breadcrumb-name');
+      const description = document.getElementById('detailDescription');
+      if (title) {
+        title.textContent =typeof t === 'function'
+          ? t('loading')
+          : 'Loading...';
+      }
+      if (breadcrumb) {
+        breadcrumb.textContent =
+          this.getCardTitle(card);
+      }
+      if (description) { description.textContent = '';}
+      [
+        'desc-body',
+        'estructura-body',
+        'enumeraciones-body',
+        'ejemplo-inner'
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) { return; }
+        el.innerHTML = `
+          <p style="color:var(--gray-500)">
+            ${typeof t === 'function'
+              ? t('loading')
+              : 'Loading...'
             }
-
-            el.innerHTML = `
-                <p style="color:var(--gray-500)">
-                    ${
-                        typeof t === 'function'
-                            ? t('loading')
-                            : 'Loading...'
-                    }
-                </p>
-            `;
-        });
+          </p>
+        `;
+      });
     }
 
     /* =====================================================
@@ -234,26 +213,31 @@ class BaseRenderer {
        ===================================================== */
 
     activateTab(tabName) {
-
         document
             .querySelectorAll('.tab-btn')
             .forEach(button => {
-
                 button.classList.toggle(
                     'active',
                     button.dataset.tab === tabName
                 );
             });
-
         document
             .querySelectorAll('.tab-panel')
             .forEach(panel => {
-
                 panel.classList.toggle(
                     'active',
                     panel.id === `tab-${tabName}`
                 );
             });
+    }
+    bindTabs() {
+      document.querySelectorAll('.tab-btn').forEach(button => {
+        button.onclick = () => {
+          const tabName =button.dataset.tab;
+          if (!tabName) {return;}
+          this.activateTab(tabName);
+        };
+      });
     }
 
     /* =====================================================
