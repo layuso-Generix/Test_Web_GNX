@@ -17,8 +17,6 @@ let _currentSection = null;   // Card actualmente abierta
 /**FIXME QUITAR EN ALGUN MOMENTO */
 let _schemaRaw      = '';     // Raw del schema principal (para descarga)
 let _examples       = [];     // Array de ejemplos cargados (por índice)
-let _respSchemas    = {};     // { [mid]: { name, raw, path } } para descargar schemas de Response
-let _respSections   = {};     // { [mid]: { html, exId, exRaw, ... } }  — estado de cada tab de Response
 
 /* ── Navegación entre vistas ────────────────────────────── */
 function showView(id) {

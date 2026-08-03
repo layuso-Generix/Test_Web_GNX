@@ -93,14 +93,8 @@ class VersionsRenderer {
         );
 
         html += `
-          <div
-            class="folder-section"
-            id="grp-${this._slug(group)}"
-          >
-            <h3>
-              📦 ${esc(group === "(raíz)" ? t("versions.general") : group)}
-            </h3>
-
+          <div class="folder-section" id="grp-${this._slug(group)}">
+            <h3>📦 ${esc(group === "(raíz)" ? t("versions.general") : group)}</h3>
             <div class="file-grid">
         `;
 
@@ -123,36 +117,30 @@ class VersionsRenderer {
             : "";
 
           html += `
-  <div class="file-card">
-    <div class="file-card__head">
-      <div class="file-card__icon">${_fileIcon(file.name)}</div>
-      <div>
-        <div class="file-card__name">${esc(file.name)}</div>
-        <div class="file-card__meta">
-          ${esc((_ext(file.name) || 'file').toUpperCase())}
-          ${file.subdir ? ' · 📁 ' + esc(file.subdir) : ''}
-        </div>
-      </div>
-    </div>
-    <div class="file-card__actions">
-      <a class="file-btn file-btn--primary"
-        target="_blank"
-        href="${window.GithubService.getRawUrl(file.path)}"
-      >
-        ${t("btn.viewContent")}
-      </a>
-      <a class="file-btn"
-        target="_blank"
-        href="${window.GithubService.getGithubUrl(file.path)}"
-      >
-        ${t("btn.viewGithub")}
-      </a>
-      <div class="file-preview" id="${previewId}">
-        <pre></pre>
-      </div>
-    </div>
-  </div>
-`;
+            <div class="file-card">
+              <div class="file-card__head">
+                <div class="file-card__icon">${_fileIcon(file.name)}</div>
+                <div>
+                  <div class="file-card__name">${esc(file.name)}</div>
+                  <div class="file-card__meta">
+                    ${esc((_ext(file.name) || 'file').toUpperCase())}
+                    ${file.subdir ? ' · 📁 ' + esc(file.subdir) : ''}
+                  </div>
+                </div>
+              </div>
+              <div class="file-card__actions">
+                <a class="file-btn file-btn--primary" target="_blank" href="${window.GithubService.getRawUrl(file.path)}">
+                  ${t("btn.viewContent")}
+                </a>
+                <a class="file-btn" target="_blank" href="${window.GithubService.getGithubUrl(file.path)}">
+                  ${t("btn.viewGithub")}
+                </a>
+                <div class="file-preview" id="${previewId}">
+                  <pre></pre>
+                </div>
+              </div>
+            </div>
+          `;
         });
 
         html += `
