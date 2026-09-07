@@ -53,8 +53,8 @@ class InvoiceRenderer extends BaseRenderer {
       this.exposeLegacyState();
       this.setHeader(card, mainSchema );
       this.renderDescription(mainSchema, readmeText, examplesData, card);
-      this.renderStructure(mainSchema, card, schemasData[0] ? schemasData[0].name : null, schemasData[0] ? schemasData[0].path : null,);
-      this.renderEnumerations(mainSchema);
+      this.renderStructure(mainSchema, card, schemasData[0] ? schemasData[0].name : null, schemasData[0] ? schemasData[0].path : null,schemasData[0] ? schemasData[0].raw : null);
+      this.renderEnumerations(mainSchema, schemasData[0] ? schemasData[0].raw : null);
       this.renderExamples(examplesData, card);
     } catch (error) {this.renderError(error);}
   }
@@ -188,27 +188,79 @@ class InvoiceRenderer extends BaseRenderer {
     this.setHTML("desc-body", html);
   }
 
+  getXsdNodeDescription(node) {
+    if (!node) {
+      return '';
+    }
+
+    const annotations =
+      node.getElementsByTagNameNS(
+        window.XsdUtils.XSD_NS,
+        'annotation'
+      );
+
+    if (!annotations.length) {
+      return '';
+    }
+
+    const documentation =
+      annotations[0].getElementsByTagNameNS(
+        window.XsdUtils.XSD_NS,
+        'documentation'
+      );
+
+    if (!documentation.length) {
+      return '';
+    }
+
+    return documentation[0].textContent.trim();
+  }
+
   /* =====================================================
     Estructura
   ===================================================== */
-  renderStructure( schema, card, schemaFileName, schemaPath ) {
+  renderStructure( schema, card, schemaFileName, schemaPath, schemaRaw ) {
     const body = this.getElement("estructura-body");
     const nav = this.getElement("snav-btns-estructura");
+    const path = schemaPath || this.localFilePath(card, schemaFileName);
     if (!body) {return;}
     if (!schemaFileName) {
       body.innerHTML = `<p style="color:var(--gray-500)">${t("struct.none")}</p>`;
       if (nav) { nav.innerHTML = "";}return;
     }
-    if (this.getExtension(schemaFileName) !== "json") {
-      const path = schemaPath || this.localFilePath(card, schemaFileName);
+    // if (this.getExtension(schemaFileName) !== "json") {
+    //   body.innerHTML = `
+    //     <p style="margin-bottom:28px">
+    //       <a href="#" onclick="downloadSchema('${this.escape(schemaFileName)}'); return false;" class="download-link">
+    //       ${t("struct.download", {file: schemaFileName})}
+    //     </a>
+    //     <br>
+    //     <a href="${path}" target="_blank" class="download-link" >
+    //         ${t("struct.view", { file: schemaFileName })}
+    //       </a>
+    //     </p>
+    //   `;
+    //   if (nav) { nav.innerHTML = ""; }
+    //   return;
+    // }
+    const extension = this.getExtension(schemaFileName);
+    if (extension === 'xsd' || extension === 'xml') {
+      this.renderStructureXsd( schemaRaw, schemaFileName, path);
+      return;
+    }
+    if (extension !== 'json') {
       body.innerHTML = `
         <p style="margin-bottom:28px">
-          }" target="_blank" class="download-link" 
-          > ${t("struct.view", { file: schemaFileName })}
+          <a href="#" class="download-link">
+            ${t('struct.download', { file: schemaFileName })}
+          </a>
+          <br>
+          <a href="${path}" target="_blank" rel="noopener noreferrer" class="download-link">
+            ${t('struct.view', { file: schemaFileName })}
           </a>
         </p>
       `;
-      if (nav) { nav.innerHTML = ""; }
+      if (nav) {nav.innerHTML = '';}
       return;
     }
     const definitions = schema.$defs || schema.definitions || {};
@@ -224,8 +276,8 @@ class InvoiceRenderer extends BaseRenderer {
           ${t("struct.download", {file: schemaFileName})}
         </a>
         <br>
-          }" target="_blank" class="download-link" 
-        > ${t("struct.view", { file: schemaFileName })}
+        <a href="${path}" target="_blank" class="download-link" >
+          ${t("struct.view", { file: schemaFileName })}
         </a>
       </p>
     `;
@@ -279,6 +331,124 @@ class InvoiceRenderer extends BaseRenderer {
     });
     body.innerHTML = bodyHtml;
     if (nav) {nav.innerHTML = navHtml;}
+  }
+
+  renderStructureXsd(xsdText, schemaFileName, schemaPath) {
+    const body = this.getElement('estructura-body');
+    const nav = this.getElement('snav-btns-estructura');
+    if (!body) {return;}
+    if (!xsdText) {
+      body.innerHTML = `
+        <p style="color:var(--gray-500)">
+          ${t('struct.none')}
+        </p>
+      `;
+      if (nav) {nav.innerHTML = '';}
+      return;
+    }
+    try {
+      const xsdDoc = window.XsdUtils.parse(xsdText);
+      const complexTypes = window.XsdUtils.getComplexTypes(xsdDoc);
+      const simpleTypeNodes = xsdDoc.getElementsByTagNameNS(window.XsdUtils.XSD_NS, 'simpleType');
+      const simpleTypes = [];
+      for (let index = 0; index < simpleTypeNodes.length; index++) {
+        const node = simpleTypeNodes[index];
+        const name = node.getAttribute('name');
+        if (!name) {continue;}
+        const enumerationNodes = node.getElementsByTagNameNS(window.XsdUtils.XSD_NS, 'enumeration');
+        if (!enumerationNodes.length) {
+          simpleTypes.push({name, node});
+        }
+      }
+
+      const types = [
+        ...complexTypes,
+        ...simpleTypes
+      ];
+
+      let bodyHtml = `
+        <p style="margin-bottom:28px">
+          <a href="#" onclick="downloadFile('${schemaFileName}', '${schemaPath}'); return false;"
+            class="download-link"
+          >
+            ${t('struct.download', { file: schemaFileName })}
+          </a>
+          <br>
+          <a href="${schemaPath}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="download-link"
+          >
+            ${t('struct.view', { file: schemaFileName })}
+          </a>
+        </p>
+      `;
+
+      if (!types.length) {
+        bodyHtml += `
+          <p style="color:var(--gray-500)">
+            ${t('struct.none')}
+          </p>
+        `;
+
+        body.innerHTML = bodyHtml;
+
+        if (nav) {
+          nav.innerHTML = '';
+        }
+
+        return;
+      }
+
+      let navHtml = '';
+
+      types.forEach((type, index) => {
+        const typeId = `xsd-block-${index}`;
+        const node = type.node;
+        const kind = node.localName;
+
+        const snippet =
+          window.XsdUtils.extractXsdSnippet(
+            xsdText,
+            type.name
+          );
+
+        navHtml += `
+          <button
+            class="snav-btn"
+            onclick="scrollToBlock('${typeId}', this)"
+          >
+            ${this.escape(type.name)}
+          </button>
+        `;
+
+        bodyHtml += this.buildXsdTypeBlock(
+          node,
+          type.name,
+          kind,
+          snippet,
+          typeId
+        );
+      });
+
+      body.innerHTML = bodyHtml;
+
+      if (nav) {
+        nav.innerHTML = navHtml;
+      }
+    } catch (error) {
+      body.innerHTML = `
+        <div class="info-box">
+          <strong>${t('versions.loadFail')}</strong>
+          <br>
+          ${this.escape(error.message)}
+        </div>
+      `;
+
+      if (nav) {
+        nav.innerHTML = '';
+      }
+    }
   }
 
   /* =====================================================
@@ -355,6 +525,132 @@ class InvoiceRenderer extends BaseRenderer {
     return blocks;
   }
 
+  buildXsdTypeBlock(
+    node,
+    typeName,
+    kind,
+    snippet,
+    typeId
+  ) {
+    const description =
+      this.getXsdNodeDescription(node);
+
+    let detailsHtml = `
+      <p>
+        <strong>${t('tech.type')}</strong>
+        <span class="tag-type">
+          ${this.escape(
+            kind === 'simpleType'
+              ? 'xs:simpleType'
+              : 'xs:complexType'
+          )}
+        </span>
+      </p>
+    `;
+
+    if (kind === 'complexType') {
+      const elements =
+        window.XsdUtils.getElements(node);
+
+      const required =
+        elements
+          .filter(element => element.min !== '0')
+          .map(element => element.name);
+
+      if (elements.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.properties')}</strong>
+            ${this.escape(
+              elements
+                .map(element => element.name)
+                .join(', ')
+            )}
+          </p>
+        `;
+      }
+
+      if (required.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.required')}</strong>
+            <span class="tag-req">
+              ${this.escape(required.join(', '))}
+            </span>
+          </p>
+        `;
+      }
+    }
+
+    if (kind === 'simpleType') {
+      const facets =
+        window.XsdUtils.getSimpleTypeFacets(node);
+
+      if (facets.base) {
+        detailsHtml += `
+          <p>
+            <strong>Base:</strong>
+            <span class="tag-type">
+              ${this.escape(facets.base)}
+            </span>
+          </p>
+        `;
+      }
+
+      if (facets.facets.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.constraints')}</strong>
+            ${facets.facets
+              .map(facet => `
+                <span class="tag-type">
+                  ${this.escape(facet.name)}:
+                  ${this.escape(facet.value)}
+                </span>
+              `)
+              .join(' ')}
+          </p>
+        `;
+      }
+    }
+
+    return `
+      <div
+        class="block-wrap"
+        id="${typeId}"
+        data-label="${this.escape(typeName)}"
+      >
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="code-header">
+              ${this.escape(typeName)}
+            </div>
+            <pre class="code-pre">${this.escape(snippet)}</pre>
+          </div>
+
+          <div>
+            <div class="explanation-box">
+              <p>
+                ${this.escape(
+                  description ||
+                  typeName
+                )}
+              </p>
+            </div>
+
+            <div class="tech-details">
+              <h4>${t('tech.title')}</h4>
+              ${detailsHtml}
+            </div>
+          </div>
+        </div>
+
+        ${this.buildXsdFieldTable(node)}
+
+        <div class="block-divider"></div>
+      </div>
+    `;
+  }
   /* =====================================================
     Tabla de campos
   ===================================================== */
@@ -433,11 +729,140 @@ class InvoiceRenderer extends BaseRenderer {
     `;
   }
 
+  buildXsdFieldTable(node) {
+    if (
+      !node ||
+      node.localName !== 'complexType'
+    ) {
+      return '';
+    }
+
+    const elements =
+      window.XsdUtils.getElementsDetailed(node);
+
+    if (!elements.length) {
+      return '';
+    }
+
+    const dash =
+      '<span style="color:var(--gray-300)">—</span>';
+
+    const rows =
+      elements.map(element => {
+        const required =
+          element.min !== '0';
+
+        const constraints = [];
+
+        if (
+          element.min !== null &&
+          element.min !== ''
+        ) {
+          constraints.push(
+            `minOccurs: ${element.min}`
+          );
+        }
+
+        if (
+          element.max !== null &&
+          element.max !== ''
+        ) {
+          constraints.push(
+            `maxOccurs: ${element.max}`
+          );
+        }
+
+        return `
+          <tr>
+            <td>
+              <span class="tag-req">
+                ${this.escape(element.name)}
+              </span>
+            </td>
+
+            <td>
+              ${
+                element.doc
+                  ? this.escape(element.doc)
+                  : dash
+              }
+            </td>
+
+            <td>
+              ${
+                element.type
+                  ? `
+                    <span class="tag-type">
+                      ${this.escape(element.type)}
+                    </span>
+                  `
+                  : dash
+              }
+            </td>
+
+            <td>
+              ${
+                required
+                  ? `
+                    <span class="tag-req">
+                      ${t('yes')}
+                    </span>
+                  `
+                  : `
+                    <span style="color:var(--gray-500)">
+                      ${t('no')}
+                    </span>
+                  `
+              }
+            </td>
+
+            <td>
+              ${
+                constraints.length
+                  ? this.escape(
+                    constraints.join(' · ')
+                  )
+                  : dash
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+    return `
+      <div class="field-tbl-wrap">
+        <table class="field-tbl">
+          <thead>
+            <tr>
+              <th>${t('table.field')}</th>
+              <th>${t('table.desc')}</th>
+              <th>${t('table.type')}</th>
+              <th>${t('table.req')}</th>
+              <th>${t('table.constraints')}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   /* =====================================================
       Enumeraciones
     ===================================================== */
-  renderEnumerations(schema) {
+  renderEnumerations(schema, schemaRaw) {
+    const schemaFileName = this.card?.schemaFileName || '';
+    const format = this.card?.format?.toUpperCase();
+    if (format === 'XML' || format === 'XSD') {
+      this.renderEnumerationsXsd(schemaRaw);
+      return;
+    }
+
     const enums = SchemaUtils.extractEnums(schema);
+
     if (!enums.length) {
       this.setHTML("enumeraciones-body", `<p style="color:var(--gray-500)">${t("enums.none")}</p>` );
       this.setHTML("snav-btns-enumeraciones", "" );
@@ -448,6 +873,9 @@ class InvoiceRenderer extends BaseRenderer {
     enums.forEach((enumItem, index) => {
       const id = `enum-${index}`;
       const snippet = JSON.stringify( { [enumItem.defName]: enumItem.raw }, null, 2);
+      const info = getEnumInfo(enumItem.defName);
+      const enumTable = buildEnumTable(enumItem.defName);
+
       navHtml += `
         <button class="snav-btn" onclick="scrollToBlock('${id}', this)" >
           ${this.escape(enumItem.field)}
@@ -462,19 +890,28 @@ class InvoiceRenderer extends BaseRenderer {
             </div>
             <div>
               <div class="explanation-box">
-                <p>${this.escape(enumItem.description ||t("noDesc"))}</p>
-              </div>
+                  <p class="explanation-box__description">
+                    <strong>Español:</strong> ${info?.esp || t('noDesc')}
+                  </p>
+                  <p class="explanation-box__text explanation-box__text--spaced">
+                    <strong>English:</strong> ${info?.eng || t('noDesc')}
+                  </p>
+                </div>
               <div class="tech-details">
-                <p>
-                  <strong>${t("enums.usedIn")}</strong>
-                  <code>${this.escape(enumItem.path)}</code>
-                </p>
-                <h4>${t("enums.allowed", { n: enumItem.values.length,})}</h4>
-                <div class="enum-val-wrap">
-                  ${enumItem.values.map((value) => `<span class="ev-pill">${this.escape(String(value))}</span>`,).join("")}
+                <h4 class="tech-details__title">📌 Detalles Técnicos</h4>
+                  <p>
+                    <strong>${t("tech.type")}</strong>
+                    <span class="tag tag--type">${this.escape(enumItem.type || 'xs:string')}</span>
+                  </p>
+                  <p>
+                    <strong>${t("enums.usedIn")}</strong>
+                    <span class="tag tech-details__used-in">${this.escape(enumItem.path || '')}</span>
+                  </p>
                 </div>
               </div>
             </div>
+          <h4>${t("enums.allowed", {n: enumItem.values.length})}</h4>
+          <div class="tech-details__values">${enumTable}</div>
           </div>
           <div class="block-divider"></div>
         </div>
@@ -484,19 +921,83 @@ class InvoiceRenderer extends BaseRenderer {
     this.setHTML( "snav-btns-enumeraciones", navHtml );
   }
 
+  renderEnumerationsXsd(xsdText) {
+    const body = this.getElement('enumeraciones-body');
+    const nav = this.getElement('snav-btns-enumeraciones');
+    if (!body) {return;}
+    try {
+      const doc = window.XsdUtils.parse(xsdText);
+      const enums = window.XsdUtils.extractEnums(doc);
+
+      if (!enums.length) {
+        this.setHTML('enumeraciones-body', `<p style="color:var(--gray-500)">${t("enums.none")}</p>`);
+        this.setHTML('snav-btns-enumeraciones', '');
+        return;
+      }
+      
+
+      let bodyHtml = '';
+      let navHtml = '';
+
+      enums.forEach((enumItem, index) => {
+        const info = getEnumInfo(enumItem.field);
+        const enumTable = buildEnumTable(enumItem.field);
+        const snippet = window.XsdUtils.extractXsdSnippet(xsdText, enumItem.enumName);
+        const id = `enum-${index}`;
+        navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}', this)">${this.escape(enumItem.field)}</button>`;
+        bodyHtml += `
+          <div class="block-wrap" id="${id}">
+            <div class="block-grid">
+              <div class="code-panel">
+                <div class="code-header">${this.escape(enumItem.field)}</div>
+                <pre class="code-pre">${this.escape(snippet)}</pre>
+              </div>
+              <div>
+                <div class="explanation-box">
+                  <p class="explanation-box__description">
+                    <strong>Español:</strong> ${info?.esp || t('noDesc')}
+                  </p>
+                  <p class="explanation-box__text explanation-box__text--spaced">
+                    <strong>English:</strong> ${info?.eng || t('noDesc')}
+                  </p>
+                </div>
+                <div class="tech-details">
+                  <h4 class="tech-details__title">📌 Detalles Técnicos</h4>
+                  <p>
+                    <strong>${t("tech.type")}</strong>
+                    <span class="tag tag--type">${this.escape(enumItem.type || 'xs:string')}</span>
+                  </p>
+                  <p>
+                    <strong>${t("enums.usedIn")}</strong>
+                    <span class="tag tech-details__used-in">${this.escape(enumItem.path || '')}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <h4>${t("enums.allowed", {n: enumItem.values.length})}</h4>
+            <div class="tech-details__values">${enumTable}</div>
+            <div class="block-divider"></div>
+          </div>
+        `;
+      });
+      this.setHTML('enumeraciones-body', bodyHtml);
+      this.setHTML('snav-btns-enumeraciones', navHtml);
+    } catch (error) {
+      this.setHTML('enumeraciones-body', `<div class="info-box">${this.escape(error.message)}</div>`);
+      this.setHTML('snav-btns-enumeraciones', '');
+    }
+  }
+
   /* =====================================================
     Ejemplos
   ===================================================== */
   renderExamples( examples, card ) {
     this.examples = [];
+    let _detailDir = card.dir || `${CONFIG.contentPath}/${folder}`;
     const inner = this.getElement("ejemplo-inner");
     if (!inner) { return; }
     if ( !examples || !examples.length ) {
-      inner.innerHTML = `
-        <p style="color:var(--gray-500)">
-        ${t("example.none")}
-        </p>
-      `;
+      inner.innerHTML = `<p style="color:var(--gray-500)">${t("example.none")}</p>`;
       this.exposeLegacyState();
       return;
     }
@@ -507,6 +1008,7 @@ class InvoiceRenderer extends BaseRenderer {
         : example.raw;
       this.examples.push(preparedRaw);
       const previewId = `ex-code-${index}`;
+      const ghUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${_detailDir}/${example.name.split('/').map(encodeURIComponent).join('/')}`;
       const path = example.path || this.localFilePath( card, example.name );
       html += `
         <div class="file-card" style="margin-bottom:18px" >
@@ -518,15 +1020,13 @@ class InvoiceRenderer extends BaseRenderer {
             </div>
           </div>
           <div class="file-card__actions">
-              }" download > ${t("btn.download")}
-              </a>
-              }" target="_blank" > ${t("btn.viewGithub")}
-              </a>
-              <button class="file-btn" onclick="toggleExampleCode('${previewId}', this, '${this.escape(path)}', ${index})" >
-                ${t("btn.viewContent")}
-              </button>
+            <a class="file-btn file-btn--primary" href="#" onclick="downloadExample(${index},'${this.escape(example.name)}');return false;">${t('btn.download')}</a>
+            <a class="file-btn" target="_blank" href="${ghUrl}">${t('btn.viewGithub')}</a>
+            <button class="file-btn" onclick="toggleExampleCode('${previewId}', this, '${this.escape(path)}', ${index})">${t('btn.viewContent')}</button>
           </div>
-          <div class="ejemplo-cp" id="${previewId}" style="display:none;margin-top:6px"></div>
+          <div class="ejemplo-cp" id="${previewId}" style="display:none;margin-top:6px">
+            <div class="ejemplo-mini" data-idx="${index}" data-name="${this.escape(example.name)}"></div>
+          </div>
         </div>
       `;
     });
@@ -551,7 +1051,9 @@ class InvoiceRenderer extends BaseRenderer {
         ? value.slice(index + 1).toLowerCase()
         : "";
   }
+  
 }
+
 
 /* =========================================================
   Exposición global
