@@ -22,12 +22,10 @@
    ========================================================= */
 
 class ResponseRenderer extends BaseRenderer {
-
   constructor() {
     super();
-
     this.card = null;
-    this.schemaRaw = '';
+    this.schemaRaw = "";
     this.examples = [];
   }
 
@@ -37,105 +35,58 @@ class ResponseRenderer extends BaseRenderer {
 
   async render(cardData) {
     const card = cardData.card || cardData;
-
     this.card = card;
-
     this.showLoading(card);
     this.bindTabs();
-    this.activateTab('descripcion');
+    this.activateTab("descripcion");
     this.resetState();
-
     try {
-      const assets =
-        await window.GithubService.getDirectoryAssets(
-          card.dir || card.folder
-        );
-
+      const assets = await window.GithubService.getDirectoryAssets(
+        card.dir || card.folder,
+      );
       const readmePath =
         assets.readmes[LANG] && assets.readmes[LANG].path
           ? assets.readmes[LANG].path
           : null;
-
-      const readmePromise =
-        readmePath
-          ? rawFetch(readmePath)
-          : Promise.resolve(null);
-
-      const schemaPromises =
-        Promise.allSettled(
-          (assets.schemas || []).map(file => rawFetch(file.path))
-        );
-
-      const examplePromises =
-        Promise.allSettled(
-          (assets.examples || []).map(file => rawFetch(file.path))
-        );
-
-      const [
-        readmeText,
-        schemaResults,
-        exampleResults
-      ] = await Promise.all([
+      const readmePromise = readmePath
+        ? rawFetch(readmePath)
+        : Promise.resolve(null);
+      const schemaPromises = Promise.allSettled(
+        (assets.schemas || []).map((file) => rawFetch(file.path)),
+      );
+      const examplePromises = Promise.allSettled(
+        (assets.examples || []).map((file) => rawFetch(file.path)),
+      );
+      const [readmeText, schemaResults, exampleResults] = await Promise.all([
         readmePromise,
         schemaPromises,
-        examplePromises
+        examplePromises,
       ]);
-
-      const schemasData =
-        this.buildSchemasData(
-          assets.schemas,
-          schemaResults
-        );
-
-      const examplesData =
-        this.buildExamplesData(
-          assets.examples,
-          exampleResults
-        );
-
+      const schemasData = this.buildSchemasData(assets.schemas, schemaResults);
+      const examplesData = this.buildExamplesData(
+        assets.examples,
+        exampleResults,
+      );
       const mainSchema =
         schemasData[0] && schemasData[0].schema
           ? schemasData[0].schema
           : {
-            title: this.getCardTitle(card),
-            description: this.getCardDescription(card)
-          };
-
+              title: this.getCardTitle(card),
+              description: this.getCardDescription(card),
+            };
       this.schemaRaw =
-        schemasData[0] && schemasData[0].raw
-          ? schemasData[0].raw
-          : '';
-
+        schemasData[0] && schemasData[0].raw ? schemasData[0].raw : "";
       this.exposeLegacyState();
-
-      this.setHeader(
-        card,
-        mainSchema
-      );
-
-      this.renderDescription(
-        mainSchema,
-        readmeText,
-        examplesData,
-        card
-      );
-
+      this.setHeader(card, mainSchema);
+      this.renderDescription(mainSchema, readmeText, examplesData, card);
       this.renderStructure(
         mainSchema,
         card,
         schemasData[0] ? schemasData[0].name : null,
-        schemasData[0] ? schemasData[0].path : null
+        schemasData[0] ? schemasData[0].path : null,
       );
-
-      this.renderEnumerations(
-        mainSchema
-      );
-
-      this.renderExamples(
-        examplesData,
-        card
-      );
-
+      this.renderEnumerations(mainSchema);
+      this.renderExamples(examplesData, card);
     } catch (error) {
       this.renderError(error);
     }
@@ -146,10 +97,10 @@ class ResponseRenderer extends BaseRenderer {
   ===================================================== */
 
   resetState() {
-    this.schemaRaw = '';
+    this.schemaRaw = "";
     this.examples = [];
 
-    window._schemaRaw = '';
+    window._schemaRaw = "";
     window._examples = [];
   }
 
@@ -168,19 +119,14 @@ class ResponseRenderer extends BaseRenderer {
         const result = results[index];
 
         const raw =
-          result && result.status === 'fulfilled'
-            ? result.value
-            : null;
+          result && result.status === "fulfilled" ? result.value : null;
 
         let schema = null;
 
-        if (
-          raw &&
-          this.getExtension(file.path) === 'json'
-        ) {
+        if (raw && this.getExtension(file.path) === "json") {
           try {
             schema =
-              typeof localizeNode === 'function'
+              typeof localizeNode === "function"
                 ? localizeNode(JSON.parse(raw))
                 : JSON.parse(raw);
           } catch (error) {
@@ -193,10 +139,10 @@ class ResponseRenderer extends BaseRenderer {
           path: file.path,
           raw,
           schema,
-          file
+          file,
         };
       })
-      .filter(item => item.raw !== null);
+      .filter((item) => item.raw !== null);
   }
 
   buildExamplesData(files, results) {
@@ -205,18 +151,16 @@ class ResponseRenderer extends BaseRenderer {
         const result = results[index];
 
         const raw =
-          result && result.status === 'fulfilled'
-            ? result.value
-            : null;
+          result && result.status === "fulfilled" ? result.value : null;
 
         return {
           name: file.name,
           path: file.path,
           raw,
-          file
+          file,
         };
       })
-      .filter(item => item.raw !== null);
+      .filter((item) => item.raw !== null);
   }
 
   /* =====================================================
@@ -224,14 +168,12 @@ class ResponseRenderer extends BaseRenderer {
   ===================================================== */
 
   renderDescription(schema, readmeText, examplesData, card) {
-    let html = '';
+    let html = "";
 
     html += `
       <h2>
         ${this.escape(
-          schema.title ||
-          this.getCardTitle(card) ||
-          t('desc.overview')
+          schema.title || this.getCardTitle(card) || t("desc.overview"),
         )}
       </h2>
     `;
@@ -245,54 +187,54 @@ class ResponseRenderer extends BaseRenderer {
     }
 
     const specs = [];
-    const endpoint = schema['x-cyc-endpoint'] || {};
+    const endpoint = schema["x-cyc-endpoint"] || {};
 
     if (card.format) {
       specs.push({
-        label: t('spec.format'),
-        value: card.format
+        label: t("spec.format"),
+        value: card.format,
       });
     }
 
     if (card.category) {
       specs.push({
-        label: t('spec.category'),
-        value: card.category
+        label: t("spec.category"),
+        value: card.category,
       });
     }
 
     if (endpoint.method) {
       specs.push({
-        label: t('spec.method'),
-        value: endpoint.method
+        label: t("spec.method"),
+        value: endpoint.method,
       });
     }
 
     if (endpoint.comunication) {
       specs.push({
-        label: t('spec.comunication'),
-        value: endpoint.comunication
+        label: t("spec.comunication"),
+        value: endpoint.comunication,
       });
     }
 
     if (endpoint.version) {
       specs.push({
-        label: t('spec.version'),
-        value: endpoint.version
+        label: t("spec.version"),
+        value: endpoint.version,
       });
     }
 
     if (endpoint.releaseDate) {
       specs.push({
-        label: t('spec.releaseDate'),
-        value: endpoint.releaseDate
+        label: t("spec.releaseDate"),
+        value: endpoint.releaseDate,
       });
     }
 
     if (endpoint.path) {
       specs.push({
-        label: t('spec.path'),
-        value: endpoint.path
+        label: t("spec.path"),
+        value: endpoint.path,
       });
     }
 
@@ -300,19 +242,20 @@ class ResponseRenderer extends BaseRenderer {
       specs.push({
         label:
           examplesData.length > 1
-            ? t('spec.exampleN', { n: index + 1 })
-            : t('spec.example'),
+            ? t("spec.exampleN", { n: index + 1 })
+            : t("spec.example"),
         value: example.name,
-        dlIdx: index
+        dlIdx: index,
       });
     });
 
     if (specs.length) {
       html += `
         <div class="spec-card">
-          ${specs.map(spec => {
-            if (spec.dlIdx !== undefined) {
-              return `
+          ${specs
+            .map((spec) => {
+              if (spec.dlIdx !== undefined) {
+                return `
                 <div class="spec-item">
                   <span class="spec-label">
                     ${this.escape(spec.label)}
@@ -329,9 +272,9 @@ class ResponseRenderer extends BaseRenderer {
                   </span>
                 </div>
               `;
-            }
+              }
 
-            return `
+              return `
               <div class="spec-item">
                 <span class="spec-label">
                   ${this.escape(spec.label)}
@@ -341,7 +284,8 @@ class ResponseRenderer extends BaseRenderer {
                 </span>
               </div>
             `;
-          }).join('')}
+            })
+            .join("")}
         </div>
       `;
     }
@@ -352,17 +296,14 @@ class ResponseRenderer extends BaseRenderer {
       html += `
         <div class="info-box">
           <strong>
-            ${t('desc.noCustom.title')}
+            ${t("desc.noCustom.title")}
           </strong>
-          ${t('desc.noCustom.body')}
+          ${t("desc.noCustom.body")}
         </div>
       `;
     }
 
-    this.setHTML(
-      'desc-body',
-      html
-    );
+    this.setHTML("desc-body", html);
   }
 
   /* =====================================================
@@ -370,38 +311,20 @@ class ResponseRenderer extends BaseRenderer {
   ===================================================== */
 
   renderStructure(schema, card, schemaFileName, schemaPath) {
-    const body =
-      this.getElement('estructura-body');
-
-    const nav =
-      this.getElement('snav-btns-estructura');
-
-    if (!body) {
-      return;
-    }
-
+    const body = this.getElement("estructura-body");
+    const nav = this.getElement("snav-btns-estructura");
+    if (!body) {return;}
     if (!schemaFileName) {
       body.innerHTML = `
         <p style="color:var(--gray-500)">
-          ${t('struct.none')}
+          ${t("struct.none")}
         </p>
       `;
-
-      if (nav) {
-        nav.innerHTML = '';
-      }
-
+      if (nav) {nav.innerHTML = "";}
       return;
     }
-
-    const path =
-      schemaPath ||
-      this.localFilePath(
-        card,
-        schemaFileName
-      );
-
-    if (this.getExtension(schemaFileName) !== 'json') {
+    const path = schemaPath || this.localFilePath(card, schemaFileName);
+    if (this.getExtension(schemaFileName) !== "json") {
       body.innerHTML = `
         <p style="margin-bottom:28px">
           }"
@@ -409,43 +332,24 @@ class ResponseRenderer extends BaseRenderer {
             rel="noopener noreferrer"
             class="download-link"
           >
-            ${t('struct.view', { file: schemaFileName })}
+            ${t("struct.view", { file: schemaFileName })}
           </a>
         </p>
       `;
-
-      if (nav) {
-        nav.innerHTML = '';
-      }
-
+      if (nav) {nav.innerHTML = "";}
       return;
     }
-
-    const definitions =
-      schema.$defs ||
-      schema.definitions ||
-      {};
-
-    const blocks =
-      this.extractBlocks(
-        schema,
-        definitions
-      );
-
+    const definitions = schema.$defs || schema.definitions || {};
+    const blocks = this.extractBlocks(schema, definitions);
     if (!blocks.length) {
       body.innerHTML = `
         <p style="color:var(--gray-500)">
-          ${t('struct.none')}
+          ${t("struct.none")}
         </p>
       `;
-
-      if (nav) {
-        nav.innerHTML = '';
-      }
-
+      if (nav) {nav.innerHTML = "";}
       return;
     }
-
     let bodyHtml = `
       <p style="margin-bottom:28px">
         <a
@@ -453,7 +357,7 @@ class ResponseRenderer extends BaseRenderer {
           onclick="downloadSchema('${this.escape(schemaFileName)}'); return false;"
           class="download-link"
         >
-          ${t('struct.download', { file: schemaFileName })}
+          ${t("struct.download", { file: schemaFileName })}
         </a>
         <br>
         }"
@@ -461,36 +365,22 @@ class ResponseRenderer extends BaseRenderer {
           rel="noopener noreferrer"
           class="download-link"
         >
-          ${t('struct.view', { file: schemaFileName })}
+          ${t("struct.view", { file: schemaFileName })}
         </a>
       </p>
     `;
-
-    let navHtml = '';
-
+    let navHtml = "";
     blocks.forEach((block, index) => {
       const id = `blk-${index}`;
-
-      const snippet =
-        JSON.stringify(
-          {
-            [block.jsonKey || block.label]: block.schemaSnippet
-          },
-          null,
-          2
-        );
-
+      const snippet = JSON.stringify({[block.jsonKey || block.label]: block.schemaSnippet,},null,2,);
       navHtml += `
         <button
           class="snav-btn"
           onclick="scrollToBlock('${id}', this)"
         >
-          ${this.escape(
-            block.label.replace(/Wrapper$/i, '')
-          )}
+          ${this.escape(block.label.replace(/Wrapper$/i, ""))}
         </button>
       `;
-
       bodyHtml += `
         <div
           class="block-wrap"
@@ -508,21 +398,21 @@ class ResponseRenderer extends BaseRenderer {
             <div>
               <div class="explanation-box">
                 <p>
-                  ${this.escape(block.description || t('noDesc'))}
+                  ${this.escape(block.description || t("noDesc"))}
                 </p>
               </div>
 
               <div class="tech-details">
                 <h4>
-                  ${t('tech.title')}
+                  ${t("tech.title")}
                 </h4>
 
                 <p>
                   <strong>
-                    ${t('tech.type')}
+                    ${t("tech.type")}
                   </strong>
                   <span class="tag-type">
-                    ${this.escape(block.type || 'object')}
+                    ${this.escape(block.type || "object")}
                   </span>
                 </p>
 
@@ -531,14 +421,14 @@ class ResponseRenderer extends BaseRenderer {
                     ? `
                       <p>
                         <strong>
-                          ${t('tech.required')}
+                          ${t("tech.required")}
                         </strong>
                         <span class="tag-req">
-                          ${this.escape(block.required.join(', '))}
+                          ${this.escape(block.required.join(", "))}
                         </span>
                       </p>
                     `
-                    : ''
+                    : ""
                 }
 
                 ${
@@ -546,12 +436,12 @@ class ResponseRenderer extends BaseRenderer {
                     ? `
                       <p>
                         <strong>
-                          ${t('tech.constraints')}
+                          ${t("tech.constraints")}
                         </strong>
                         ${this.escape(block.constraints)}
                       </p>
                     `
-                    : ''
+                    : ""
                 }
               </div>
             </div>
@@ -578,126 +468,81 @@ class ResponseRenderer extends BaseRenderer {
   extractBlocks(schema, definitions) {
     const blocks = [];
 
-    for (
-      const [key, raw] of Object.entries(schema.properties || {})
-    ) {
-      const prop =
-        SchemaUtils.resolveRef(
-          raw,
-          definitions
-        );
+    for (const [key, raw] of Object.entries(schema.properties || {})) {
+      const prop = SchemaUtils.resolveRef(raw, definitions);
 
-      const type =
-        prop.type ||
-        'object';
+      const type = prop.type || "object";
 
-      if (
-        type === 'array' &&
-        prop.items
-      ) {
+      if (type === "array" && prop.items) {
         const constraints = [
-          prop.minItems != null
-            ? `minItems: ${prop.minItems}`
-            : '',
-          prop.maxItems != null
-            ? `maxItems: ${prop.maxItems}`
-            : ''
+          prop.minItems != null ? `minItems: ${prop.minItems}` : "",
+          prop.maxItems != null ? `maxItems: ${prop.maxItems}` : "",
         ]
           .filter(Boolean)
-          .join(' · ');
+          .join(" · ");
 
         blocks.push({
           label: key,
-          type: 'array',
-          description: prop.description || '',
-          schemaSnippet: SchemaUtils.trimSchema(
-            prop,
-            false
-          ),
+          type: "array",
+          description: prop.description || "",
+          schemaSnippet: SchemaUtils.trimSchema(prop, false),
           properties: {},
           required: [],
-          constraints
+          constraints,
         });
 
-        const items =
-          SchemaUtils.resolveRef(
-            prop.items,
-            definitions
-          );
+        const items = SchemaUtils.resolveRef(prop.items, definitions);
 
         if (items.properties) {
           blocks.push({
             label: `${key}[] — campos principales`,
             jsonKey: key,
-            type: 'object',
-            description: items.description || '',
-            schemaSnippet: SchemaUtils.trimSchema(
-              items,
-              true
-            ),
+            type: "object",
+            description: items.description || "",
+            schemaSnippet: SchemaUtils.trimSchema(items, true),
             properties: items.properties,
-            required: items.required || []
+            required: items.required || [],
           });
         }
-      } else if (
-        type === 'object' &&
-        prop.properties
-      ) {
+      } else if (type === "object" && prop.properties) {
         blocks.push({
           label: key,
-          type: 'object',
-          description: prop.description || '',
-          schemaSnippet: SchemaUtils.trimSchema(
-            prop,
-            true
-          ),
+          type: "object",
+          description: prop.description || "",
+          schemaSnippet: SchemaUtils.trimSchema(prop, true),
           properties: prop.properties,
-          required: prop.required || []
+          required: prop.required || [],
         });
       } else {
         blocks.push({
           label: key,
           type,
-          description: prop.description || '',
-          schemaSnippet: SchemaUtils.trimSchema(
-            prop,
-            true
-          ),
+          description: prop.description || "",
+          schemaSnippet: SchemaUtils.trimSchema(prop, true),
           properties: {
-            [key]: prop
+            [key]: prop,
           },
-          required:
-            (schema.required || []).includes(key)
-              ? [key]
-              : []
+          required: (schema.required || []).includes(key) ? [key] : [],
         });
       }
     }
 
-    const added =
-      new Set(
-        blocks.map(block => block.label)
-      );
+    const added = new Set(blocks.map((block) => block.label));
 
-    for (
-      const [name, definition] of Object.entries(definitions || {})
-    ) {
+    for (const [name, definition] of Object.entries(definitions || {})) {
       if (
         definition &&
-        definition.type === 'object' &&
+        definition.type === "object" &&
         definition.properties &&
         !added.has(name)
       ) {
         blocks.push({
           label: name,
-          type: 'object',
-          description: definition.description || '',
-          schemaSnippet: SchemaUtils.trimSchema(
-            definition,
-            true
-          ),
+          type: "object",
+          description: definition.description || "",
+          schemaSnippet: SchemaUtils.trimSchema(definition, true),
           properties: definition.properties,
-          required: definition.required || []
+          required: definition.required || [],
         });
       }
     }
@@ -710,36 +555,25 @@ class ResponseRenderer extends BaseRenderer {
   ===================================================== */
 
   buildFieldTable(schema) {
-    const dash =
-      '<span style="color:var(--gray-300)">—</span>';
+    const dash = '<span style="color:var(--gray-300)">—</span>';
 
     const rows = [];
 
-    const walk =
-      (properties, required, depth) => {
-        required = required || [];
+    const walk = (properties, required, depth) => {
+      required = required || [];
 
-        for (
-          const [field, raw] of Object.entries(properties || {})
-        ) {
-          const type =
-            SchemaUtils.getFieldType(raw);
+      for (const [field, raw] of Object.entries(properties || {})) {
+        const type = SchemaUtils.getFieldType(raw);
 
-          const constraints =
-            SchemaUtils.getFieldConstraints(raw);
+        const constraints = SchemaUtils.getFieldConstraints(raw);
 
-          const isRequired =
-            required.includes(field);
+        const isRequired = required.includes(field);
 
-          const indent =
-            8 + depth * 22;
+        const indent = 8 + depth * 22;
 
-          const arrow =
-            depth > 0
-              ? '<span class="rf-arrow">↳</span>'
-              : '';
+        const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>' : "";
 
-          rows.push(`
+        rows.push(`
             <tr>
               <td style="padding-left:${indent}px">
                 <span class="rf-name-wrap">
@@ -751,11 +585,7 @@ class ResponseRenderer extends BaseRenderer {
               </td>
 
               <td>
-                ${
-                  raw.description
-                    ? this.escape(raw.description)
-                    : dash
-                }
+                ${raw.description ? this.escape(raw.description) : dash}
               </td>
 
               <td>
@@ -769,8 +599,8 @@ class ResponseRenderer extends BaseRenderer {
               <td>
                 ${
                   isRequired
-                    ? `<span class="tag-req">${t('yes')}</span>`
-                    : `<span style="color:var(--gray-500)">${t('no')}</span>`
+                    ? `<span class="tag-req">${t("yes")}</span>`
+                    : `<span style="color:var(--gray-500)">${t("no")}</span>`
                 }
               </td>
 
@@ -780,39 +610,20 @@ class ResponseRenderer extends BaseRenderer {
             </tr>
           `);
 
-          if (
-            raw.type === 'object' &&
-            raw.properties
-          ) {
-            walk(
-              raw.properties,
-              raw.required,
-              depth + 1
-            );
-          }
-
-          if (
-            raw.type === 'array' &&
-            raw.items &&
-            raw.items.properties
-          ) {
-            walk(
-              raw.items.properties,
-              raw.items.required,
-              depth + 1
-            );
-          }
+        if (raw.type === "object" && raw.properties) {
+          walk(raw.properties, raw.required, depth + 1);
         }
-      };
 
-    walk(
-      schema.properties,
-      schema.required,
-      0
-    );
+        if (raw.type === "array" && raw.items && raw.items.properties) {
+          walk(raw.items.properties, raw.items.required, depth + 1);
+        }
+      }
+    };
+
+    walk(schema.properties, schema.required, 0);
 
     if (!rows.length) {
-      return '';
+      return "";
     }
 
     return `
@@ -820,15 +631,15 @@ class ResponseRenderer extends BaseRenderer {
         <table class="field-tbl">
           <thead>
             <tr>
-              <th>${t('table.field')}</th>
-              <th>${t('table.desc')}</th>
-              <th>${t('table.type')}</th>
-              <th>${t('table.req')}</th>
-              <th>${t('table.constraints')}</th>
+              <th>${t("table.field")}</th>
+              <th>${t("table.desc")}</th>
+              <th>${t("table.type")}</th>
+              <th>${t("table.req")}</th>
+              <th>${t("table.constraints")}</th>
             </tr>
           </thead>
           <tbody>
-            ${rows.join('')}
+            ${rows.join("")}
           </tbody>
         </table>
       </div>
@@ -840,37 +651,32 @@ class ResponseRenderer extends BaseRenderer {
   ===================================================== */
 
   renderEnumerations(schema) {
-    const enums =
-      SchemaUtils.extractEnums(schema);
+    const enums = SchemaUtils.extractEnums(schema);
 
     if (!enums.length) {
       this.setHTML(
-        'enumeraciones-body',
-        `<p style="color:var(--gray-500)">${t('enums.none')}</p>`
+        "enumeraciones-body",
+        `<p style="color:var(--gray-500)">${t("enums.none")}</p>`,
       );
 
-      this.setHTML(
-        'snav-btns-enumeraciones',
-        ''
-      );
+      this.setHTML("snav-btns-enumeraciones", "");
 
       return;
     }
 
-    let bodyHtml = '';
-    let navHtml = '';
+    let bodyHtml = "";
+    let navHtml = "";
 
     enums.forEach((enumItem, index) => {
       const id = `enum-${index}`;
 
-      const snippet =
-        JSON.stringify(
-          {
-            [enumItem.defName]: enumItem.raw
-          },
-          null,
-          2
-        );
+      const snippet = JSON.stringify(
+        {
+          [enumItem.defName]: enumItem.raw,
+        },
+        null,
+        2,
+      );
 
       navHtml += `
         <button
@@ -894,14 +700,14 @@ class ResponseRenderer extends BaseRenderer {
             <div>
               <div class="explanation-box">
                 <p>
-                  ${this.escape(enumItem.description || t('noDesc'))}
+                  ${this.escape(enumItem.description || t("noDesc"))}
                 </p>
               </div>
 
               <div class="tech-details">
                 <p>
                   <strong>
-                    ${t('enums.usedIn')}
+                    ${t("enums.usedIn")}
                   </strong>
                   <code>
                     ${this.escape(enumItem.path)}
@@ -909,15 +715,19 @@ class ResponseRenderer extends BaseRenderer {
                 </p>
 
                 <h4>
-                  ${t('enums.allowed', { n: enumItem.values.length })}
+                  ${t("enums.allowed", { n: enumItem.values.length })}
                 </h4>
 
                 <div class="enum-val-wrap">
-                  ${enumItem.values.map(value => `
+                  ${enumItem.values
+                    .map(
+                      (value) => `
                     <span class="ev-pill">
                       ${this.escape(String(value))}
                     </span>
-                  `).join('')}
+                  `,
+                    )
+                    .join("")}
                 </div>
               </div>
             </div>
@@ -928,15 +738,9 @@ class ResponseRenderer extends BaseRenderer {
       `;
     });
 
-    this.setHTML(
-      'enumeraciones-body',
-      bodyHtml
-    );
+    this.setHTML("enumeraciones-body", bodyHtml);
 
-    this.setHTML(
-      'snav-btns-enumeraciones',
-      navHtml
-    );
+    this.setHTML("snav-btns-enumeraciones", navHtml);
   }
 
   /* =====================================================
@@ -946,20 +750,16 @@ class ResponseRenderer extends BaseRenderer {
   renderExamples(examples, card) {
     this.examples = [];
 
-    const inner =
-      this.getElement('ejemplo-inner');
+    const inner = this.getElement("ejemplo-inner");
 
     if (!inner) {
       return;
     }
 
-    if (
-      !examples ||
-      !examples.length
-    ) {
+    if (!examples || !examples.length) {
       inner.innerHTML = `
         <p style="color:var(--gray-500)">
-          ${t('example.none')}
+          ${t("example.none")}
         </p>
       `;
 
@@ -968,26 +768,19 @@ class ResponseRenderer extends BaseRenderer {
       return;
     }
 
-    let html =
-      '<div class="ejemplo-grid">';
+    let html = '<div class="ejemplo-grid">';
 
     examples.forEach((example, index) => {
       const preparedRaw =
-        this.getExtension(example.name) === 'json'
+        this.getExtension(example.name) === "json"
           ? fmtJSON(example.raw)
           : example.raw;
 
       this.examples.push(preparedRaw);
 
-      const previewId =
-        `ex-code-${index}`;
+      const previewId = `ex-code-${index}`;
 
-      const path =
-        example.path ||
-        this.localFilePath(
-          card,
-          example.name
-        );
+      const path = example.path || this.localFilePath(card, example.name);
 
       html += `
         <div class="file-card" style="margin-bottom:18px">
@@ -1002,7 +795,7 @@ class ResponseRenderer extends BaseRenderer {
               </div>
               <div class="file-card__meta">
                 ${this.escape(
-                  (this.getExtension(example.name) || 'file').toUpperCase()
+                  (this.getExtension(example.name) || "file").toUpperCase(),
                 )}
               </div>
             </div>
@@ -1012,21 +805,21 @@ class ResponseRenderer extends BaseRenderer {
             }"
               download
             >
-              ${t('btn.download')}
+              ${t("btn.download")}
             </a>
 
             }"
               target="_blank"
               rel="noopener noreferrer"
             >
-              ${t('btn.viewGithub')}
+              ${t("btn.viewGithub")}
             </a>
 
             <button
               class="file-btn"
               onclick="toggleExampleCode('${previewId}', this, '${this.escape(path)}', ${index})"
             >
-              ${t('btn.viewContent')}
+              ${t("btn.viewContent")}
             </button>
           </div>
 
@@ -1039,7 +832,7 @@ class ResponseRenderer extends BaseRenderer {
       `;
     });
 
-    html += '</div>';
+    html += "</div>";
 
     inner.innerHTML = html;
 
@@ -1052,10 +845,10 @@ class ResponseRenderer extends BaseRenderer {
 
   localFilePath(card, fileNameOrPath) {
     if (!fileNameOrPath) {
-      return '';
+      return "";
     }
 
-    if (String(fileNameOrPath).includes('/')) {
+    if (String(fileNameOrPath).includes("/")) {
       return fileNameOrPath;
     }
 
@@ -1063,39 +856,31 @@ class ResponseRenderer extends BaseRenderer {
   }
 
   getExtension(name) {
-    if (typeof _ext === 'function') {
+    if (typeof _ext === "function") {
       return _ext(name);
     }
 
-    const value =
-      String(name || '');
+    const value = String(name || "");
 
-    const index =
-      value.lastIndexOf('.');
+    const index = value.lastIndexOf(".");
 
-    return index >= 0
-      ? value.slice(index + 1).toLowerCase()
-      : '';
+    return index >= 0 ? value.slice(index + 1).toLowerCase() : "";
   }
 
   getRawUrl(path) {
-    if (typeof rawUrl === 'function') {
+    if (typeof rawUrl === "function") {
       return rawUrl(path);
     }
 
     return `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${path}`;
   }
-
 }
 
 window.ResponseRenderer = ResponseRenderer;
 
 if (
-  typeof RendererFactory !== 'undefined' &&
-  typeof ResponseRenderer !== 'undefined'
+  typeof RendererFactory !== "undefined" &&
+  typeof ResponseRenderer !== "undefined"
 ) {
-  RendererFactory.registerRenderer(
-    'Response',
-    ResponseRenderer
-  );
+  RendererFactory.registerRenderer("Response", ResponseRenderer);
 }
