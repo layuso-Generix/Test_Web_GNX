@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generix · E-Invoicing · Developer Documentation</title>
+  <link rel="icon" href="Assets/logo-black.png" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ═══ TOPBAR ══════════════════════════════════════════ -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" onclick="showIndex()" aria-label="Generix"> <!-- <a href="#home" class="logo"  aria-label="Generix">-->
+        <img src="Assets/generix.svg" alt="Generix" />
+      </a>
+      <nav class="nav">
+        <a href="https://www.generixgroup.com/es/contacto" class="btn-contact" data-i18n="nav.contact">Contactar</a>
+        <div class="lang-switch" id="langSwitch" aria-label="Idioma / Language">
+          <button type="button" class="lang-current" id="langCurrent" aria-haspopup="listbox" aria-expanded="false"></button>
+          <ul class="lang-menu" id="langMenu" role="listbox"></ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+<!-- ═══ INDEX VIEW ══════════════════════════════════════ -->
+  <section id="view-index">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-content">
+          <div class="hero-tagline" data-i18n="hero.tagline">Developer Documentation Portal</div>
+          <h1><span data-i18n="hero.title1">Facturación electrónica B2B</span><br><span class="accent" data-i18n="hero.title2">Spain e-Invoicing</span></h1>
+          <p class="hero-subtitle" data-i18n="hero.subtitle">Documentación técnica para los estándares JSON, XML, Respuestas, Estados y Documentación AEAT.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" data-i18n="hero.cta.docs" onclick="document.getElementById('documentation-section').scrollIntoView({behavior:'smooth'})">
+              Explorar documentación
+            </a>
+            <a class="btn btn-secondary" data-i18n="hero.cta.validator" onclick="document.getElementById('recursos-section').scrollIntoView({behavior:'smooth'})">
+              Recursos
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual"><img src="Assets/hero-ico.svg" alt="" width="230" height="230" /></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stats-inner">
+        <div><div class="stat-number" id="stat-sections">—</div><div class="stat-label" data-i18n="stats.sections">Secciones documentales</div></div>
+        <div><div class="stat-number">JSON</div><div class="stat-label" data-i18n="stats.format">Formato de integraci&oacute;n</div></div>
+        <div><div class="stat-number">XML</div><div class="stat-label" data-i18n="stats.format">Formato de integraci&oacute;n</div></div>
+        <div><div class="stat-number">UBL</div><div class="stat-label" data-i18n="stats.format">Formato de integraci&oacute;n</div></div>
+        <div><div class="stat-number">AEAT</div><div class="stat-label" data-i18n="stats.docu">Documentation</div></div>
+      </div>
+    </section>
+
+    <section class="section" id="documentation-section">
+      <div class="section-header">
+        <span class="section-eyebrow" data-i18n="home.eyebrow">Centro de documentación · E-Invoicing</span>
+        <h2 data-i18n="home.title">Estándares y recursos de integración</h2>
+        <p data-i18n="home.subtitle">Selecciona una sección para consultar sus readmes, ejemplos, esquemas y documentación relacionada.</p>
+      </div>
+      <div id="sectionGrid"></div>
+      <div class="folder-section" id="recursos-section">
+        <h3><span class="card-icon" style="margin-bottom: 0px; font-size: 1.2rem;">⚙</span> RECURSOS</h3>
+        <div class="file-grid">
+          <div class="card" onclick="showVersions()">
+            <div class="card-icon">↺</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.history.badge">Historial</span></div>
+            <h3 data-i18n="res.history.title">Versiones de esquemas</h3>
+            <p data-i18n="res.history.desc">Consulta y descarga las distintas versiones publicadas de los esquemas JSON.</p>
+            <span class="card-link" data-i18n="res.history.link">Ver versiones</span>
+          </div>
+          <div class="card" id="resp-card" style="display:none" onclick="showRespuestas()">
+            <div class="card-icon">↩</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.resp.badge">Schema</span></div>
+            <h3 data-i18n="res.resp.title">Respuestas</h3>
+            <p data-i18n="res.resp.desc">Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.</p>
+            <span class="card-link" data-i18n="res.resp.link">Ver respuestas</span>
+          </div>
+          <div class="card" onclick="showValidacion()">
+            <div class="card-icon">✓</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.val.badge">Herramienta</span></div>
+            <h3 data-i18n="res.val.title">Validaciones</h3>
+            <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
+            <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
+          </div>
+          <div class="card" >
+            <div class="card-icon">AEAT</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.aeat.badge">Documentación</span></div>
+            <h3 data-i18n="res.aeat.title">Documentación AEAT</h3>
+            <p data-i18n="res.aeat.desc">Documentación oficial relacionada con Crea y Crece.</p>
+            <span class="card-link" data-i18n="res.aeat.link">Abrir documentación</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+<!-- ═══ DETAIL VIEW ═════════════════════════════════════ -->
+  <section id="view-detail" class="view">
+    <!-- Page header -->
+    <section class="dh">
+      <div class="dhi">
+        <div class="d-breadcrumb">
+          <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+          <span>/</span>
+          <span class="cur" id="d-breadcrumb-name">—</span>
+        </div>
+        <div class="ep-badges" id="detailBadges"></div>
+        <h1 id="detailTitle">Cargando...</h1>
+        <p class="ddesc" id="detailDescription"></p>
+      </div>
+    </section>
+
+    <!-- Tab navigation -->
+    <div class="tab-nav-outer">
+      <div class="tab-nav-inner">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="descripcion" data-i18n="tabs.desc">Descripci&oacute;n General</button>
+          <button class="tab-btn" data-tab="estructura" data-i18n="tabs.struct">Estructura</button>
+          <button class="tab-btn" data-tab="enumeraciones" data-i18n="tabs.enums">Enumeraciones</button>
+          <button class="tab-btn" data-tab="ejemplo" data-i18n="tabs.example">Ejemplo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Descripción -->
+    <div id="tab-descripcion" class="tab-panel active">
+      <div class="desc-content">
+        <div id="desc-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+      </div>
+    </div>
+
+    <!-- Tab: Estructura -->
+    <div id="tab-estructura" class="tab-panel">
+      <div class="three-col">
+        <div class="sidebar-nav" id="snav-estructura">
+          <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+          <div class="snav-btns" id="snav-btns-estructura"></div>
+        </div>
+        <div id="estructura-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+      </div>
+    </div>
+
+    <!-- Tab: Enumeraciones -->
+    <div id="tab-enumeraciones" class="tab-panel">
+      <div class="three-col">
+        <div class="sidebar-nav" id="snav-enumeraciones">
+          <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+          <div class="snav-btns" id="snav-btns-enumeraciones"></div>
+        </div>
+        <div id="enumeraciones-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+      </div>
+    </div>
+
+    <!-- Tab: Ejemplo -->
+    <div id="tab-ejemplo" class="tab-panel">
+      <div class="ejemplo-wrap">
+        <h2 data-i18n="example.title">Ejemplos</h2>
+        <div id="ejemplo-inner"><p style="color:var(--gray-500)">Cargando…</p></div>
+      </div>
+    </div>
+  </section>
+
+<!-- ═══ VERSIONS VIEW ═══ -->
+  <section id="view-versions" style="display:none">
+    <section class="dh">
+      <div class="dhi">
+        <div class="d-breadcrumb">
+          <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+          <span>/</span><span class="cur" data-i18n="crumb.versions">Versiones de esquemas</span>
+        </div>
+        <h1 data-i18n="versions.h1">Versiones de esquemas</h1>
+        <p class="ddesc" data-i18n="versions.desc">Listado en vivo desde el repositorio. Cualquier carpeta o fichero que se añada aparece aqu&iacute; autom&aacute;ticamente.</p>
+      </div>
+    </section>
+    <div class="vers-section">
+      <div id="versStatus" class="vers-status">Cargando…</div>
+      <div id="versQuick" class="vers-quick"></div>
+      <div id="versContainer"></div>
+    </div>
+  </section>
+<!-- ═══ VALIDACION VIEW ═══ -->
+  <section id="view-validacion" style="display:none">
+    <section class="dh">
+      <div class="dhi">
+        <div class="d-breadcrumb">
+          <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+          <span>/</span><span class="cur" data-i18n="crumb.validation">Validaciones</span>
+        </div>
+        <h1 data-i18n="val.h1">Validador de mensajes</h1>
+        <p class="ddesc" data-i18n="val.desc">Selecciona el tipo de mensaje, sube tu fichero JSON y val&iacute;dalo contra el esquema oficial del WMS.</p>
+      </div>
+    </section>
+    <div class="val-section">
+      <div class="val-controls">
+        <div class="val-field">
+          <label for="valSchema" data-i18n="val.label">Mensaje a validar</label>
+          <select id="valSchema" class="val-select"><option value="">Cargando…</option></select>
+        </div>
+      </div>
+      <div id="dropzone" class="disabled">
+        Selecciona primero un mensaje, luego arrastra tu JSON o haz click
+        <input type="file" id="fileInput" accept=".json,application/json" hidden />
+      </div>
+      <div class="val-layout">
+        <div id="validationSummary" class="val-empty"></div>
+        <div id="jsonViewerContainer"></div>
+      </div>
+      <div style="display:none">
+        <div id="result"></div><div id="errorList"></div><div id="jsonViewer"></div>
+      </div>
+    </div>
+  </section>
+
+<!-- ═══ RESPUESTAS VIEW ═══ -->
+  <div id="view-respuestas" style="display:none">
+    <section class="dh">
+      <div class="dhi">
+        <div class="d-breadcrumb">
+          <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+          <span>/</span><span class="cur" data-i18n="crumb.responses">Respuestas</span>
+        </div>
+        <h1 data-i18n="resp.h1">Respuestas de la API</h1>
+        <p class="ddesc" data-i18n="resp.desc">La API es as&iacute;ncrona: devuelve una respuesta inmediata (HTTP) y, si detecta errores de validaci&oacute;n, env&iacute;a un callback al endpoint que el cliente expone.</p>
+      </div>
+    </section>
+    <div id="respuestas-nav"></div>
+    <div class="resp-section">
+      <div id="respuestas-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+<!-- ═══ FOOTER ══════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo"><img src="Assets/generix.svg" alt="Generix"></div>
+            <div class="footer-tagline">Connecting Businesses Together</div>
+            <p class="footer-desc" data-i18n="footer.desc">Documentaci&oacute;n t&eacute;cnica de facturación electrónica · Generix Spain · Especificaciones de mensajes e integraci&oacute;n.</p>
+          </div>
+          <div>
+            <p style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.9">
+              <strong style="color:#fff">e-Invoicing</strong> · Generix Spain<br>
+              JSON · XML · AEAT · Validation<br>
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© <span class="accent">Generix</span> · Developer Documentation Portal</p>
+          <p data-i18n="footer.bottom2">Especificaciones técnicas e integración e-Invoicing</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+<!-- Botón volver arriba -->
+  <button id="goTop" class="go-top" data-i18n-attr="aria-label:aria.top;title:aria.top" aria-label="Volver arriba" title="Volver arriba"
+  onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/markdown-loader.js"></script>
+  <script src="js/file-viewer.js"></script>
+  <script src="js/validator.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generix · WMS API · Developer Documentation</title>
+<link rel="icon" href="Assets/logo-black.png" type="image/png">
+</head>
+<body>
+
+<!-- ═══ TOPBAR ══════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" onclick="showIndex()" aria-label="Generix">
+      <img src="Assets/generix.svg" alt="Generix">
+    </a>
+    <div class="lang-switch" id="langSwitch" aria-label="Idioma / Language">
+      <button type="button" class="lang-current" id="langCurrent" aria-haspopup="listbox" aria-expanded="false"></button>
+      <ul class="lang-menu" id="langMenu" role="listbox"></ul>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ INDEX VIEW ══════════════════════════════════════ -->
+<div id="view-index">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-tagline" data-i18n="hero.tagline">Portal de Documentaci&oacute;n para Desarrolladores</div>
+        <h1>WMS API<br><span class="accent">Generix Spain</span></h1>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+          Especificaciones t&eacute;cnicas, esquemas de mensajes y gu&iacute;as de integraci&oacute;n para la API del sistema de gesti&oacute;n de almacenes (WMS) de Generix Spain.
+        </p>
+        <div class="cta-row">
+          <button class="btn btn-primary" data-i18n="hero.cta.explore" onclick="document.getElementById('ep-section').scrollIntoView({behavior:'smooth'})">
+            Explorar endpoints
+          </button>
+          <button class="btn btn-secondary" data-i18n="hero.cta.resources" onclick="document.getElementById('recursos-section').scrollIntoView({behavior:'smooth'})">
+            Recursos
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="Assets/hero-ico.svg" alt="" width="230" height="230">
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stats-inner">
+      <div><div class="stat-number" id="stat-count">—</div><div class="stat-label" data-i18n="stats.endpoints">Endpoints documentados</div></div>
+      <div><div class="stat-number">ASYNC</div><div class="stat-label" data-i18n="stats.comm">Comunicaci&oacute;n</div></div>
+      <div><div class="stat-number">REST</div><div class="stat-label" data-i18n="stats.protocol">Protocolo</div></div>
+      <div><div class="stat-number">JSON</div><div class="stat-label" data-i18n="stats.format">Formato de integraci&oacute;n</div></div>
+      <div><div class="stat-number">WMS</div><div class="stat-label" data-i18n="stats.generix">Generix Spain</div></div>
+    </div>
+  </div>
+
+  <section class="section" id="ep-section">
+    <div class="section-header">
+      <span class="section-eyebrow" data-i18n="sec.eyebrow">Centro de documentaci&oacute;n · WMS API</span>
+      <h2 data-i18n="sec.title">Endpoints y mensajes de integraci&oacute;n</h2>
+      <p data-i18n="sec.subtitle">Selecciona un mensaje para explorar su esquema completo: campos, tipos, validaciones y ejemplos de payload.</p>
+    </div>
+    <div class="grid" id="endpoints-grid">
+      <!-- filled by JS -->
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0" id="recursos-section">
+    <div class="grid">
+      <div class="card" onclick="showVersions()">
+        <div class="card-icon">↺</div>
+        <div class="card-meta"><span class="badge badge-cat" data-i18n="res.history.badge">Historial</span></div>
+        <h3 data-i18n="res.history.title">Versiones de esquemas</h3>
+        <p data-i18n="res.history.desc">Consulta y descarga las distintas versiones publicadas de los esquemas JSON.</p>
+        <span class="card-link" data-i18n="res.history.link">Ver versiones</span>
+      </div>
+      <div class="card" id="resp-card" style="display:none" onclick="showRespuestas()">
+        <div class="card-icon">↩</div>
+        <div class="card-meta"><span class="badge badge-cat" data-i18n="res.resp.badge">Schema</span></div>
+        <h3 data-i18n="res.resp.title">Respuestas</h3>
+        <p data-i18n="res.resp.desc">Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.</p>
+        <span class="card-link" data-i18n="res.resp.link">Ver respuestas</span>
+      </div>
+      <div class="card" onclick="showValidacion()">
+        <div class="card-icon">✓</div>
+        <div class="card-meta"><span class="badge badge-cat" data-i18n="res.val.badge">Herramienta</span></div>
+        <h3 data-i18n="res.val.title">Validaciones</h3>
+        <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
+        <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#view-index -->
+
+<!-- ═══ DETAIL VIEW ═════════════════════════════════════ -->
+<div id="view-detail">
+
+  <!-- Page header -->
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span>
+        <span class="cur" id="d-breadcrumb-name">—</span>
+      </div>
+      <div class="ep-badges" id="ep-badges"></div>
+      <h1 id="d-title">Cargando...</h1>
+      <p class="ddesc" id="d-desc"></p>
+    </div>
+  </section>
+
+  <!-- Tab navigation -->
+  <div class="tab-nav-outer">
+    <div class="tab-nav-inner">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="descripcion" data-i18n="tabs.desc">Descripci&oacute;n General</button>
+        <button class="tab-btn" data-tab="estructura" data-i18n="tabs.struct">Estructura</button>
+        <button class="tab-btn" data-tab="enumeraciones" data-i18n="tabs.enums">Enumeraciones</button>
+        <button class="tab-btn" data-tab="ejemplo" data-i18n="tabs.example">Ejemplo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Descripción -->
+  <div id="tab-descripcion" class="tab-panel active">
+    <div class="desc-content">
+      <div id="desc-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Estructura -->
+  <div id="tab-estructura" class="tab-panel">
+    <div class="three-col">
+      <div class="sidebar-nav" id="snav-estructura">
+        <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+        <div class="snav-btns" id="snav-btns-estructura"></div>
+      </div>
+      <div id="estructura-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Enumeraciones -->
+  <div id="tab-enumeraciones" class="tab-panel">
+    <div class="three-col">
+      <div class="sidebar-nav" id="snav-enumeraciones">
+        <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+        <div class="snav-btns" id="snav-btns-enumeraciones"></div>
+      </div>
+      <div id="enumeraciones-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Ejemplo -->
+  <div id="tab-ejemplo" class="tab-panel">
+    <div class="ejemplo-wrap">
+      <h2 data-i18n="example.title">Ejemplos</h2>
+      <div class="highlight-box" style="margin-bottom:24px" data-i18n-html="example.notice">
+        <strong>⚠️ Aviso:</strong> Los datos utilizados en estos ejemplos no tienen relaci&oacute;n con datos reales. Confirma con tu consultor WMS que los valores sean correctos.
+      </div>
+      <div id="ejemplo-inner"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+</div><!-- /#view-detail -->
+
+<!-- ═══ VERSIONS VIEW ═══ -->
+<div id="view-versions" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.versions">Versiones de esquemas</span>
+      </div>
+      <h1 data-i18n="versions.h1">Versiones de esquemas</h1>
+      <p class="ddesc" data-i18n="versions.desc">Listado en vivo desde el repositorio. Cualquier carpeta o fichero que se añada aparece aqu&iacute; autom&aacute;ticamente.</p>
+    </div>
+  </section>
+  <div class="vers-section">
+    <div id="versStatus" class="vers-status">Cargando…</div>
+    <div id="versQuick" class="vers-quick"></div>
+    <div id="versContainer"></div>
+  </div>
+</div>
+
+
+<!-- ═══ VALIDACION VIEW ═══ -->
+<div id="view-validacion" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.validation">Validaciones</span>
+      </div>
+      <h1 data-i18n="val.h1">Validador de mensajes</h1>
+      <p class="ddesc" data-i18n="val.desc">Selecciona el tipo de mensaje, sube tu fichero JSON y val&iacute;dalo contra el esquema oficial del WMS.</p>
+    </div>
+  </section>
+  <div class="val-section">
+    <div class="val-controls">
+      <div class="val-field">
+        <label for="valSchema" data-i18n="val.label">Mensaje a validar</label>
+        <select id="valSchema" class="val-select"><option value="">Cargando…</option></select>
+      </div>
+    </div>
+    <div id="dropzone" class="disabled">
+      Selecciona primero un mensaje, luego arrastra tu JSON o haz click
+      <input type="file" id="fileInput" accept=".json,application/json" hidden />
+    </div>
+    <div class="val-layout">
+      <div id="validationSummary" class="val-empty"></div>
+      <div id="jsonViewerContainer"></div>
+    </div>
+    <div style="display:none">
+      <div id="result"></div><div id="errorList"></div><div id="jsonViewer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESPUESTAS VIEW ═══ -->
+<div id="view-respuestas" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.responses">Respuestas</span>
+      </div>
+      <h1 data-i18n="resp.h1">Respuestas de la API</h1>
+      <p class="ddesc" data-i18n="resp.desc">La API es as&iacute;ncrona: devuelve una respuesta inmediata (HTTP) y, si detecta errores de validaci&oacute;n, env&iacute;a un callback al endpoint que el cliente expone.</p>
+    </div>
+  </section>
+  <div id="respuestas-nav"></div>
+  <div class="resp-section">
+    <div id="respuestas-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ══════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo"><img src="Assets/generix.svg" alt="Generix"></div>
+        <div class="footer-tagline">Connecting Businesses Together</div>
+        <p class="footer-desc" data-i18n="footer.desc">Documentaci&oacute;n t&eacute;cnica de la API WMS · Generix Spain · Especificaciones de mensajes e integraci&oacute;n.</p>
+      </div>
+      <div>
+        <p style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.9">
+          <strong style="color:#fff">WMS API</strong> · Warehouse Management System<br>
+          REST · JSON · Inbound · Outbound · Inventory<br>
+          Generix Spain
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span class="accent">Generix</span> · Developer Documentation Portal · WMS API Spain</p>
+      <p data-i18n="footer.bottom2">Especificaciones t&eacute;cnicas e integraci&oacute;n WMS</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Botón volver arriba -->
+<button id="goTop" class="go-top" data-i18n-attr="aria-label:aria.top;title:aria.top" aria-label="Volver arriba" title="Volver arriba"
+  onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+</body>
+</html>
