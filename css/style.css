@@ -577,6 +577,22 @@
   .enum-desc-tbl td { padding:8px 12px; border-bottom:1px solid var(--gray-200); vertical-align:top; color:var(--gray-700); }
   .enum-desc-tbl tbody tr:last-child td { border-bottom:none; }
   .enum-desc-tbl tbody tr:hover { background:var(--gray-50); }
+  .enums-description {background: var(--generix-blue-soft); border-left: 4px solid var(--generix-blue); padding: 20px; border-radius: 6px; margin-bottom: 20px;}
+  .enum-desc-table {width: 100%; border-collapse: collapse; background: var(--white); border: 1px solid var(--gray-200); border-radius: 6px; overflow: hidden; font-size: 0.9rem; margin-top: 8px;}
+  .enum-desc-table thead {background: var(--generix-dark); color: var(--white);}
+  .enum-desc-table th {padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.3px;}
+  .enum-desc-table td {padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--gray-200); vertical-align: top; color: var(--gray-700); line-height: 1.5;}
+  .enum-desc-table tbody tr:last-child td {border-bottom: none;}
+  .enum-desc-table tbody tr:hover {background: var(--gray-100);}
+  .enum-desc-table td:first-child,.enum-desc-table th:first-child {white-space: nowrap; width: 1%; text-align: left;}
+  .tag {padding: 2px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.85rem;}
+  .tag--type {background: var(--generix-dark); color: var(--generix-orange);}
+  .tag--properties {background: var(--white); padding: 2px 6px; border-radius: 3px;}
+  .tag--text {color: var(--gray-700); font-size: 0.95rem; line-height: 1.7; margin: 0;}
+  .tag--required {background: var(--generix-orange); color: var(--generix-dark); padding: 2px 6px; border-radius: 3px;}
+  .tag--required-empty {background: var(--white); color: var(--generix-dark); padding: 2px 6px; border-radius: 3px;}
+  .tech-details__values {margin: 0 0 12px 0;}
+  .tech-details__used-in {display: inline-block; background: var(--gray-200); color: var(--generix-dark); margin: 2px 4px 2px 0; border: 1px solid var(--gray-300);}
 
   /* Ejemplo tab */
   .ejemplo-wrap { max-width:1240px; margin:0 auto; padding:48px 32px; }
