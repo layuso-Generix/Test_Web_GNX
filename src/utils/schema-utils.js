@@ -89,7 +89,11 @@ function extractEnums(schema) {
     }
   };
   walk(schema, '');
-  return results;
+  return Object.values(results.reduce((acc, item) => {
+    const key = item.defName || item.field;
+    if (!acc[key]) {acc[key] = item;}
+    return acc;
+  }, {}));;
 }
 
 function getFieldType(definition) {
