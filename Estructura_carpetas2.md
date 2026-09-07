@@ -1,8 +1,8 @@
+
 src/
 ├── app.js
 ├── config/
-│   ├── config.js
-│   └── site-config.js
+│   └── config.js
 │
 ├── router/
 │   └── router.js
@@ -12,6 +12,7 @@ src/
 │   ├── markdown-loader.js
 │   ├── schema-loader.js
 │   ├── example-loader.js
+│   ├── markdown-loader.js
 │   └── download-service.js
 │
 ├── renderers/
@@ -25,6 +26,7 @@ src/
 ├── components/
 │   ├── markdown-panel.js
 │   ├── schema-viewer.js
+│   ├── example-viewer.js
 │   ├── schema-tree.js
 │   ├── schema-search.js
 │   ├── file-list.js
@@ -37,6 +39,7 @@ src/
 │   ├── dom.js
 │   ├── path-utils.js
 │   ├── schema-utils.js
+│   ├── xsd-utils.js
 │   ├── diff-utils.js
 │   └── format-utils.js
 │
@@ -46,3 +49,10 @@ src/
     ├── response.css
     ├── status.css
     └── versions.css
+js/
+├── file-viewer.js
+├── i18n.js
+├── markdown-loader.js
+└── validator.js
+
+index.html
