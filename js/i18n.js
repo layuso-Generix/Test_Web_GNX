@@ -43,7 +43,7 @@ const I18N = {
   'val.selectPlaceholder':'— Selecciona un mensaje —','val.loadError':'Error cargando mensajes',
   'vstatus.syntaxInvalid':'❌ JSON inválido (error de sintaxis)','vstatus.schemaLoadFail':'⚠️ No se pudo cargar el esquema','vstatus.valid':'✅ JSON válido','vstatus.invalid':'❌ JSON inválido',
   'vmeta.noStatus.badge':'Sin estado','vmeta.noStatus.title':'Esperando validación','vmeta.noStatus.text':'Sube un fichero para lanzar la validación.','vmeta.ok.badge':'Válido','vmeta.ok.title':'Validación completada','vmeta.ok.text':'El fichero cumple con el esquema.','vmeta.err.badge':'Inválido','vmeta.err.title':'Se detectaron errores','vmeta.err.text':'El fichero no cumple con el esquema.','vmeta.warn.badge':'Atención','vmeta.warn.title':'No se pudo validar','vmeta.info.badge':'Info','vmeta.info.title':'Estado',
-  'vtable.num':'#','vtable.field':'Campo','vtable.error':'Error','vviewer.title':'📄 JSON validado'
+  'vtable.num':'#','vtable.field':'Campo','vtable.error':'Error','vviewer.title':'📄 JSON validado','tech.properties': 'Propiedades:'
  },
  en: {
   'nav.contact':'Contact',
@@ -80,7 +80,7 @@ const I18N = {
   'val.selectPlaceholder':'— Select a message —','val.loadError':'Error loading messages',
   'vstatus.syntaxInvalid':'❌ Invalid JSON (syntax error)','vstatus.schemaLoadFail':'⚠️ Could not load the schema','vstatus.valid':'✅ Valid JSON','vstatus.invalid':'❌ Invalid JSON',
   'vmeta.noStatus.badge':'No status','vmeta.noStatus.title':'Waiting for validation','vmeta.noStatus.text':'Upload a file to run validation.','vmeta.ok.badge':'Valid','vmeta.ok.title':'Validation completed','vmeta.ok.text':'The file complies with the schema.','vmeta.err.badge':'Invalid','vmeta.err.title':'Errors detected','vmeta.err.text':'The file does not comply with the schema.','vmeta.warn.badge':'Warning','vmeta.warn.title':'Could not validate','vmeta.info.badge':'Info','vmeta.info.title':'Status',
-  'vtable.num':'#','vtable.field':'Field','vtable.error':'Error','vviewer.title':'📄 Validated JSON'
+  'vtable.num':'#','vtable.field':'Field','vtable.error':'Error','vviewer.title':'📄 Validated JSON','tech.properties': 'Properties:'
  }
 };
 
