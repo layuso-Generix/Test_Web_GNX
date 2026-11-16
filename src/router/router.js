@@ -57,6 +57,12 @@
     return btn ? btn.dataset.tab : '';
   }
 
+  /** Pestaña principal de la ficha: la primera .tab-btn de la vista detalle. */
+  function getDefaultTab() {
+    const btn = document.querySelector('#view-detail .tab-btn[data-tab]');
+    return btn ? btn.dataset.tab : '';
+  }
+
   /** Escribe la URL sin disparar el router. */
   function writeUrl(route, { replace = false } = {}) {
     const url = route ? `#${route}` : location.pathname + location.search;
@@ -127,11 +133,16 @@
         await views.card(card);
         if (token !== renderToken) return;   // Ha empezado otra navegación
       }
-      if (route.tab && typeof window.activateDetailTab === 'function') {
-        window.activateDetailTab(route.tab);
+      // Sin pestaña en la URL → pestaña principal (la primera).
+      // Así "Atrás" desde #card/estructura vuelve a #card correctamente.
+      const tab = route.tab || getDefaultTab();
+      if (tab && typeof window.activateDetailTab === 'function') {
+        window.activateDetailTab(tab);
       }
       if (route.anchor && typeof window.scrollToElementId === 'function') {
         window.scrollToElementId(route.anchor);
+      } else if (!needsRender && !route.tab) {
+        window.scrollTo({ top: 0, behavior: 'auto' });
       }
       if (typeof window.initScrollSpy === 'function') {
         window.initScrollSpy();
