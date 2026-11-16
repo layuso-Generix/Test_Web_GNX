@@ -1,20 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
     <xs:element name="InvoiceGNX" type="InvoiceGNXType"/>
 
     <xs:complexType name="InvoiceGNXType">
         <xs:sequence>
-            <xs:element name="FileHeader" type="FileHeaderType"/>
-            <xs:element name="Invoices" type="InvoicesType"/>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="InvoicesType">
-        <xs:sequence>
-            <xs:element name="InvoiceWrapper" type="InvoiceWrapperType" maxOccurs="unbounded">
+            <xs:element name="FileHeader" type="FileHeaderType">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">Conjunto de datos de una factura, incluyendo las partes y el detalle del documento.</xs:documentation>
-                    <xs:documentation xml:lang="en">Dataset for a single invoice, including parties and document details.</xs:documentation>
+                    <xs:documentation xml:lang="sp">Cabecera del fichero</xs:documentation>
+                    <xs:documentation xml:lang="en">File header</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Invoices" type="InvoicesType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Lista con todas las facturas recogidas en el fichero.</xs:documentation>
+                    <xs:documentation xml:lang="en">List of all invoices collected in the file.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -28,7 +28,7 @@
                     <xs:documentation xml:lang="en">Version of the schema used to generate the document.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Modality" type="xs:string">
+            <xs:element name="Modality" type="ModalityEnum">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Modalidad del envío.</xs:documentation>
                     <xs:documentation xml:lang="en">Submission modality.</xs:documentation>
@@ -40,7 +40,7 @@
                     <xs:documentation xml:lang="en">Type of invoice issuer.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Batch" type="BatchType">
+            <xs:element name="Batch" type="BatchType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Lote.</xs:documentation>
                     <xs:documentation xml:lang="en">Batch.</xs:documentation>
@@ -48,40 +48,63 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
+    
+    <xs:complexType name="InvoicesType">
+        <xs:sequence>
+            <xs:element name="Parties" type="PartiesType">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos de las partes que intervienen en la factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">Data of the parties involved in the invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Legislation" type="LegislationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos específicos de la legislación aplicable a la factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">Specific data for the legislation applicable to the invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Invoice" type="InvoiceType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos del documento de factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">Invoice document data.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:complexType name="BatchType">
         <xs:sequence>
-            <xs:element name="BatchIdentifier" type="xs:string">
+            <xs:element name="BatchIdentifier" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Identificador único del lote de facturas.</xs:documentation>
                     <xs:documentation xml:lang="en">Unique identifier for the invoice batch.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="InvoicesCount" type="xs:integer">
+            <xs:element name="InvoicesCount" type="xs:integer" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Número de facturas incluidas en el lote.</xs:documentation>
                     <xs:documentation xml:lang="en">Number of invoices included in the batch.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TotalInvoicesAmount" type="AmountContainerType">
+            <xs:element name="TotalInvoicesAmount" type="AmountContainerType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Total facturas del lote.</xs:documentation>
                     <xs:documentation xml:lang="en">Total invoice amount for the batch.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TotalOutstandingAmount" type="AmountContainerType">
+            <xs:element name="TotalOutstandingAmount" type="AmountContainerType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Total del lote a pago.</xs:documentation>
                     <xs:documentation xml:lang="en">Total outstanding amount for the batch.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TotalExecutableAmount" type="AmountContainerType">
+            <xs:element name="TotalExecutableAmount" type="AmountContainerType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Total del lote a Ejecutar.</xs:documentation>
                     <xs:documentation xml:lang="en">Total executable amount for the batch.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="InvoiceCurrencyCode" type="CurrencyCodeType">
+            <xs:element name="InvoiceCurrencyCode" type="CurrencyCodeType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Moneda del lote, según la Norma ISO 4217. Valor por defecto: EUR.</xs:documentation>
                     <xs:documentation xml:lang="en">Currency of the batch, according to ISO 4217. Default value: EUR.</xs:documentation>
@@ -102,36 +125,6 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Importe equivalente expresado en euros.</xs:documentation>
                     <xs:documentation xml:lang="en">Equivalent amount expressed in euros.</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:simpleType name="CurrencyCodeType">
-        <xs:restriction base="xs:string">
-            <xs:length value="3"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="CountryCodeType">
-        <xs:restriction base="xs:string">
-            <xs:length value="2"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:complexType name="InvoiceWrapperType">
-        <xs:sequence>
-            <xs:element name="Parties" type="PartiesType">
-                <xs:annotation>
-                    <xs:documentation xml:lang="sp">Datos de las partes que intervienen en la factura.</xs:documentation>
-                    <xs:documentation xml:lang="en">Data of the parties involved in the invoice.</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="Legislacion" type="LegislacionType" minOccurs="0"/>
-            <xs:element name="Invoice" type="InvoiceType" maxOccurs="unbounded">
-                <xs:annotation>
-                    <xs:documentation xml:lang="sp">Datos del documento de factura.</xs:documentation>
-                    <xs:documentation xml:lang="en">Invoice document data.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -163,7 +156,7 @@
     <xs:complexType name="PartyType">
         <xs:sequence>
             <xs:element name="TaxIdentification" type="TaxIdentificationType"/>
-            <xs:element name="PartyIdentification" type="xs:string">
+            <xs:element name="PartyIdentification" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-30 / BT-47 / Identificación adicional de la parte.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-30 / BT-47 / Additional identification of the party.</xs:documentation>
@@ -209,7 +202,7 @@
                     <xs:documentation xml:lang="en">BT-27 / BT-44 | Full name or company name of the party.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TradeName" type="xs:string">
+            <xs:element name="TradeName" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Nombre comercial de la parte.</xs:documentation>
                     <xs:documentation xml:lang="en">Trade name of the party.</xs:documentation>
@@ -221,7 +214,7 @@
                     <xs:documentation xml:lang="en">Registration data: Company Register entry, Volume, Folio...</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Address" type="AddressType">
+            <xs:element name="Address" type="AddressType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-5 / BG-8 | Grupo de términos de negocio que proporciona información de la dirección postal de la parte.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-5 / BG-8 | Group of business terms providing the postal address information of the party.</xs:documentation>
@@ -238,37 +231,37 @@
 
     <xs:complexType name="RegistrationDataType">
         <xs:sequence>
-            <xs:element name="Book" type="xs:string">
+            <xs:element name="Book" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Libro de inscripción en el Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Book of registration in the Commercial Register.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RegisterOfCompaniesLocation" type="xs:string">
+            <xs:element name="RegisterOfCompaniesLocation" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Localidad del Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Location of the Commercial Register.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Sheet" type="xs:string">
+            <xs:element name="Sheet" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Hoja de inscripción en el Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Sheet of registration in the Commercial Register.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Folio" type="xs:string">
+            <xs:element name="Folio" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Folio de inscripción en el Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Folio of registration in the Commercial Register.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Section" type="xs:string">
+            <xs:element name="Section" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Sección de inscripción en el Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Section of registration in the Commercial Register.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Volume" type="xs:string">
+            <xs:element name="Volume" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Tomo de inscripción en el Registro Mercantil.</xs:documentation>
                     <xs:documentation xml:lang="en">Volume of registration in the Commercial Register.</xs:documentation>
@@ -360,9 +353,189 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="LegislacionType">
+    <xs:complexType name="LegislationType">
         <xs:sequence>
-            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+            <xs:element name="VeriFactu" type="VeriFactuType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos VERI*FACTU del registro de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">VERI*FACTU data of the billing record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="VeriFactuType">
+        <xs:sequence>
+            <xs:element name="InformaticSistem" type="InformaticSistemType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos del sistema informático de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">Information about the billing information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RecordInfo" type="RecordInfoType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Información adicional del registro de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">Additional information of the billing record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PreviousRecord" type="PreviousRecordType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos del registro de facturación anterior (encadenamiento).</xs:documentation>
+                    <xs:documentation xml:lang="en">Data of the previous billing record (chaining).</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InvoiceIndicators" type="InvoiceIndicatorsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indicadores de la factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicators of the invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InformaticSistemType">
+        <xs:sequence>
+            <xs:element name="CorporateName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Nombre o razón social del productor del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Corporate name or legal name of the producer of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaxIdentificationType" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Tipo de identificación fiscal del productor del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Tax identification type of the producer of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaxIdentificationNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">NIF del productor del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Tax identification number of the producer of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InformaticSistemName" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Nombre del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Name of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InformaticSistemID" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Identificador del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Identifier of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InformaticSistemVersion" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Versión del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Version of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InstallationNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Número de instalación del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Installation number of the information system.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UseVeriFactu" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indica si el sistema informático se utiliza en modalidad VERI*FACTU.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicates if the information system is used in VERI*FACTU mode.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="UseMultiOTtype" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indica si el sistema informático puede usarse para varios obligados tributarios.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicates if the information system can be used for multiple tax obligations.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MultiOT" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indica si el sistema informático se usa para varios obligados tributarios.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicates if the information system is used for multiple tax obligations.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RecordInfoType">
+        <xs:sequence>
+            <xs:element name="ExternalReference" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Referencia externa del registro de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">External reference of the billing record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="BillingAgreementRegistrationNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Número de registro del acuerdo de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">Registration number of the billing agreement.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InformaticSystemAgreementID" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Identificador del acuerdo del sistema informático.</xs:documentation>
+                    <xs:documentation xml:lang="en">Identifier of the information system agreement.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PreviousRecordType">
+        <xs:sequence>
+            <xs:element name="PreviousIssuerTaxIdentificationNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">NIF del emisor del registro de facturación anterior.</xs:documentation>
+                    <xs:documentation xml:lang="en">Tax identification number of the issuer of the previous billing record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PreviousInvoiceNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Número y serie de la factura del registro anterior.</xs:documentation>
+                    <xs:documentation xml:lang="en">Number and series of the invoice of the previous record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PreviousInvoiceIssueDate" type="DateTimeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Fecha de expedición de la factura del registro anterior.</xs:documentation>
+                    <xs:documentation xml:lang="en">Issue date of the invoice of the previous record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PreviousFingerprint" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Huella (hash) del registro de facturación anterior.</xs:documentation>
+                    <xs:documentation xml:lang="en">Fingerprint of the previous billing record.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InvoiceIndicatorsType">
+        <xs:sequence>
+            <xs:element name="SimplifiedInvoice" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indica si la factura es simplificada.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicates if the invoice is simplified.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InvoiceWithoutRecipient" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indica si la factura se emite sin identificación del destinatario.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicates if the invoice is issued without recipient identification.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="MacroData" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indicador de factura con macrodato.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicator of invoice with macrodata.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Coupon" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Indicador de cupón.</xs:documentation>
+                    <xs:documentation xml:lang="en">Indicator of coupon.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
@@ -380,13 +553,13 @@
                     <xs:documentation xml:lang="en">Group of business terms with the invoice issuance data.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TaxesOutputs" type="TaxSectionType" minOccurs="0">
+            <xs:element name="TaxesOutputs" type="TaxSectionType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-23 | Grupo de términos de negocio que proporcionan información sobre el desglose del IVA en diferentes categorías.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-23 | Group of business terms providing information on the VAT breakdown by category.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TaxesWithheld" type="TaxSectionType" minOccurs="0">
+            <xs:element name="TaxesWithheld" type="TaxSectionType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-ES-4 | Grupo de términos de negocio que proporcionan información relativa a las retenciones practicadas en la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-ES-4 | Group of business terms providing information on withholdings applied to the invoice.</xs:documentation>
@@ -398,13 +571,13 @@
                     <xs:documentation xml:lang="en">BG-22 | Group of business terms providing the monetary totals of the invoice.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Items" type="InvoiceLineListType" minOccurs="0">
+            <xs:element name="Items" type="InvoiceLineListType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Datos de una línea individual de la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">Data of an individual invoice line.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="PaymentDetails" type="PaymentDetailsType" minOccurs="0">
+            <xs:element name="PaymentDetails" type="PaymentDetailsType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-16 | Un grupo de términos de negocio que ofrecen información acerca del pago.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-16 | A group of business terms providing information about payment.</xs:documentation>
@@ -458,6 +631,12 @@
                     <xs:documentation xml:lang="en">BG-ES-1 | This group contains data related to the type of corrective invoice and/or modality.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="Notes" type="NotesType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BG-1 | Grupo de términos de negocio con notas textuales relevantes para la factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">BG-1 | Group of business terms with relevant textual notes for the invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
@@ -499,7 +678,7 @@
                     <xs:documentation xml:lang="en">Description of the correction modality used.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="CorrectiveAmounts" type="CorrectiveAmountsType">
+            <xs:element name="CorrectiveAmounts" type="CorrectiveAmountsType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-ES-2 | Este grupo recoge los importes rectificados, en los casos en los que se proceda.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-ES-2 | This group contains the corrected amounts, when applicable.</xs:documentation>
@@ -510,22 +689,45 @@
 
     <xs:complexType name="CorrectiveAmountsType">
         <xs:sequence>
-            <xs:element name="GrossAmount" type="xs:decimal">
+            <xs:element name="GrossAmount" type="xs:decimal" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-4 | Base imponible de la factura rectificada.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-ES-4 | Taxable base of the corrected invoice.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TaxAmount" type="xs:decimal">
+            <xs:element name="TaxAmount" type="xs:decimal" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-5 | Cuota repercutida de la factura rectificada.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-ES-5 | Tax amount of the corrected invoice.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ChargeAmount" type="xs:decimal">
+            <xs:element name="ChargeAmount" type="xs:decimal" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-6 | Cuota recargo de equivalencia de la factura rectificada.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-ES-6 | Equivalence surcharge amount of the corrected invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NotesType">
+        <xs:sequence>
+            <xs:element name="Note" type="NoteType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="NoteType">
+        <xs:sequence>
+            <xs:element name="SubjectCode" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-21 | Código del asunto de la nota de factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-21 | Code specifying the subject of the invoice note.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Text" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-22 | Texto de la nota de factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-22 | Text of the invoice note.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -545,7 +747,13 @@
                     <xs:documentation xml:lang="en">Issue date of the previous invoice, when applicable.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="InvoicingPeriod" type="PeriodType" minOccurs="0"/>
+            <xs:element name="EffectivePaymentDate" type="DateTimeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Fecha efectiva de pago, cuando proceda.</xs:documentation>
+                    <xs:documentation xml:lang="en">Effective payment date, when applicable.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="InvoicingPeriod" type="InvoicingPeriodType" minOccurs="0"/>
             <xs:element name="InvoiceCurrencyCode" type="CurrencyCodeType">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-5 | Moneda en la que se expresan todos los importes de la factura, usando los códigos de la Norma ISO-4217.</xs:documentation>
@@ -558,6 +766,12 @@
                     <xs:documentation xml:lang="en">BT-6 | Currency in which all invoice tax amounts are expressed, using ISO-4217 codes.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="ExchangeRate" type="xs:decimal" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Tipo de cambio aplicado entre la moneda de la factura y la moneda del impuesto.</xs:documentation>
+                    <xs:documentation xml:lang="en">Exchange rate applied between the invoice currency and the tax currency.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="LanguageName" type="LanguageCodeType">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Idioma en que se expresa la factura, según la Norma ISO 639-1.</xs:documentation>
@@ -567,7 +781,7 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="PeriodType">
+    <xs:complexType name="InvoicingPeriodType">
         <xs:sequence>
             <xs:element name="StartDate" type="DateTimeType" minOccurs="0">
                 <xs:annotation>
@@ -586,7 +800,7 @@
 
     <xs:complexType name="TaxSectionType">
         <xs:sequence>
-            <xs:element name="Tax" type="TaxType" maxOccurs="unbounded"/>
+            <xs:element name="Tax" type="TaxType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -608,6 +822,12 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Tipo de operación a efectos del impuesto.</xs:documentation>
                     <xs:documentation xml:lang="en">Type of operation for tax purposes.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="TaxExemptionReason" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Causa de exención del impuesto.</xs:documentation>
+                    <xs:documentation xml:lang="en">Reason for tax exemption.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="TaxExemptionReasonCode" type="xs:string" minOccurs="0">
@@ -634,18 +854,28 @@
                     <xs:documentation xml:lang="en">BT-117 | The tax amount by category.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="EquivalenceSurchargeRate" type="xs:decimal" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Tipo del recargo de equivalencia, en porcentaje.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EquivalenceSurchargeAmount" type="AmountContainerType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Cuota del recargo de equivalencia.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="InvoiceTotalsType">
         <xs:sequence>
-            <xs:element name="GeneralDiscounts" type="GeneralDiscountsType" minOccurs="0">
+            <xs:element name="GeneralDiscounts" type="GeneralDiscountsType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-20 | Un grupo de términos de negocio que ofrecen información sobre minoraciones aplicables a la factura en su totalidad.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-20 | A group of business terms providing information about allowances applicable to the invoice as a whole.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="GeneralCharges" type="GeneralChargesType" minOccurs="0">
+            <xs:element name="GeneralCharges" type="GeneralChargesType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-21 | Grupo de términos de negocio que proporcionan información sobre cargos que aplican a la factura en su conjunto.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-21 | Group of business terms providing information about charges applicable to the invoice as a whole.</xs:documentation>
@@ -681,16 +911,34 @@
                     <xs:documentation xml:lang="en">BT-110 | Total VAT amount for the invoice.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="TotalTaxOutputsInTaxCurrency" type="xs:decimal" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-111 | Cuota total del IVA expresada en la moneda de contabilización del impuesto.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-111 | Total VAT amount expressed in the tax accounting currency.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="TotalTaxesWithheld" type="xs:decimal">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-33 | Suma de retenciones.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-ES-33 | Sum of withholdings.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="TaxesWithheldDescription" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Descripción de las retenciones practicadas.</xs:documentation>
+                    <xs:documentation xml:lang="en">Description of the withholdings applied.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="InvoiceTotal" type="xs:decimal">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-112 | Importe total de la factura después de aplicar el IVA.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-112 | Total invoice amount after VAT.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PayableRoundingAmount" type="xs:decimal" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-114 | Importe de redondeo aplicado al total a pagar.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-114 | Rounding amount applied to the total amount payable.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="TotalPayableAmount" type="xs:decimal">
@@ -799,7 +1047,7 @@
 
     <xs:complexType name="InvoiceLineListType">
         <xs:sequence>
-            <xs:element name="InvoiceLine" type="InvoiceLineType" maxOccurs="unbounded">
+            <xs:element name="InvoiceLine" type="InvoiceLineType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-25 | Un grupo de términos de negocio que proporcionan información a nivel de líneas individuales de la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-25 | A group of business terms providing information about individual invoice lines.</xs:documentation>
@@ -840,21 +1088,21 @@
                     <xs:documentation xml:lang="en">Unit of measure in which the quantity is expressed.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="NotesReferences" type="NotesReferenceType" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="LineItemPeriod" type="PeriodType" minOccurs="0"/>
-            <xs:element name="Discounts" type="LineDiscountsType" minOccurs="0">
+            <xs:element name="NotesReferences" type="NotesReferencesType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="LineItemPeriod" type="LineItemPeriodType" minOccurs="0"/>
+            <xs:element name="Discounts" type="LineDiscountsType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-27 | Grupo de elementos de negocio que proporciona información sobre minoraciones aplicables a una línea de factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-27 | A group of business terms providing information about allowances applicable to an invoice line.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Charges" type="LineChargesType" minOccurs="0">
+            <xs:element name="Charges" type="LineChargesType" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-28 | Grupo de elementos de negocio que proporciona información sobre cargos e impuestos distintos del IVA aplicables a una línea de la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-28 | A group of business terms providing information about charges and taxes other than VAT applicable to an invoice line.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="TaxesOutputs" type="TaxSectionType" minOccurs="0">
+            <xs:element name="TaxesOutputs" type="TaxSectionType" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-30 | Un grupo de términos de negocio que ofrecen información sobre Impuestos a nivel de línea de la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-30 | A group of business terms providing information about taxes at invoice line level.</xs:documentation>
@@ -887,7 +1135,7 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="NotesReferenceType">
+    <xs:complexType name="NotesReferencesType">
         <xs:sequence>
             <xs:element name="DeliveryNote" type="DeliveryNoteType" minOccurs="0"/>
             <xs:element name="Order" type="OrderType" minOccurs="0"/>
@@ -895,6 +1143,12 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-32 | Un grupo de términos de negocio que ofrece información relativa al inmueble sobre el que recae la operación facturada.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-32 | A group of business terms providing information about the property subject to the invoiced operation.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="AdditionalLineInformation" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Información adicional de la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">Additional line information.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -919,7 +1173,7 @@
 
     <xs:complexType name="OrderType">
         <xs:sequence>
-            <xs:element name="OrderNumber" type="xs:decimal">
+            <xs:element name="OrderNumber" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Número de pedido asociado a la línea.</xs:documentation>
                     <xs:documentation xml:lang="en">Order number associated with the line.</xs:documentation>
@@ -936,7 +1190,7 @@
 
     <xs:complexType name="CadastralReferenceType">
         <xs:sequence>
-            <xs:element name="CadastralReferenceNumber" type="xs:decimal">
+            <xs:element name="CadastralReferenceNumber" type="xs:string">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-161 | Referencia catastral del inmueble.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-161 | Cadastral reference of the property.</xs:documentation>
@@ -946,6 +1200,23 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-43 | Identificador que especifica la situación del inmueble.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-ES-43 | Identifier specifying the situation of the property.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="LineItemPeriodType">
+        <xs:sequence>
+            <xs:element name="StartDate" type="DateTimeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Fecha de inicio del periodo al que corresponde la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">Start date of the period to which the line corresponds.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="EndDate" type="DateTimeType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Fecha de fin del periodo al que corresponde la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">End date of the period to which the line corresponds.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -961,8 +1232,14 @@
         <xs:sequence>
             <xs:element name="DiscountTypeCode" type="DiscountChargeTypeCodeEnum">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">Código que identifica el tipo de minoración aplicada a la línea.</xs:documentation>
-                    <xs:documentation xml:lang="en">Code identifying the type of allowance applied to the line.</xs:documentation>
+                    <xs:documentation xml:lang="sp">BT-ES-15 | Código que identifica el tipo de minoración aplicada a la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-ES-15 | Code identifying the type of allowance applied to the line.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="DiscountReason" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-139 | Motivo de la minoración de la línea, expresado como texto.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-139 | Reason for the line allowance, expressed as text.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="DiscountRate" type="xs:decimal" minOccurs="0">
@@ -973,8 +1250,8 @@
             </xs:element>
             <xs:element name="DiscountAmount" type="xs:decimal">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">BT-136 | Importe de la minoración, sin IVA.</xs:documentation>
-                    <xs:documentation xml:lang="en">BT-136 | The allowance amount, VAT excluded.</xs:documentation>
+                    <xs:documentation xml:lang="sp">BT-136 / BT-179 | Importe de la minoración, sin IVA.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-136 / BT-179 | The allowance amount, VAT excluded.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -988,24 +1265,43 @@
 
     <xs:complexType name="LineChargeType">
         <xs:sequence>
-            <xs:element name="ChargeTypeCode" type="DiscountChargeTypeCodeEnum">
+            <xs:element name="ChargeAmount" type="xs:decimal">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">Código que identifica el tipo de cargo aplicado a la línea.</xs:documentation>
-                    <xs:documentation xml:lang="en">Code identifying the type of charge applied to the line.</xs:documentation>
+                    <xs:documentation xml:lang="sp">BT-141 / BT-179 | Importe del cargo, sin IVA.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-141 / BT-179 | The charge amount, VAT excluded.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ChargeBaseAmount" type="xs:decimal">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-142 | El importe base que puede utilizarse, junto con el porcentaje de cargo, tasa o impuesto de la línea de factura, para calcular el importe del cargo o del impuesto correspondiente a dicha línea de factura.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-142 | The base amount that can be used, together with the charge percentage, rate or tax of the invoice line, to calculate the amount of the charge or the tax corresponding to that invoice line.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="ChargeRate" type="xs:decimal" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">Porcentaje aplicado para el cálculo del cargo de la línea.</xs:documentation>
-                    <xs:documentation xml:lang="en">Percentage applied to calculate the line charge.</xs:documentation>
+                    <xs:documentation xml:lang="sp">BT-143 / BT-180 | Porcentaje aplicado para el cálculo del cargo de la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-143 / BT-180 | Percentage applied to calculate the line charge.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ChargeAmount" type="xs:decimal">
+            <xs:element name="ChargeTaxTypeCode" type="TaxOperationTypeEnum" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation xml:lang="sp">BT-141 | Importe del cargo, sin IVA.</xs:documentation>
-                    <xs:documentation xml:lang="en">BT-141 | The charge amount, VAT excluded.</xs:documentation>
+                    <xs:documentation xml:lang="sp">BT-ES-22 | Categoría de impuesto aplicable al cargo de la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-ES-22 | Tax category applicable to the line charge.</xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="ChargeReason" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-144 | Motivo del cargo de la línea, expresado como texto.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-144 | Reason for the line charge, expressed as text.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ChargeTypeCode" type="DiscountChargeTypeCodeEnum">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-ES-10 | Código que identifica el tipo de minoración aplicada a la línea.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-ES-10 | Code identifying the type of allowance applied to the line.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            
         </xs:sequence>
     </xs:complexType>
 
@@ -1017,7 +1313,7 @@
 
     <xs:complexType name="InstallmentType">
         <xs:sequence>
-            <xs:element name="InstallmentDueDate" type="DateTimeType">
+            <xs:element name="InstallmentDueDate" type="DateTimeType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-9 | Fecha de vencimiento del pago.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-9 | Payment due date.</xs:documentation>
@@ -1033,6 +1329,12 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-81 | Metodo de pago de la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">BT-81 | Payment method for the invoice.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PaymentTermsNote" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">BT-20 | Descripción textual de las condiciones de pago.</xs:documentation>
+                    <xs:documentation xml:lang="en">BT-20 | Textual description of the payment terms.</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="Account" type="AccountType" minOccurs="0">
@@ -1070,7 +1372,7 @@
                     <xs:documentation xml:lang="en">Payment account number.</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="BankCode" type="xs:string">
+            <xs:element name="BankCode" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Código de la entidad bancaria.</xs:documentation>
                     <xs:documentation xml:lang="en">Bank entity code.</xs:documentation>
@@ -1087,7 +1389,7 @@
 
     <xs:complexType name="LegalLiteralsType">
         <xs:sequence>
-            <xs:element name="LegalReference" type="xs:string">
+            <xs:element name="LegalReference" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">Texto de la mención legal aplicable a la factura.</xs:documentation>
                     <xs:documentation xml:lang="en">Text of the legal notice applicable to the invoice.</xs:documentation>
@@ -1098,17 +1400,23 @@
 
     <xs:complexType name="AdditionalDataType">
         <xs:sequence>
-            <xs:element name="RelatedDocuments" type="RelatedDocumentType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="RelatedDocuments" type="RelatedDocumentsType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="RelatedDocumentType">
+    <xs:complexType name="RelatedDocumentsType">
         <xs:sequence>
             <xs:element name="Attachment" type="AttachmentType" minOccurs="0"/>
             <xs:element name="QRAttachment" type="QRAttachmentType" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BG-24 | Grupo de términos de negocio que proporcionan información obligatoria relativa al código QR.</xs:documentation>
                     <xs:documentation xml:lang="en">BG-24 | Group of business terms providing mandatory information about the QR code.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="BillingAuthorization" type="BillingAuthorizationType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Datos de la autorización de facturación.</xs:documentation>
+                    <xs:documentation xml:lang="en">Billing authorization data.</xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
@@ -1126,6 +1434,12 @@
 
     <xs:complexType name="QRAttachmentType">
         <xs:sequence>
+            <xs:element name="DocumentDescription" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Descripción del documento asociado al QR.</xs:documentation>
+                    <xs:documentation xml:lang="en">Description of the document associated with the QR.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
             <xs:element name="URL" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation xml:lang="sp">BT-ES-47 | Se debe consignar la URL correspondiente al QR VERI*FACTU o el que corresponda según normativa aplicable.</xs:documentation>
@@ -1149,9 +1463,37 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="BillingAuthorizationType">
+        <xs:sequence>
+            <xs:element name="Description" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Descripción de la autorización de facturación.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ReferenceNumber" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="sp">Número de referencia de la autorización de facturación.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:simpleType name="DateTimeType">
         <xs:restriction base="xs:string">
             <xs:pattern value="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="CountryCodeType">
+        <xs:restriction base="xs:string">
+            <xs:length value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="CurrencyCodeType">
+        <xs:restriction base="xs:string">
+            <xs:length value="3"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -1166,6 +1508,13 @@
             <xs:enumeration value="EM"/>
             <xs:enumeration value="RE"/>
             <xs:enumeration value="TE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="ModalityEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="I"/>
+            <xs:enumeration value="L"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -1191,6 +1540,7 @@
             <xs:enumeration value="384"/>
             <xs:enumeration value="388"/>
             <xs:enumeration value="389"/>
+            <xs:enumeration value="471"/>
             <xs:enumeration value="481"/>
         </xs:restriction>
     </xs:simpleType>
@@ -1217,7 +1567,7 @@
             <xs:enumeration value="S"/>
         </xs:restriction>
     </xs:simpleType>
-
+    
     <xs:simpleType name="TaxTypeCodeEnum">
         <xs:restriction base="xs:string">
             <xs:enumeration value="IVA"/>
@@ -1260,6 +1610,9 @@
             <xs:enumeration value="G"/>
             <xs:enumeration value="L"/>
             <xs:enumeration value="M"/>
+            <xs:enumeration value="N"/>
+            <xs:enumeration value="D"/>
+            <xs:enumeration value="F"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -1267,9 +1620,34 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="SUPL"/>
             <xs:enumeration value="MINO"/>
-            <xs:enumeration value="REGE"/>
-            <xs:enumeration value="REEQ"/>
             <xs:enumeration value="RETE"/>
+            <xs:enumeration value="IEDMT"/>
+            <xs:enumeration value="OTROS"/>
+        </xs:restriction>
+    </xs:simpleType>
+        <xs:simpleType name="DiscountTypeCodeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SUPL"/>
+            <xs:enumeration value="MINO"/>
+            <xs:enumeration value="RETE"/>
+            <xs:enumeration value="IEDMT"/>
+            <xs:enumeration value="OTROS"/>
+        </xs:restriction>
+    </xs:simpleType>
+        <xs:simpleType name="ChargeTypeCodeEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="IEH"/>
+            <xs:enumeration value="IECE"/>
+            <xs:enumeration value="IEPI"/>
+            <xs:enumeration value="IEA"/>
+            <xs:enumeration value="IET"/>
+            <xs:enumeration value="IELC"/>
+            <xs:enumeration value="IEE"/>
+            <xs:enumeration value="IEC"/>
+            <xs:enumeration value="IEP"/>
+            <xs:enumeration value="IEDE"/>
+            <xs:enumeration value="IMPTAS"/>
+            <xs:enumeration value="RESTO"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -1296,7 +1674,7 @@
             <xs:enumeration value="19"/>
         </xs:restriction>
     </xs:simpleType>
-
+    
     <xs:simpleType name="CadastralReferenceEnum">
         <xs:restriction base="xs:string">
             <xs:enumeration value="01"/>
