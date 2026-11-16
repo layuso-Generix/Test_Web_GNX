@@ -1,40 +1,77 @@
-# JSON e-Invoicing Standard
+## Invoice JSON · Generix Spain Standard
 
-## Overview
+JSON format for sending B2B electronic invoices to Generix Spain.
+Complies with **Law 18/2022 (Crea y Crece)** and the AEAT Annex I code lists.
 
-The **Generix Spain JSON e-Invoicing Standard** provides a unified and modular structure for representing electronic invoices in JSON format.
+---
 
-It has been designed to facilitate B2B integrations while ensuring interoperability between systems and compliance with Spanish electronic invoicing requirements.
+### Is this for me?
 
-## Key Features
+Use this standard if your system **generates invoices in JSON** and sends them to Generix.
+If you work with XML, see **Invoice XML**.
 
-### Compatibility
+---
 
-Complies with Spanish electronic invoicing regulations, including the requirements derived from the **Crea y Crece Law** and applicable tax regulations.
+### Get started in 4 steps
 
-### Modularity
+1. **Download the schema** (*Examples & schemas* tab). It is the official reference: if anything differs from this guide, the schema prevails.
+2. **Start from an example** in the same tab and adapt it to your data.
+3. **Validate your file** with this site's *Validator* before sending it.
+4. **Check the response**: after sending you will receive a **Response** message and then the invoice **Status** updates.
 
-The structure is designed to be flexible, allowing each integration scenario to include only the data elements required by the business process.
+---
 
-### Validation
+### Structure at a glance
 
-The standard includes schemas and validation rules to ensure data integrity, consistency and quality.
+```
+InvoiceGNX
+└── Invoices[]                  Invoice batch
+    └── Invoice[]               One invoice
+        ├── InvoiceHeader       Number, date, type, correction
+        ├── Parties             Issuer, recipient and third party
+        ├── TaxesOutputs[]      Output taxes
+        ├── TaxesWithheld[]     Withholdings
+        ├── InvoiceTotals       Totals, general discounts and charges
+        ├── Items[]             Invoice lines
+        ├── PaymentDetails[]    Instalments and payment means
+        └── AdditionalData      Related documents and attachments
+```
+<!-- REVIEW: add any missing top-level blocks (e.g. FileHeader) -->
 
-### Scalability
+Each block is detailed in the **Structure** tab. Click 🔗 on any type to jump to its definition.
 
-Designed to support large transaction volumes while maintaining performance and reliability.
+---
 
-## Available Content
+### Rules worth knowing from the start
 
-This section includes:
+| Topic | Rule |
+|---|---|
+| Dates and times | Format `YYYY-MM-DDThh:mm:ss` |
+| Countries | 2-letter code (ISO 3166-1), e.g. `ES` |
+| Currencies | 3-letter code (ISO 4217), e.g. `EUR` |
+| Languages | 2-letter code (ISO 639-1), e.g. `en` |
+| Code lists | Only the values in the **Enumerations** tab are accepted |
+| Corrective invoices | Require `ReasonCode` (L2.A) and `CorrectionMethod` (L2.B) |
+| Attachments | Only `pdf`, `jpg`, `jpeg` or `png` |
 
-- JSON document examples.
-- JSON Schema definitions.
-- Integration guides.
-- Functional and technical documentation.
+---
 
-## Important Note
+### What you will find in each tab
 
-> This standard is part of the Generix Spain electronic invoicing ecosystem.
->
-> It is strongly recommended to review the complete documentation and verify the applicable schema version before starting any implementation.
+| Tab | Purpose |
+|---|---|
+| **Description** | This guide |
+| **Structure** | Every block and field: type, whether required, and constraints |
+| **Enumerations** | Accepted values for each list, their meaning and where they are used |
+| **Examples & schemas** | Example and schema files to download |
+
+---
+
+### Versions
+
+Always work with the **current version** of the schema. Previous ones are under **Resources › Schema versions**.
+<!-- REVIEW: state the current version and date here -->
+
+### Questions?
+
+Contact your Generix Spain representative quoting the **invoice number** and, if available, the **Response message** received.
