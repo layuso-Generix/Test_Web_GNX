@@ -793,7 +793,11 @@
   .resp-block-top.has-expanded { grid-template-columns:1fr; }
   .resp-block-top .file-card.expanded { grid-column:1 / -1; }
   @media (max-width:860px){ .resp-block-top { grid-template-columns:1fr; } }
-
+/* ===== Tabla de descripción de campos (pestaña Estructura) ===== */
+  .field-desc-section {margin-top: 20px;}
+  .field-desc-table td:first-child, .field-desc-table th:first-child {text-align: left;}
+  .field-desc-table td:nth-child(2) {min-width: 220px;}
+  .sidebar-right {/* Columna derecha en blanco */background-color: transparent;}
 /* ── SELECTOR DE IDIOMA (desplegable personalizado con banderas) ── */
   .lang-switch { position:relative; display:inline-block; font-family:inherit; }
   .lang-current {

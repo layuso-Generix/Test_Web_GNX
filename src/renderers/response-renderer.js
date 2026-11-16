@@ -84,8 +84,9 @@ class ResponseRenderer extends BaseRenderer {
         card,
         schemasData[0] ? schemasData[0].name : null,
         schemasData[0] ? schemasData[0].path : null,
+        schemasData[0] ? schemasData[0].raw : null
       );
-      this.renderEnumerations(mainSchema);
+      this.renderEnumerations(mainSchema, schemasData[0] ? schemasData[0].raw : null);
       this.renderExamples(examplesData, card);
     } catch (error) {
       this.renderError(error);
@@ -304,13 +305,37 @@ class ResponseRenderer extends BaseRenderer {
     }
 
     this.setHTML("desc-body", html);
-  }
-
+  }  
+  // getXsdNodeDescription(node) {
+  //   if (!node) {return '';}
+  //   const activeLang = String(window.LANG || LANG || 'es').toLowerCase().split('-')[0];
+  //   const annotation = Array.from(node.children || []).find(child => child.localName === 'annotation');
+  //   if (!annotation) {return '';}
+  //   const documentationNodes = Array.from(annotation.children || []).filter(child => child.localName === 'documentation');
+  //   const localizedDocumentation =
+  //     documentationNodes.find(documentation => {
+  //       const language =
+  //         documentation.getAttribute('xml:lang') ||
+  //         documentation.getAttributeNS('http://www.w3.org/XML/1998/namespace', 'lang') || '';
+        
+  //       return language.toLowerCase().split('-')[0] === activeLang;
+  //     });
+    
+  //   const fallbackDocumentation =
+  //     documentationNodes.find(documentation =>
+  //       !documentation.getAttribute('xml:lang') &&
+  //       !documentation.getAttributeNS('http://www.w3.org/XML/1998/namespace', 'lang')
+  //     );
+    
+  //   const selectedDocumentation = localizedDocumentation || fallbackDocumentation || documentationNodes[0];
+  //   return selectedDocumentation ? String(selectedDocumentation.textContent || '').trim() : '';
+  // }
+  getXsdNodeDescription(node) {return window.XsdUtils.getLocalizedDocumentation(node);}
   /* =====================================================
     Estructura
   ===================================================== */
 
-  renderStructure(schema, card, schemaFileName, schemaPath) {
+  renderStructure(schema, card, schemaFileName, schemaPath, schemaRaw) {
     const body = this.getElement("estructura-body");
     const nav = this.getElement("snav-btns-estructura");
     if (!body) {return;}
@@ -325,19 +350,11 @@ class ResponseRenderer extends BaseRenderer {
     }
     const path = schemaPath || this.localFilePath(card, schemaFileName);
     if (this.getExtension(schemaFileName) !== "json") {
-      body.innerHTML = `
-        <p style="margin-bottom:28px">
-          }"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="download-link"
-          >
-            ${t("struct.view", { file: schemaFileName })}
-          </a>
-        </p>
-      `;
-      if (nav) {nav.innerHTML = "";}
-      return;
+      return this.renderStructureXsd(
+        schemaRaw,
+        schemaFileName,
+        schemaPath
+      );
     }
     const definitions = schema.$defs || schema.definitions || {};
     const blocks = this.extractBlocks(schema, definitions);
@@ -360,7 +377,9 @@ class ResponseRenderer extends BaseRenderer {
           ${t("struct.download", { file: schemaFileName })}
         </a>
         <br>
-        }"
+        <a
+          href="#"
+          onclick="viewSchema('${this.escape(schemaFileName)}'); return false;"
           target="_blank"
           rel="noopener noreferrer"
           class="download-link"
@@ -460,6 +479,181 @@ class ResponseRenderer extends BaseRenderer {
       nav.innerHTML = navHtml;
     }
   }
+  renderStructureXsd(xsdText, schemaFileName, schemaPath) {
+    const body = this.getElement('estructura-body');
+    const nav = this.getElement('snav-btns-estructura');
+    if (!body) {return;}
+    if (!xsdText) {
+      body.innerHTML = `
+        <p style="color:var(--gray-500)">
+          ${t('struct.none')}
+        </p>
+      `;
+      if (nav) {nav.innerHTML = '';}
+      return;
+    }
+    try {
+      const xsdDoc = window.XsdUtils.parse(xsdText);
+      const complexTypes = window.XsdUtils.getComplexTypes(xsdDoc)
+        .map((type, index) => {
+          if (type.name) {return type;}
+          const parentElement = type.node?.parentElement;
+          const parentName = parentElement?.localName === 'element' ? parentElement.getAttribute('name') : '';
+          return {...type, name: parentName || `AnonymousType${index + 1}`};
+        });
+      const simpleTypeNodes = xsdDoc.getElementsByTagNameNS(window.XsdUtils.XSD_NS, 'simpleType');
+      const simpleTypes = [];
+      for (let index = 0; index < simpleTypeNodes.length; index++) {
+        const node = simpleTypeNodes[index];
+        const name = node.getAttribute('name');
+        if (!name) {continue;}
+        const enumerationNodes = node.getElementsByTagNameNS(window.XsdUtils.XSD_NS, 'enumeration');
+        if (!enumerationNodes.length) {
+          simpleTypes.push({name, node});
+        }
+      }
+
+      const types = [
+        ...complexTypes,
+        ...simpleTypes
+      ];
+
+      let bodyHtml = `
+        <p style="margin-bottom:28px">
+          <a href="#" onclick="downloadFile('${schemaFileName}', '${schemaPath}'); return false;"
+            class="download-link"
+          >
+            ${t('struct.download', { file: schemaFileName })}
+          </a>
+          <br>
+          <a href="${schemaPath}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="download-link"
+          >
+            ${t('struct.view', { file: schemaFileName })}
+          </a>
+        </p>
+      `;
+
+      if (!types.length) {
+        bodyHtml += `
+          <p style="color:var(--gray-500)">
+            ${t('struct.none')}
+          </p>
+        `;
+
+        body.innerHTML = bodyHtml;
+
+        if (nav) {
+          nav.innerHTML = '';
+        }
+
+        return;
+      }
+
+      let navHtml = '';
+
+      types.forEach((type, index) => {
+        const typeId = `xsd-block-${index}`;
+        const node = type.node;
+        const kind = node.localName;
+
+        let snippet = window.XsdUtils.extractXsdSnippet(xsdText, type.name);
+        if (!snippet && node) {snippet = new XMLSerializer().serializeToString(node);}
+
+        navHtml += `
+          <button
+            class="snav-btn"
+            onclick="scrollToBlock('${typeId}', this)"
+          >
+            ${this.escape(type.name)}
+          </button>
+        `;
+
+        bodyHtml += this.buildXsdTypeBlock(
+          node,
+          type.name,
+          kind,
+          snippet,
+          typeId
+        );
+      });
+
+      body.innerHTML = bodyHtml;
+
+      if (nav) {
+        nav.innerHTML = navHtml;
+      }
+    } catch (error) {
+      body.innerHTML = `
+        <div class="info-box">
+          <strong>${t('versions.loadFail')}</strong>
+          <br>
+          ${this.escape(error.message)}
+        </div>
+      `;
+
+      if (nav) {
+        nav.innerHTML = '';
+      }
+    }
+  }
+  formatXsdSnippet(xmlText) {
+  if (!xmlText) {
+    return '';
+  }
+
+  const normalized =
+    String(xmlText)
+      .replace(/>\s*</g, '><')
+      .replace(
+        /\s+xmlns:xs="http:\/\/www\.w3\.org\/2001\/XMLSchema"/g,
+        ''
+      )
+      .trim();
+
+  const tokens =
+    normalized
+      .replace(/</g, '\n<')
+      .trim()
+      .split('\n')
+      .filter(Boolean);
+
+  let depth = 0;
+
+  return tokens
+    .map(token => {
+      const trimmed = token.trim();
+
+      if (/^<\//.test(trimmed)) {
+        depth = Math.max(0, depth - 1);
+      }
+
+      const line =
+        `${'  '.repeat(depth)}${trimmed}`;
+
+      const isOpeningTag =
+        /^<[^!?/][^>]*>$/.test(trimmed);
+
+      const isSelfClosing =
+        /\/>$/.test(trimmed);
+
+      const opensAndCloses =
+        /^<([^>\s]+)[^>]*>.*<\/\1>$/.test(trimmed);
+
+      if (
+        isOpeningTag &&
+        !isSelfClosing &&
+        !opensAndCloses
+      ) {
+        depth += 1;
+      }
+
+      return line;
+    })
+    .join('\n');
+}
 
   /* =====================================================
     Bloques de schema
@@ -549,7 +743,133 @@ class ResponseRenderer extends BaseRenderer {
 
     return blocks;
   }
+  buildXsdTypeBlock(
+    node,
+    typeName,
+    kind,
+    snippet,
+    typeId
+  ) {
+    const description =
+      this.getXsdNodeDescription(node);
 
+    let detailsHtml = `
+      <p>
+        <strong>${t('tech.type')}</strong>
+        <span class="tag-type">
+          ${this.escape(
+            kind === 'simpleType'
+              ? 'xs:simpleType'
+              : 'xs:complexType'
+          )}
+        </span>
+      </p>
+    `;
+
+    if (kind === 'complexType') {
+      const elements =
+        window.XsdUtils.getElements(node);
+
+      const required =
+        elements
+          .filter(element => element.min !== '0')
+          .map(element => element.name);
+
+      if (elements.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.properties')}</strong>
+            ${this.escape(
+              elements
+                .map(element => element.name)
+                .join(', ')
+            )}
+          </p>
+        `;
+      }
+
+      if (required.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.required')}</strong>
+            <span class="tag-req">
+              ${this.escape(required.join(', '))}
+            </span>
+          </p>
+        `;
+      }
+    }
+
+    if (kind === 'simpleType') {
+      const facets =
+        window.XsdUtils.getSimpleTypeFacets(node);
+
+      if (facets.base) {
+        detailsHtml += `
+          <p>
+            <strong>Base:</strong>
+            <span class="tag-type">
+              ${this.escape(facets.base)}
+            </span>
+          </p>
+        `;
+      }
+
+      if (facets.facets.length) {
+        detailsHtml += `
+          <p>
+            <strong>${t('tech.constraints')}</strong>
+            ${facets.facets
+              .map(facet => `
+                <span class="tag-type">
+                  ${this.escape(facet.name)}:
+                  ${this.escape(facet.value)}
+                </span>
+              `)
+              .join(' ')}
+          </p>
+        `;
+      }
+    }
+
+    return `
+      <div
+        class="block-wrap"
+        id="${typeId}"
+        data-label="${this.escape(typeName)}"
+      >
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="code-header">
+              ${this.escape(typeName)}
+            </div>
+            <pre class="code-pre">${this.escape(snippet)}</pre>
+          </div>
+
+          <div>
+            <div class="explanation-box">
+              <p>
+                ${this.escape(
+                  description ||
+                  typeName
+                )}
+              </p>
+            </div>
+
+            <div class="tech-details">
+              <h4>${t('tech.title')}</h4>
+              ${detailsHtml}
+            </div>
+          </div>
+        </div>
+
+        ${this.buildXsdFieldTable(node)}
+
+        <div class="block-divider"></div>
+      </div>
+    `;
+  }
+  
   /* =====================================================
     Tabla de campos
   ===================================================== */
@@ -645,12 +965,132 @@ class ResponseRenderer extends BaseRenderer {
       </div>
     `;
   }
+  buildXsdFieldTable(node) {
+    if (
+      !node ||
+      node.localName !== 'complexType'
+    ) {
+      return '';
+    }
+
+    const elements =
+      window.XsdUtils.getElementsDetailed(node);
+
+    if (!elements.length) {
+      return '';
+    }
+
+    const dash =
+      '<span style="color:var(--gray-300)">—</span>';
+
+    const rows =
+      elements.map(element => {
+        const required =
+          element.min !== '0';
+
+        const constraints = [];
+
+        if (
+          element.min !== null &&
+          element.min !== ''
+        ) {
+          constraints.push(
+            `minOccurs: ${element.min}`
+          );
+        }
+
+        if (
+          element.max !== null &&
+          element.max !== ''
+        ) {
+          constraints.push(
+            `maxOccurs: ${element.max}`
+          );
+        }
+
+        return `
+          <tr>
+            <td>
+              <span class="tag-req">
+                ${this.escape(element.name)}
+              </span>
+            </td>
+
+            <td>
+              ${
+                element.doc
+                  ? this.escape(element.doc)
+                  : dash
+              }
+            </td>
+
+            <td>
+              ${
+                element.type
+                  ? `
+                    <span class="tag-type">
+                      ${this.escape(element.type)}
+                    </span>
+                  `
+                  : dash
+              }
+            </td>
+
+            <td>
+              ${
+                required
+                  ? `
+                    <span class="tag-req">
+                      ${t('yes')}
+                    </span>
+                  `
+                  : `
+                    <span style="color:var(--gray-500)">
+                      ${t('no')}
+                    </span>
+                  `
+              }
+            </td>
+
+            <td>
+              ${
+                constraints.length
+                  ? this.escape(
+                    constraints.join(' · ')
+                  )
+                  : dash
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+    return `
+      <div class="field-tbl-wrap">
+        <table class="field-tbl">
+          <thead>
+            <tr>
+              <th>${t('table.field')}</th>
+              <th>${t('table.desc')}</th>
+              <th>${t('table.type')}</th>
+              <th>${t('table.req')}</th>
+              <th>${t('table.constraints')}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
 
   /* =====================================================
     Enumeraciones
   ===================================================== */
 
-  renderEnumerations(schema) {
+  renderEnumerations(schema, schemaRaw) {
     const enums = SchemaUtils.extractEnums(schema);
 
     if (!enums.length) {

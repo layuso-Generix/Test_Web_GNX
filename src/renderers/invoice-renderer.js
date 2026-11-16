@@ -189,32 +189,17 @@ class InvoiceRenderer extends BaseRenderer {
   }
 
   getXsdNodeDescription(node) {
-    if (!node) {
-      return '';
-    }
-
-    const annotations =
-      node.getElementsByTagNameNS(
-        window.XsdUtils.XSD_NS,
-        'annotation'
-      );
-
-    if (!annotations.length) {
-      return '';
-    }
-
-    const documentation =
-      annotations[0].getElementsByTagNameNS(
-        window.XsdUtils.XSD_NS,
-        'documentation'
-      );
-
-    if (!documentation.length) {
-      return '';
-    }
-
-    return documentation[0].textContent.trim();
-  }
+  if (!node) {return '';}
+  const annotation = Array.from(node.children).find(
+    child => child.localName === 'annotation' && child.namespaceURI === window.XsdUtils.XSD_NS
+  );
+  if (!annotation) {return '';}
+  const documentation = Array.from(annotation.children).find(
+    child => child.localName === 'documentation' && child.namespaceURI === window.XsdUtils.XSD_NS
+  );
+  if (!documentation) {return '';}
+  return documentation.textContent.trim();
+}
 
   /* =====================================================
     Estructura
@@ -525,16 +510,8 @@ class InvoiceRenderer extends BaseRenderer {
     return blocks;
   }
 
-  buildXsdTypeBlock(
-    node,
-    typeName,
-    kind,
-    snippet,
-    typeId
-  ) {
-    const description =
-      this.getXsdNodeDescription(node);
-
+  buildXsdTypeBlock(node, typeName, kind, snippet, typeId) {
+    const description = this.getXsdNodeDescription(node);
     let detailsHtml = `
       <p>
         <strong>${t('tech.type')}</strong>
@@ -549,104 +526,61 @@ class InvoiceRenderer extends BaseRenderer {
     `;
 
     if (kind === 'complexType') {
-      const elements =
-        window.XsdUtils.getElements(node);
-
-      const required =
-        elements
-          .filter(element => element.min !== '0')
-          .map(element => element.name);
-
+      const elements = window.XsdUtils.getElements(node);
+      const required = elements.filter(element => element.min !== '0').map(element => element.name);
       if (elements.length) {
         detailsHtml += `
           <p>
             <strong>${t('tech.properties')}</strong>
-            ${this.escape(
-              elements
-                .map(element => element.name)
-                .join(', ')
-            )}
-          </p>
-        `;
+            ${this.escape(elements.map(element => element.name).join(', '))}
+          </p>`;
       }
-
       if (required.length) {
         detailsHtml += `
           <p>
             <strong>${t('tech.required')}</strong>
-            <span class="tag-req">
-              ${this.escape(required.join(', '))}
-            </span>
+            <span class="tag-req">${this.escape(required.join(', '))}</span>
           </p>
         `;
       }
     }
-
     if (kind === 'simpleType') {
-      const facets =
-        window.XsdUtils.getSimpleTypeFacets(node);
-
+      const facets = window.XsdUtils.getSimpleTypeFacets(node);
       if (facets.base) {
         detailsHtml += `
           <p>
             <strong>Base:</strong>
-            <span class="tag-type">
-              ${this.escape(facets.base)}
-            </span>
+            <span class="tag-type">${this.escape(facets.base)}</span>
           </p>
         `;
       }
-
       if (facets.facets.length) {
         detailsHtml += `
           <p>
             <strong>${t('tech.constraints')}</strong>
-            ${facets.facets
-              .map(facet => `
-                <span class="tag-type">
-                  ${this.escape(facet.name)}:
-                  ${this.escape(facet.value)}
-                </span>
-              `)
-              .join(' ')}
+            ${facets.facets.map(facet => `<span class="tag-type">${this.escape(facet.name)}:${this.escape(facet.value)}</span>`).join(' ')}
           </p>
         `;
       }
     }
-
     return `
-      <div
-        class="block-wrap"
-        id="${typeId}"
-        data-label="${this.escape(typeName)}"
-      >
+      <div class="block-wrap" id="${typeId}" data-label="${this.escape(typeName)}">
         <div class="block-grid">
           <div class="code-panel">
-            <div class="code-header">
-              ${this.escape(typeName)}
-            </div>
+            <div class="code-header">${this.escape(typeName)}</div>
             <pre class="code-pre">${this.escape(snippet)}</pre>
           </div>
-
           <div>
             <div class="explanation-box">
-              <p>
-                ${this.escape(
-                  description ||
-                  typeName
-                )}
-              </p>
+              <p>${this.escape(description || typeName)}</p>
             </div>
-
             <div class="tech-details">
               <h4>${t('tech.title')}</h4>
               ${detailsHtml}
             </div>
           </div>
         </div>
-
         ${this.buildXsdFieldTable(node)}
-
         <div class="block-divider"></div>
       </div>
     `;
@@ -671,32 +605,13 @@ class InvoiceRenderer extends BaseRenderer {
                 <td style="padding-left:${indent}px">
                   <span class="rf-name-wrap">
                     ${arrow}
-                    <span class="tag-req">
-                      ${this.escape(field)}
-                    </span>
+                    <span class="tag-req">${this.escape(field)}</span>
                   </span>
                 </td>
-                <td>
-                  ${raw.description
-                    ? this.escape(raw.description)
-                    : dash
-                  }
-                </td>
-                <td>
-                  ${type
-                    ? `<span class="tag-type">${this.escape(type)}</span>`
-                    : dash
-                  }
-                </td>
-                <td>
-                  ${isRequired
-                    ? `<span class="tag-req">${t("yes")}</span>`
-                    : `<span style="color:var(--gray-500)">${t("no")}</span>`
-                  }
-                </td>
-                <td>
-                    ${constraints || dash}
-                </td>
+                <td>${raw.description ? this.escape(raw.description) : dash }</td>
+                <td>${type ? `<span class="tag-type">${this.escape(type)}</span>` : dash }</td>
+                <td>${isRequired ? `<span class="tag-req">${t("yes")}</span>` : `<span style="color:var(--gray-500)">${t("no")}</span>` }</td>
+                <td>${constraints || dash}</td>
               </tr>
             `);
             if ( raw.type === "object" && raw.properties ) {
@@ -728,110 +643,51 @@ class InvoiceRenderer extends BaseRenderer {
       </div>
     `;
   }
-
-  buildXsdFieldTable(node) {
-    if (
-      !node ||
-      node.localName !== 'complexType'
-    ) {
-      return '';
-    }
-
-    const elements =
-      window.XsdUtils.getElementsDetailed(node);
-
-    if (!elements.length) {
-      return '';
-    }
-
-    const dash =
-      '<span style="color:var(--gray-300)">—</span>';
-
-    const rows =
-      elements.map(element => {
-        const required =
-          element.min !== '0';
-
-        const constraints = [];
-
-        if (
-          element.min !== null &&
-          element.min !== ''
-        ) {
-          constraints.push(
-            `minOccurs: ${element.min}`
-          );
-        }
-
-        if (
-          element.max !== null &&
-          element.max !== ''
-        ) {
-          constraints.push(
-            `maxOccurs: ${element.max}`
-          );
-        }
-
-        return `
-          <tr>
-            <td>
-              <span class="tag-req">
-                ${this.escape(element.name)}
-              </span>
-            </td>
-
-            <td>
-              ${
-                element.doc
-                  ? this.escape(element.doc)
-                  : dash
-              }
-            </td>
-
-            <td>
-              ${
-                element.type
-                  ? `
-                    <span class="tag-type">
-                      ${this.escape(element.type)}
-                    </span>
-                  `
-                  : dash
-              }
-            </td>
-
-            <td>
-              ${
-                required
-                  ? `
-                    <span class="tag-req">
-                      ${t('yes')}
-                    </span>
-                  `
-                  : `
-                    <span style="color:var(--gray-500)">
-                      ${t('no')}
-                    </span>
-                  `
-              }
-            </td>
-
-            <td>
-              ${
-                constraints.length
-                  ? this.escape(
-                    constraints.join(' · ')
-                  )
-                  : dash
-              }
-            </td>
-          </tr>
-        `;
-      }).join('');
+  buildTypeLink(typeName) {
+    if (!typeName || !typeName.endsWith('Enum')) {return '';}
 
     return `
-      <div class="field-tbl-wrap">
-        <table class="field-tbl">
+      <a href="javascript:void(0)"
+        class="tag-type"
+        style="text-decoration:none;cursor:pointer;"
+        onclick="goToEnum('${this.escape(typeName)}')"
+      >
+        🔗 ${this.escape(typeName)}
+      </a>
+    `;
+  }
+
+  buildXsdFieldTable(node) {
+    if (!node || node.localName !== 'complexType') {return '';}
+    const elements = window.XsdUtils.getElementsDetailed(node);
+    if (!elements.length) {return '';}
+    const dash = '<span style="color:var(--gray-300)">—</span>';
+    const rows = elements.map(element => {
+      const required = element.min !== '0';
+      const constraints = [];
+      if (element.min !== null && element.min !== '') {
+        constraints.push(`minOccurs: ${element.min}`);
+      }
+      if ( element.max !== null && element.max !== '') {
+        constraints.push(`maxOccurs: ${element.max}`);
+      }
+      const typeLink = this.buildTypeLink(element.type);
+      const restricciones = [constraints.length ? this.escape(constraints.join(' · ')) : '',typeLink].filter(Boolean).join(' · ');
+      return `
+        <tr>
+          <td><span class="tag-req">${this.escape(element.name)}</span></td>
+          <td>${element.doc ? this.escape(element.doc) : dash}</td>
+          <td>${element.type ? `<span class="tag-type">${this.escape(element.type)}</span>` : dash}</td>
+          <td>${required ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+          <td>${restricciones || dash}</td>
+        </tr>
+      `;
+      }).join('');
+
+    
+    const table = `
+      <div class="field-desc-section">
+        <table class="enum-desc-table field-desc-table">
           <thead>
             <tr>
               <th>${t('table.field')}</th>
@@ -841,13 +697,13 @@ class InvoiceRenderer extends BaseRenderer {
               <th>${t('table.constraints')}</th>
             </tr>
           </thead>
-
-          <tbody>
-            ${rows}
-          </tbody>
+          <tbody>${rows}</tbody>
         </table>
       </div>
     `;
+    
+    return table;
+    
   }
 
   /* =====================================================
@@ -877,7 +733,7 @@ class InvoiceRenderer extends BaseRenderer {
       const enumTable = buildEnumTable(enumItem.defName);
 
       navHtml += `
-        <button class="snav-btn" onclick="scrollToBlock('${id}', this)" >
+        <button class="snav-btn" data-enum="${enumItem.defName}" onclick="scrollToBlock('${id}', this)" >
           ${this.escape(enumItem.field)}
         </button>
       `;
@@ -943,8 +799,8 @@ class InvoiceRenderer extends BaseRenderer {
         const info = getEnumInfo(enumItem.field);
         const enumTable = buildEnumTable(enumItem.field);
         const snippet = window.XsdUtils.extractXsdSnippet(xsdText, enumItem.enumName);
-        const id = `enum-${index}`;
-        navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}', this)">${this.escape(enumItem.field)}</button>`;
+        const id = `enum-${enumItem.enumName}`;
+        navHtml += `<button class="snav-btn" data-enum="${enumItem.defName}" onclick="scrollToBlock('${id}', this)">${this.escape(enumItem.field)}</button>`;
         bodyHtml += `
           <div class="block-wrap" id="${id}">
             <div class="block-grid">

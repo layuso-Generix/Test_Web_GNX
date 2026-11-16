@@ -133,36 +133,34 @@ const XsdUtils = (() => {
     };
   }
 
+  function getLocalizedDocumentation(annotation) {
+    if (!annotation) {return '';}
+    const activeLang =typeof LANG !== 'undefined' ? String(LANG).toLowerCase().split('-')[0] : 'sp';
+    const documentationNodes = Array.from(annotation.children || []).filter(child => child.localName === 'documentation');
+    if (!documentationNodes.length) {return '';}
+    const selectedDocumentation =
+      documentationNodes.find(doc => {
+        const lang = doc.getAttribute('xml:lang') || '';
+        return (lang.toLowerCase().split('-')[0] === activeLang);
+      }) || documentationNodes[0];
+    return selectedDocumentation.textContent.trim();
+  }
+
   function getElementsDetailed(node) {
     const result = [];
-
     const elements = node.getElementsByTagNameNS(XSD_NS, "element");
-
     for (let i = 0; i < elements.length; i++) {
       const el = elements[i];
-
       const name = el.getAttribute("name");
-
-      if (!name) {
-        continue;
-      }
-
+      if (!name) {continue;}
       let description = "";
-
       for (let k = 0; k < el.childNodes.length; k++) {
         const child = el.childNodes[k];
-
         if (child.nodeType === 1 && child.localName === "annotation") {
-          const docs = child.getElementsByTagNameNS(XSD_NS, "documentation");
-
-          if (docs.length) {
-            description = docs[0].textContent.trim();
-
-            break;
-          }
+          description = getLocalizedDocumentation(child);
+          break;
         }
       }
-
       result.push({
         name,
         type: el.getAttribute("type") || "",
@@ -171,8 +169,10 @@ const XsdUtils = (() => {
         doc: description,
       });
     }
-
     return result;
+  }
+  function getEnumByType(typeName, enums) {
+    return enums.find( enumItem => enumItem.name === typeName );
   }
 
   function extractXsdSnippet(xsdText, name) {
@@ -320,6 +320,7 @@ const XsdUtils = (() => {
     getTypeKind,
     dedent,
     getElements,
+    getLocalizedDocumentation,
     getElementsDetailed,
     getSimpleTypeFacets,
     extractXsdSnippet,
@@ -327,6 +328,7 @@ const XsdUtils = (() => {
     getEnumerations,
     extractEnums,
     getComplexTypes,
+    getEnumByType,
   };
 })();
 
