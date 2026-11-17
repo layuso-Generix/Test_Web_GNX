@@ -1,40 +1,72 @@
-# Estándar XML e-Invoicing
+## Factura XML
 
-## Descripción General
+### ¿Es para mí?
 
-El estándar **XML e-Invoicing de Generix Spain** proporciona un esquema XSD unificado y modular para la representación de facturas electrónicas en formato XML.
+Usa este estándar si tu sistema **genera facturas en XML** y las envía a Generix Spain.
+Si trabajas con JSON, consulta **Factura JSON**.
 
-Está diseñado para facilitar la integración entre sistemas B2B, asegurar la interoperabilidad y garantizar el cumplimiento de los requisitos normativos de facturación electrónica en España.
+---
 
-## Características Principales
+### Cómo empezar
 
-### Compatibilidad
+1. **Descarga el schema** (XSD) en *Ejemplos y schemas*. Es la referencia oficial: si algo no cuadra con esta guía, manda el schema.
+2. **Parte de un ejemplo** de la misma pestaña y adáptalo a tus datos.
+3. **Valida tu fichero** contra el XSD con tu herramienta habitual antes de enviarlo.
+4. **Revisa la respuesta**: recibirás un mensaje de **Respuesta** y, después, los **Estados** de la factura.
 
-Cumple con los requisitos establecidos por la normativa española de facturación electrónica, incluida la **Ley 18/2022 (Crea y Crece)** y los requisitos fiscales aplicables.
+---
 
-### Modularidad
+### Estructura en un vistazo
 
-La solución está basada en tipos complejos reutilizables que permiten construir diferentes tipos de documentos a partir de componentes comunes.
+```
+InvoiceGNX
+└── Invoices                  Lote de facturas
+    └── Invoice               Una factura
+        ├── InvoiceHeader       Número, fecha, tipo, rectificativa
+        ├── Parties             Emisor, receptor y tercero
+        ├── TaxesOutputs      Impuestos repercutidos
+        ├── TaxesWithheld     Retenciones
+        ├── InvoiceTotals       Totales, descuentos y cargos generales
+        ├── Items             Líneas de factura
+        ├── PaymentDetails    Vencimientos y medio de pago
+        └── AdditionalData      Documentos relacionados y anexos
+```
+<!-- REVISAR: completar con los bloques de primer nivel que falten (p. ej. FileHeader) -->
 
-### Validación
+El detalle de cada bloque está en la pestaña **Estructura**.
 
-Los esquemas XSD permiten validar tanto la estructura como los tipos de datos de cada documento XML intercambiado.
+---
 
-### Escalabilidad
+### Reglas que conviene conocer
 
-Diseñado para soportar altos volúmenes de intercambio documental manteniendo la integridad y el rendimiento del sistema.
+| Tema | Regla |
+|---|---|
+| Fechas y horas | Formato `AAAA-MM-DDThh:mm:ss` |
+| Países | Código de 2 letras (ISO 3166-1), p. ej. `ES` |
+| Monedas | Código de 3 letras (ISO 4217), p. ej. `EUR` |
+| Idiomas | Código de 2 letras (ISO 639-1), p. ej. `es` |
+| Listas de valores | Solo se admiten los valores de la pestaña **Enumeraciones** |
+| Rectificativas | Requieren `ReasonCode` (L2.A) y `CorrectionMethod` (L2.B) |
+| Anexos | Solo `pdf`, `jpg`, `jpeg` o `png` |
 
-## Contenido Disponible
+---
 
-Esta sección incluye:
+### Qué encontrarás en cada pestaña
 
-- Ejemplos de documentos XML.
-- Esquemas XSD.
-- Guías de integración.
-- Información funcional y técnica del estándar.
+| Pestaña | Para qué sirve |
+|---|---|
+| **Descripción** | Esta guía |
+| **Estructura** | Todos los bloques y campos: tipo, obligatoriedad y restricciones. Pulsa 🔗 para saltar a un tipo |
+| **Enumeraciones** | Valores admitidos en cada lista, con su significado y dónde se usan |
+| **Ejemplos y schemas** | Ficheros de ejemplo y schema para descargar |
 
-## Nota Importante
+---
 
-> Este estándar forma parte del ecosistema de facturación electrónica de Generix Spain.
->
-> Antes de iniciar cualquier desarrollo o integración, se recomienda revisar la documentación completa y verificar la versión vigente del esquema utilizada en el proyecto.
+### Versiones
+
+Trabaja siempre con la **versión vigente** del schema. Las anteriores están en **Recursos › Versiones de esquemas**.
+<!-- REVISAR: versión vigente y fecha -->
+
+### ¿Dudas?
+
+Contacta con tu interlocutor de Generix Spain indicando el **número de factura** y, si lo tienes, el **mensaje de Respuesta** recibido.
