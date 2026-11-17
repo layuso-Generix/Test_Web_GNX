@@ -1,136 +1,197 @@
-/* =========================================================
-   validator.js - validador local con misma UI que web1
-   ========================================================= */
-let _schemaCache = {};
-let _lastFileText = null;
-function schemaDir(value) { return value; }
-async function fetchSchema(value) {
-  if (_schemaCache[value]) return _schemaCache[value];
-  const txt = await rawFetch(value);
-  const schema = JSON.parse(txt);
-  _schemaCache[value] = schema;
-  return schema;
+// Validador GNX → SPFE. Módulo de navegador; conserva los IDs de la página original.
+// Ruta relativa al HTML (no a este .js). Cambiar solo si la estructura del portal es distinta.
+import { SCHEMA_URL, exampleUrl } from "./Assets/spfe/config.mjs";
+const AJV_URL = "https://cdn.jsdelivr.net/npm/ajv@8.17.1/+esm";
+const FORMATS_URL = "https://cdn.jsdelivr.net/npm/ajv-formats@2.1.1/+esm";
+
+// JSON Schema define multipleOf en decimal. Evitar tanto falsos errores (0.29 / 0.01)
+// como aceptar fracciones de céntimo por aplicar una tolerancia absoluta.
+function decimal(value) {
+  const [mantissa, exp = "0"] = String(value).toLowerCase().split("e");
+  const [whole, fraction = ""] = mantissa.split(".");
+  const digits = (whole + fraction).replace(/^-/, "").replace(/^0+/, "");
+  if (!digits) return { digits: "0", power: 0, negative: false };
+  const trimmed = digits.replace(/0+$/, "");
+  return { digits: trimmed, power: Number(exp) - fraction.length + digits.length - trimmed.length,
+    negative: mantissa.startsWith("-") };
 }
-function setupValidator() {
-  const sel = document.getElementById('valSchema');
-  const dropzone = document.getElementById('dropzone');
-  const input = document.getElementById('fileInput');
-  if (!sel || !dropzone || !input) return;
-  const schemas = getAllCards().filter(s => s.validatorSchema);
-  sel.innerHTML = `<option value="">${t('val.selectPlaceholder')}</option>` + schemas.map(s => `<option value="${esc(s.validatorSchema)}">${esc(localizedSectionTitle(s))}</option>`).join('');
-  sel.onchange = () => {
-    const on = !!sel.value;
-    dropzone.classList.toggle('disabled', !on);
-    if (dropzone.childNodes[0]) dropzone.childNodes[0].nodeValue = on ? ' ' + t('val.dropzone.enabled') + ' ' : ' ' + t('val.dropzone.disabled') + ' ';
-    if (on && _lastFileText) processJSON(_lastFileText);
-  };
-  dropzone.onclick = () => { if (sel.value) input.click(); };
-  dropzone.ondragover = e => { e.preventDefault(); if (sel.value) dropzone.classList.add('dragover'); };
-  dropzone.ondragleave = () => dropzone.classList.remove('dragover');
-  dropzone.ondrop = e => { e.preventDefault(); dropzone.classList.remove('dragover'); if (sel.value && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
-  input.onchange = () => input.files[0] && handleFile(input.files[0]);
-  renderSummary('', '');
+function decimalMultipleOf(step, value) {
+  if (!Number.isFinite(value) || !Number.isFinite(step) || step <= 0) return false;
+  const a = decimal(value), b = decimal(step);
+  if (a.digits === "0") return true;
+  const delta = a.power - b.power;
+  if (delta < 0) return false; // Las mantisas normalizadas no terminan en cero.
+  return (BigInt(a.digits) * 10n ** BigInt(delta)) % BigInt(b.digits) === 0n;
 }
-async function handleFile(file) { _lastFileText = await file.text(); processJSON(_lastFileText); }
-function serializeWithMap(data) {
-  const lines = [], map = {};
-  const escKey = k => String(k).replace(/~/g,'~0').replace(/\//g,'~1');
-  function rec(value, ptr, indent, keyPrefix, comma) {
-    const pad = '  '.repeat(indent);
-    if (value !== null && typeof value === 'object') {
-      const isArr = Array.isArray(value);
-      const entries = isArr ? value.map((v,i)=>[i,v]) : Object.entries(value);
-      if (!entries.length) { lines.push(pad + keyPrefix + (isArr?'[]':'{}') + (comma?',':'')); map[ptr]=lines.length; return; }
-      lines.push(pad + keyPrefix + (isArr?'[':'{')); map[ptr]=lines.length;
-      entries.forEach(([k,v],i) => rec(v, ptr + '/' + (isArr ? k : escKey(k)), indent+1, isArr ? '' : JSON.stringify(String(k)) + ': ', i < entries.length-1));
-      lines.push(pad + (isArr?']':'}') + (comma?',':''));
-    } else { lines.push(pad + keyPrefix + JSON.stringify(value) + (comma?',':'')); map[ptr]=lines.length; }
+function parseInvoice(text) {
+  const source = text.replace(/^\uFEFF/, "");
+  const data = JSON.parse(source);
+  // JSON.parse redondea silenciosamente algunos importes y enteros grandes. Revisar los
+  // literales antes de validar; omitir las cadenas completas, incluidos sus escapes.
+  const tokens = /"(?:\\[\s\S]|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+  for (const match of source.matchAll(tokens)) {
+    const raw = match[0];
+    if (raw[0] === '"') continue;
+    const n = Number(raw), a = decimal(raw), b = Number.isFinite(n) && decimal(n);
+    if (!b || a.digits !== b.digits || a.power !== b.power || a.negative !== b.negative) {
+      const err = new Error("El navegador no puede representar el número " + raw + " sin cambiar su valor (posición " + (match.index + 1) + ").");
+      err.name = "PrecisionError";
+      throw err;
+    }
   }
-  rec(data, '', 0, '', false);
-  return { lines, map };
+  return data;
 }
-function resolveLocalRef(root, node) {
-  if (!node || !node.$ref || !node.$ref.startsWith('#/')) return node;
-  return node.$ref.slice(2).split('/').reduce((n,p)=>n&&n[p], root) || node;
+
+let pendingValidator;
+function getValidator() {
+  if (!pendingValidator) pendingValidator = loadValidator().catch(error => {
+    pendingValidator = undefined; // Reintentar si hubo un fallo transitorio.
+    throw error;
+  });
+  return pendingValidator;
 }
-function valueType(v){ if(Array.isArray(v))return 'array'; if(v===null)return 'null'; return typeof v; }
-function validateLocal(root, schema, data, path, errors) {
-  schema = resolveLocalRef(root, schema);
-  if (!schema || typeof schema !== 'object') return;
-  const expected = Array.isArray(schema.type) ? schema.type : (schema.type ? [schema.type] : []);
-  if (expected.length) {
-    const actual = valueType(data);
-    const ok = expected.some(t => t === 'integer' ? Number.isInteger(data) : t === actual);
-    if (!ok) errors.push({instancePath:path, keyword:'type', params:{type:expected.join('|')}, message:`Tipo incorrecto: ${expected.join('|')}`});
-  }
-  if (schema.enum && !schema.enum.some(v => JSON.stringify(v) === JSON.stringify(data))) errors.push({instancePath:path, keyword:'enum', params:{allowedValues:schema.enum}, message:'Valor no permitido'});
-  if (typeof data === 'string') {
-    if (schema.maxLength != null && data.length > schema.maxLength) errors.push({instancePath:path, keyword:'maxLength', params:{limit:schema.maxLength}});
-    if (schema.minLength != null && data.length < schema.minLength) errors.push({instancePath:path, keyword:'minLength', params:{limit:schema.minLength}});
-    if (schema.pattern) { try { if (!new RegExp(schema.pattern).test(data)) errors.push({instancePath:path, keyword:'pattern', params:{pattern:schema.pattern}}); } catch(e){} }
-  }
-  if (data && typeof data === 'object' && !Array.isArray(data)) {
-    const props = schema.properties || {};
-    (schema.required || []).forEach(k => { if (!(k in data)) errors.push({instancePath:path, keyword:'required', params:{missingProperty:k}}); });
-    Object.entries(data).forEach(([k,v]) => {
-      if (props[k]) validateLocal(root, props[k], v, path + '/' + k, errors);
-      else if (schema.additionalProperties === false) errors.push({instancePath:path + '/' + k, keyword:'additionalProperties', params:{additionalProperty:k}});
-    });
-  }
-  if (Array.isArray(data) && schema.items) data.forEach((v,i)=>validateLocal(root, schema.items, v, path + '/' + i, errors));
-}
-function describeError(e){
-  const p = e.params || {};
-  switch(e.keyword){
-    case 'enum': return `Valor no permitido. Valores admitidos: ${(p.allowedValues||[]).join(', ')}`;
-    case 'maxLength': return `Longitud máxima permitida: ${p.limit}`;
-    case 'minLength': return `Longitud mínima requerida: ${p.limit}`;
-    case 'pattern': return `No cumple el patrón requerido: ${p.pattern}`;
-    case 'type': return `Tipo incorrecto, se esperaba: ${p.type}`;
-    case 'required': return `Falta el campo obligatorio: ${p.missingProperty}`;
-    case 'additionalProperties': return `Propiedad no permitida: ${p.additionalProperty}`;
-    default: return e.message || 'Error de validación';
-  }
-}
-function errorPath(e){ let path = e.instancePath || ''; if (e.keyword === 'required') path += '/' + e.params.missingProperty; else if (e.keyword === 'additionalProperties') path += '/' + e.params.additionalProperty; return path || '(raíz)'; }
-async function processJSON(text) {
-  const sel = document.getElementById('valSchema');
-  const result = document.getElementById('result');
-  const errorList = document.getElementById('errorList');
-  const viewer = document.getElementById('jsonViewer');
-  let data;
-  try { data = JSON.parse(text); }
-  catch { result.textContent = t('vstatus.syntaxInvalid'); errorList.textContent=''; viewer.textContent=text; syncValidationVisual(); return; }
+async function loadValidator() {
   let schema;
-  try { schema = await fetchSchema(sel.value); }
-  catch (e) { result.textContent = t('vstatus.schemaLoadFail'); errorList.textContent = '➡ ' + e.message; viewer.textContent=''; syncValidationVisual(); return; }
-  const errors = [];
-  validateLocal(schema, schema, data, '', errors);
-  if (!errors.length) { window._valErrorLines = []; viewer.textContent = JSON.stringify(data, null, 2); result.textContent = t('vstatus.valid'); errorList.textContent = ''; }
-  else {
-    const { lines, map } = serializeWithMap(data);
-    window._valErrorLines = errors.map(e => map[e.instancePath]).filter(Boolean);
-    viewer.textContent = lines.join('\n');
-    result.textContent = t('vstatus.invalid');
-    errorList.textContent = errors.map(e => `➡ ${errorPath(e)} → ${describeError(e)}`).join('\n');
+  try {
+    const res = await fetch(SCHEMA_URL, { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    schema = await res.json();
+  } catch (e) { throw new Error("No se pudo leer " + SCHEMA_URL + ": " + e.message); }
+  if (schema?.$schema !== "http://json-schema.org/draft-07/schema#" ||
+      schema.definitions?.Parties?.properties?.ThirdParty?.type !== "array") {
+    throw new Error("El recurso servido no corresponde al perfil GNX SPFE esperado (Draft-07, ThirdParty como lista). Revisa " + SCHEMA_URL);
   }
-  syncValidationVisual();
+  let Ajv, addFormats;
+  try {
+    [{ default: Ajv }, { default: addFormats }] = await Promise.all([import(AJV_URL), import(FORMATS_URL)]);
+  } catch (e) { throw new Error("No se pudieron cargar Ajv y sus formatos desde jsDelivr: " + e.message); }
+  try {
+    const ajv = new Ajv({ allErrors: true, strict: false, strictNumbers: true, ownProperties: true,
+      coerceTypes: false, useDefaults: false, removeAdditional: false, validateFormats: true, verbose: true });
+    addFormats(ajv, { mode: "full", keywords: false });
+    ajv.removeKeyword("multipleOf");
+    ajv.addKeyword({ keyword: "multipleOf", type: "number", schemaType: "number", errors: false,
+      metaSchema: { type: "number", exclusiveMinimum: 0 }, validate: decimalMultipleOf });
+    return ajv.compile(schema);
+  } catch (e) { throw new Error("No se pudo compilar el esquema GNX SPFE: " + e.message); }
 }
-function statusMeta(msg){
-  if(!msg.trim()) return {kind:'info',badge:t('vmeta.noStatus.badge'),title:t('vmeta.noStatus.title'),text:t('vmeta.noStatus.text')};
-  if(msg.includes('✅')) return {kind:'success',badge:t('vmeta.ok.badge'),title:t('vmeta.ok.title'),text:msg.replace('✅','').trim()||t('vmeta.ok.text')};
-  if(msg.includes('❌')) return {kind:'error',badge:t('vmeta.err.badge'),title:t('vmeta.err.title'),text:msg.replace('❌','').trim()||t('vmeta.err.text')};
-  if(msg.includes('⚠️')) return {kind:'warning',badge:t('vmeta.warn.badge'),title:t('vmeta.warn.title'),text:msg.replace('⚠️','').trim()};
-  return {kind:'info',badge:t('vmeta.info.badge'),title:t('vmeta.info.title'),text:msg};
+
+const types = { object: "un objeto", array: "una lista", number: "un número", integer: "un entero",
+  string: "un texto", boolean: "un booleano", null: "null" };
+function child(path, key) {
+  return /^[A-Za-z_$][\w$]*$/.test(key) ? path + "." + key
+    : /^(0|[1-9][0-9]*)$/.test(key) ? path + "[" + key + "]" : path + "[" + JSON.stringify(key) + "]";
 }
-function parseErrors(raw){return (raw||'').split('➡').map(s=>s.trim()).filter(Boolean).map((it,i)=>{const p=it.split('→');return{index:i+1,path:(p[0]||'(raíz)').trim(),message:(p.slice(1).join('→')||'Error').trim()};});}
-function renderSummary(msg, raw){
-  const target=document.getElementById('validationSummary'); if(!target)return;
-  const errs=parseErrors(raw), m=statusMeta(msg); let tbl='';
-  if(errs.length) tbl=`<table class="val-err-tbl"><thead><tr><th>${t('vtable.num')}</th><th>${t('vtable.field')}</th><th>${t('vtable.error')}</th></tr></thead><tbody>${errs.map(e=>`<tr><td>${e.index}</td><td><code>${esc(e.path)}</code></td><td>${esc(e.message)}</td></tr>`).join('')}</tbody></table>`;
-  target.classList.remove('val-empty');
-  target.innerHTML=`<div class="val-status-card ${m.kind}"><div class="val-status-head"><div class="val-status-title">${esc(m.title)}</div><div class="val-status-badge">${esc(m.badge)}</div></div><p class="val-status-text">${esc(m.text)}</p></div>${tbl}`;
+function pathOf(pointer) {
+  return (pointer || "").split("/").slice(1).reduce((p, part) =>
+    child(p, part.replace(/~1/g, "/").replace(/~0/g, "~")), "$");
 }
-function renderViewer(raw){ const cont=document.getElementById('jsonViewerContainer'); if(!cont)return; const text=(raw||'').trim(); if(!text){cont.innerHTML='';return;} renderJsonMinimap(cont,text,window._valErrorLines||[],`<span>${t('vviewer.title')}</span>`); }
-function syncValidationVisual(){ renderSummary(document.getElementById('result')?.textContent||'', document.getElementById('errorList')?.textContent||''); renderViewer(document.getElementById('jsonViewer')?.textContent||''); }
-window.setupValidator = setupValidator;
+function explain(e) {
+  const p = e.params || {};
+  let at = pathOf(e.instancePath), msg;
+  switch (e.keyword) {
+    case "required": at = child(at, p.missingProperty); msg = "falta este campo obligatorio."; break;
+    case "additionalProperties": at = child(at, p.additionalProperty); msg = "el esquema no admite esta propiedad."; break;
+    case "type": msg = "se esperaba " + (types[p.type] || p.type) + ".";
+      if (at.endsWith(".ThirdParty") && p.type === "array") msg += " Si hay un solo tercero, usa [ { … } ].";
+      break;
+    case "enum": {
+      const values = p.allowedValues;
+      msg = values.length > 20 ? "el valor no pertenece al catálogo (" + values.length + " códigos)."
+        : "valores permitidos aquí: " + values.map(v => JSON.stringify(v)).join(", ") + ".";
+      if (at.endsWith(".CountryCode")) msg += " Usa el código de dos letras, por ejemplo ES.";
+      break;
+    }
+    case "const": msg = "el valor debe ser " + JSON.stringify(p.allowedValue) + "."; break;
+    case "format": msg = "formato no válido: " + p.format + "."; break;
+    case "pattern": msg = p.pattern === "\\S" ? "se requiere al menos un carácter que no sea un espacio en blanco." : "no cumple el patrón " + p.pattern + "."; break;
+    case "multipleOf": msg = p.multipleOf === 0.01 || e.schema === 0.01 ? "el importe debe ser múltiplo de 0,01 (sin fracciones de céntimo)." : "se requiere un múltiplo de " + (p.multipleOf ?? e.schema) + "."; break;
+    case "minItems": msg = "la lista requiere al menos " + p.limit + " elemento(s)."; break;
+    case "maxItems": msg = "la lista permite como máximo " + p.limit + " elemento(s)."; break;
+    case "minLength": msg = "longitud mínima: " + p.limit + " caracteres."; break;
+    case "maxLength": msg = "longitud máxima: " + p.limit + " caracteres."; break;
+    case "minimum": case "maximum": case "exclusiveMinimum": case "exclusiveMaximum":
+      msg = "el valor debe cumplir " + p.comparison + " " + p.limit + "."; break;
+    case "dependencies": msg = "al informar " + p.property + " también se requiere " + p.missingProperty + "."; break;
+    case "not": {
+      const object = e.data ?? {};
+      const keys = e.schema?.anyOf?.flatMap(rule => rule.required || [])
+        .filter(k => Object.prototype.hasOwnProperty.call(object, k));
+      if (keys?.length === 1) at = child(at, keys[0]);
+      msg = keys?.length ? "no se admite en este contexto" + (keys.length > 1 ? ": " + keys.join(", ") : "") + "."
+        : "esta combinación de campos no está permitida aquí."; break;
+    }
+    case "anyOf": msg = "debe cumplirse al menos una de las alternativas del esquema."; break;
+    default: msg = e.message || ("regla no cumplida: " + e.keyword);
+  }
+  return { path: at, message: msg };
+}
+function describeErrors(errors) {
+  // Ajv acompaña un fallo de 'then' con un segundo mensaje 'if' que no añade información.
+  const details = (errors || []).filter(e => e.keyword !== "if");
+  return [...new Map(details.map(explain).map(e => [JSON.stringify(e), e])).values()];
+}
+
+function start() {
+  const el = id => document.getElementById(id);
+  const dropzone = el("dropzone"), input = el("fileInput"), result = el("result"),
+    errorList = el("errorList"), viewer = el("jsonViewer");
+  if (!dropzone || !input || !result || !errorList || !viewer) {
+    console.error("Validador GNX: faltan elementos del HTML (dropzone, fileInput, result, errorList o jsonViewer).");
+    return;
+  }
+  function render(status, lines = [], json = "") {
+    result.textContent = status;
+    const errors = lines.map(v => typeof v === "string" ? { path: "", message: v } : v);
+    const visible = errors.map(e => e.path ? e.path + " → " + e.message : e.message);
+    if (errorList.matches("ul, ol")) {
+      const entries = visible.map(line => { const li = document.createElement("li"); li.textContent = line; return li; });
+      errorList.replaceChildren(...entries);
+    } else {
+      errorList.style.whiteSpace = "pre-wrap";
+      errorList.textContent = visible.join("\n");
+    }
+    viewer.textContent = json;
+    document.dispatchEvent(new CustomEvent("gnx:validation", { detail: { status, errors, json } }));
+  }
+  let sequence = 0;
+  async function handleFile(file) {
+    if (!file) return;
+    const task = ++sequence;
+    render("Leyendo " + file.name + "…");
+    let data;
+    try {
+      const text = await file.text();
+      if (task !== sequence) return;
+      data = parseInvoice(text);
+    } catch (e) {
+      if (task === sequence) render(e.name === "SyntaxError" ? "❌ JSON con error de sintaxis"
+        : e.name === "PrecisionError" ? "⚠️ No validado: precisión numérica" : "⚠️ No se pudo leer el fichero", [e.message]);
+      return;
+    }
+    const pretty = JSON.stringify(data, null, 2);
+    render("Validando con el esquema GNX SPFE…", [], pretty);
+    try {
+      const validate = await getValidator();
+      if (task !== sequence) return;
+      if (validate(data)) render("✅ JSON válido según el esquema GNX SPFE.", [], pretty);
+      else render("❌ El JSON no cumple el esquema GNX SPFE.", describeErrors(validate.errors), pretty);
+    } catch (e) {
+      if (task === sequence) render("⚠️ No se ha podido validar la factura.", [e.message], pretty);
+    }
+  }
+  document.getElementById("probarEjemplo")?.addEventListener("click", () => handleFile({
+    name: "ejemplo_spfe_ordinaria.json",
+    text: async () => { const r = await fetch(exampleUrl("ordinaria")); if (!r.ok) throw Error("HTTP " + r.status); return r.text(); }
+  }));
+  dropzone.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === dropzone) { e.preventDefault(); input.click(); } });
+  dropzone.addEventListener("click", e => { if (e.target !== input) input.click(); });
+  dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("dragover"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", e => {
+    e.preventDefault(); dropzone.classList.remove("dragover"); handleFile(e.dataTransfer.files[0]);
+  });
+  input.addEventListener("change", () => { const file = input.files[0]; input.value = ""; handleFile(file); });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });
+else start();
