@@ -250,6 +250,7 @@ class InvoiceRenderer extends BaseRenderer {
     }
     const definitions = schema.$defs || schema.definitions || {};
     const blocks = this.extractBlocks( schema, definitions );
+    this._blockNames = new Set(blocks.map(b => b.label));
     if (!blocks.length) {
       body.innerHTML = `<p style="color:var(--gray-500)"> ${t("struct.none")} </p>`;
       if (nav) { nav.innerHTML = ""; }
@@ -268,7 +269,7 @@ class InvoiceRenderer extends BaseRenderer {
     `;
     let navHtml = "";
     blocks.forEach((block, index) => {
-      const id = `blk-${index}`;
+      const id = this.blockId(block.label);
       const snippet = JSON.stringify( {[block.jsonKey || block.label ]: block.schemaSnippet }, null, 2 );
       navHtml += `
         <button class="snav-btn" onclick="scrollToBlock('${id}', this)">
@@ -292,6 +293,13 @@ class InvoiceRenderer extends BaseRenderer {
                   <strong>${t("tech.type")}</strong>
                   <span class="tag-type">${this.escape(block.type || "object")}</span>
                 </p>
+                ${Object.keys(block.properties || {}).length
+                    ? `<p>
+                        <strong>${t("tech.properties")}</strong>
+                        ${this.escape(Object.keys(block.properties).join(", "))}
+                      </p>`
+                    : ""
+                  }
                 ${block.required && block.required.length
                   ? `<p>
                       <strong>${t("tech.required")}</strong>
@@ -346,10 +354,8 @@ class InvoiceRenderer extends BaseRenderer {
         }
       }
 
-      const types = [
-        ...complexTypes,
-        ...simpleTypes
-      ];
+      const types = [...complexTypes, ...simpleTypes];
+      this._blockNames = new Set(types.map(type => type.name));
 
       let bodyHtml = `
         <p style="margin-bottom:28px">
@@ -388,7 +394,7 @@ class InvoiceRenderer extends BaseRenderer {
       let navHtml = '';
 
       types.forEach((type, index) => {
-        const typeId = `xsd-block-${index}`;
+        const typeId = this.blockId(type.name);
         const node = type.node;
         const kind = node.localName;
 
@@ -588,261 +594,241 @@ class InvoiceRenderer extends BaseRenderer {
   /* =====================================================
     Tabla de campos
   ===================================================== */
-  buildFieldTable(schema) {
+    safeId(name) { return String(name || '').replace(/[^\w-]/g, '_');}
+    blockId(name) { return `block-${this.safeId(name)}`; }
+    enumId(name)  { return `enum-${this.safeId(name)}`; }
+
+    /* ── Tipo con enlace 🔗 a su enum o a su bloque ─────── */
+    buildTypeLink(typeName) {
+      if (!typeName) { return ''; }
+      // array<Tipo> → Tipo ;  tns:Tipo → Tipo
+      const inner = String(typeName).replace(/^array<(.+)>$/, '$1');
+      const local = inner.includes(':') ? inner.split(':').pop() : inner;
+
+      let kind = '';
+      if (document.getElementById(this.enumId(local)) || /Enum$/.test(local)) {
+        kind = 'Enum';
+      } else if (this._blockNames?.has(local) || document.getElementById(this.blockId(local))) {
+        kind = 'Block';
+      }
+      if (!kind) { return ''; }
+
+      return `<a href="javascript:void(0)" class="tag-type" style="text-decoration:none;cursor:pointer;" onclick="goTo${kind}('${this.safeId(local)}')">🔗 ${this.escape(local)}</a>`;
+    }
+
+    /* ── Fila común (formato XML) ───────────────────────── */
+    buildFieldRow({ name, depth = 0, description, type, required, constraints }) {
       const dash = '<span style="color:var(--gray-300)">—</span>';
-      const rows = [];
-      const walk =
-        (properties, required, depth) => {
-          required = required || [];
-          for (const [field, raw] of Object.entries(properties || {}) ) {
-            const type = SchemaUtils.getFieldType(raw);
-            const constraints = SchemaUtils.getFieldConstraints(raw);
-            const isRequired = required.includes(field);
-            const indent = 8 + depth * 22;
-            const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>': "";
-            rows.push(`
-              <tr>
-                <td style="padding-left:${indent}px">
-                  <span class="rf-name-wrap">
-                    ${arrow}
-                    <span class="tag-req">${this.escape(field)}</span>
-                  </span>
-                </td>
-                <td>${raw.description ? this.escape(raw.description) : dash }</td>
-                <td>${type ? `<span class="tag-type">${this.escape(type)}</span>` : dash }</td>
-                <td>${isRequired ? `<span class="tag-req">${t("yes")}</span>` : `<span style="color:var(--gray-500)">${t("no")}</span>` }</td>
-                <td>${constraints || dash}</td>
-              </tr>
-            `);
-            if ( raw.type === "object" && raw.properties ) {
-              walk( raw.properties, raw.required, depth + 1 );
-            }
-            if ( raw.type === "array" && raw.items && raw.items.properties) {
-              walk(raw.items.properties, raw.items.required, depth + 1 );
-            }
-          }
-        };
-    walk( schema.properties, schema.required, 0);
-    if (!rows.length) {return "";}
-    return `
-      <div class="field-tbl-wrap">
-        <table class="field-tbl">
-          <thead>
-            <tr>
-              <th>${t("table.field")}</th>
-              <th>${t("table.desc")}</th>
-              <th>${t("table.type")}</th>
-              <th>${t("table.req")}</th>
-              <th>${t("table.constraints")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rows.join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-  buildTypeLink(typeName) {
-    if (!typeName || !typeName.endsWith('Enum')) {return '';}
+      const indent = 8 + depth * 22;
+      const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>' : '';
+      const constraintText = Array.isArray(constraints)
+        ? constraints.filter(Boolean).join(' · ')
+        : String(constraints || '');
+      const restricciones = [
+        constraintText ? this.escape(constraintText) : '',
+        this.buildTypeLink(type)
+      ].filter(Boolean).join(' · ');
 
-    return `
-      <a href="javascript:void(0)"
-        class="tag-type"
-        style="text-decoration:none;cursor:pointer;"
-        onclick="goToEnum('${this.escape(typeName)}')"
-      >
-        🔗 ${this.escape(typeName)}
-      </a>
-    `;
-  }
-
-  buildXsdFieldTable(node) {
-    if (!node || node.localName !== 'complexType') {return '';}
-    const elements = window.XsdUtils.getElementsDetailed(node);
-    if (!elements.length) {return '';}
-    const dash = '<span style="color:var(--gray-300)">—</span>';
-    const rows = elements.map(element => {
-      const required = element.min !== '0';
-      const constraints = [];
-      if (element.min !== null && element.min !== '') {
-        constraints.push(`minOccurs: ${element.min}`);
-      }
-      if ( element.max !== null && element.max !== '') {
-        constraints.push(`maxOccurs: ${element.max}`);
-      }
-      const typeLink = this.buildTypeLink(element.type);
-      const restricciones = [constraints.length ? this.escape(constraints.join(' · ')) : '',typeLink].filter(Boolean).join(' · ');
       return `
         <tr>
-          <td><span class="tag-req">${this.escape(element.name)}</span></td>
-          <td>${element.doc ? this.escape(element.doc) : dash}</td>
-          <td>${element.type ? `<span class="tag-type">${this.escape(element.type)}</span>` : dash}</td>
-          <td>${required ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+          <td${depth ? ` style="padding-left:${indent}px"` : ''}>
+            ${depth ? `<span class="rf-name-wrap">${arrow}` : ''}<span class="tag-req">${this.escape(name)}</span>${depth ? '</span>' : ''}
+          </td>
+          <td>${description ? this.escape(description) : dash}</td>
+          <td>${type ? `<span class="tag-type">${this.escape(type)}</span>` : dash}</td>
+          <td>${required
+            ? `<span class="tag-req">${t('yes')}</span>`
+            : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
           <td>${restricciones || dash}</td>
-        </tr>
-      `;
-      }).join('');
+        </tr>`;
+    }
 
-    
-    const table = `
-      <div class="field-desc-section">
-        <table class="enum-desc-table field-desc-table">
-          <thead>
-            <tr>
-              <th>${t('table.field')}</th>
-              <th>${t('table.desc')}</th>
-              <th>${t('table.type')}</th>
-              <th>${t('table.req')}</th>
-              <th>${t('table.constraints')}</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    `;
-    
-    return table;
-    
-  }
+    /* ── Tabla común (formato XML) ──────────────────────── */
+    buildFieldTableHtml(rows) {
+      if (!rows.length) { return ''; }
+      return `
+        <div class="field-desc-section">
+          <table class="enum-desc-table field-desc-table">
+            <thead>
+              <tr>
+                <th>${t('table.field')}</th>
+                <th>${t('table.desc')}</th>
+                <th>${t('table.type')}</th>
+                <th>${t('table.req')}</th>
+                <th>${t('table.constraints')}</th>
+              </tr>
+            </thead>
+            <tbody>${rows.join('')}</tbody>
+          </table>
+        </div>`;
+    }
+
+    /* ── JSON → filas ───────────────────────────────────── */
+    buildFieldTable(schema) {
+      const rows = [];
+      const walk = (properties, required, depth) => {
+        required = required || [];
+        for (const [field, raw] of Object.entries(properties || {})) {
+          rows.push(this.buildFieldRow({
+            name: field,
+            depth,
+            description: raw.description,
+            type: SchemaUtils.getFieldType(raw),
+            required: required.includes(field),
+            constraints: SchemaUtils.getFieldConstraints(raw)
+          }));
+          // Solo se despliegan objetos EN LÍNEA; los $ref van con 🔗 a su bloque
+          if (raw.type === 'object' && raw.properties) {
+            walk(raw.properties, raw.required, depth + 1);
+          }
+          if (raw.type === 'array' && raw.items && raw.items.properties) {
+            walk(raw.items.properties, raw.items.required, depth + 1);
+          }
+        }
+      };
+      walk(schema.properties, schema.required, 0);
+      return this.buildFieldTableHtml(rows);
+    }
+
+    /* ── XSD → filas ────────────────────────────────────── */
+    buildXsdFieldTable(node) {
+      if (!node || node.localName !== 'complexType') { return ''; }
+      const elements = window.XsdUtils.getElementsDetailed(node);
+      const rows = elements.map((element) => {
+        const constraints = [];
+        if (element.min !== null && element.min !== undefined && element.min !== '') {
+          constraints.push(`minOccurs: ${element.min}`);
+        }
+        if (element.max !== null && element.max !== undefined && element.max !== '') {
+          constraints.push(`maxOccurs: ${element.max}`);
+        }
+        return this.buildFieldRow({
+          name: element.name,
+          description: element.doc,
+          type: element.type,
+          required: element.min !== '0',
+          constraints
+        });
+      });
+      return this.buildFieldTableHtml(rows);
+    }
 
   /* =====================================================
       Enumeraciones
     ===================================================== */
-  renderEnumerations(schema, schemaRaw) {
-    const schemaFileName = this.card?.schemaFileName || '';
-    const format = this.card?.format?.toUpperCase();
-    if (format === 'XML' || format === 'XSD') {
-      this.renderEnumerationsXsd(schemaRaw);
-      return;
+    findEnumInfo(...names) {
+      for (const name of names.filter(Boolean)) {
+        const info = getEnumInfo(name) || getEnumInfo(`${name}Enum`);
+        if (info) { return { info, key: getEnumInfo(name) ? name : `${name}Enum` }; }
+      }
+      return { info: null, key: names.find(Boolean) || '' };
     }
 
-    const enums = SchemaUtils.extractEnums(schema);
+    /* ── Bloque común de una enumeración ─────────────────── */
+    buildEnumBlock({ name, field, snippet, type, path, valuesCount, names }) {
+      const { info, key } = this.findEnumInfo(...names);
+      const enumTable = buildEnumTable(key);
+      const id = this.enumId(name);
+      const noDesc = t('noDesc');
+      const usedIn = Array.isArray(path) ? path : [path].filter(Boolean);
 
-    if (!enums.length) {
-      this.setHTML("enumeraciones-body", `<p style="color:var(--gray-500)">${t("enums.none")}</p>` );
-      this.setHTML("snav-btns-enumeraciones", "" );
-      return;
-    }
-    let bodyHtml = "";
-    let navHtml = "";
-    enums.forEach((enumItem, index) => {
-      const id = `enum-${index}`;
-      const snippet = JSON.stringify( { [enumItem.defName]: enumItem.raw }, null, 2);
-      const info = getEnumInfo(enumItem.defName);
-      const enumTable = buildEnumTable(enumItem.defName);
+      const nav = `<button class="snav-btn" data-target="${id}" onclick="scrollToBlock('${id}', this)">${this.escape(field)}</button>`;
 
-      navHtml += `
-        <button class="snav-btn" data-enum="${enumItem.defName}" onclick="scrollToBlock('${id}', this)" >
-          ${this.escape(enumItem.field)}
-        </button>
-      `;
-      bodyHtml += `
+      const body = `
         <div class="block-wrap" id="${id}">
           <div class="block-grid">
             <div class="code-panel">
-              <div class="code-header"> ${this.escape(enumItem.field)} </div>
+              <div class="code-header">${this.escape(info?.title || field)}</div>
               <pre class="code-pre">${this.escape(snippet)}</pre>
             </div>
-            <div>
+            <div class="block-side">
               <div class="explanation-box">
-                  <p class="explanation-box__description">
-                    <strong>Español:</strong> ${info?.esp || t('noDesc')}
-                  </p>
-                  <p class="explanation-box__text explanation-box__text--spaced">
-                    <strong>English:</strong> ${info?.eng || t('noDesc')}
-                  </p>
-                </div>
+                <p class="explanation-box__description"><strong>Español:</strong> ${this.escape(info?.esp || noDesc)}</p>
+                <p class="explanation-box__text explanation-box__text--spaced"><strong>English:</strong> ${this.escape(info?.eng || noDesc)}</p>
+              </div>
               <div class="tech-details">
-                <h4 class="tech-details__title">📌 Detalles Técnicos</h4>
-                  <p>
-                    <strong>${t("tech.type")}</strong>
-                    <span class="tag tag--type">${this.escape(enumItem.type || 'xs:string')}</span>
-                  </p>
-                  <p>
-                    <strong>${t("enums.usedIn")}</strong>
-                    <span class="tag tech-details__used-in">${this.escape(enumItem.path || '')}</span>
-                  </p>
-                </div>
+                <h4 class="tech-details__title">${t('tech.title')}</h4>
+                <p><strong>${t('tech.type')}</strong> <span class="tag tag--type">${this.escape(type || 'string')}</span></p>
+                ${usedIn.length ? `
+                <p><strong>${t('enums.usedIn')}</strong></p>
+                ${usedIn.map((p) => `<span class="tag tech-details__used-in">${this.escape(p)}</span>`).join('')}` : ''}
               </div>
             </div>
-          <h4>${t("enums.allowed", {n: enumItem.values.length})}</h4>
-          <div class="tech-details__values">${enumTable}</div>
           </div>
+          <h4>${t('enums.allowed', { n: valuesCount })}</h4>
+          <div class="tech-details__values">${enumTable || ''}</div>
           <div class="block-divider"></div>
-        </div>
-      `;
-    });
-    this.setHTML( "enumeraciones-body", bodyHtml );
-    this.setHTML( "snav-btns-enumeraciones", navHtml );
-  }
+        </div>`;
 
-  renderEnumerationsXsd(xsdText) {
-    const body = this.getElement('enumeraciones-body');
-    const nav = this.getElement('snav-btns-enumeraciones');
-    if (!body) {return;}
-    try {
-      const doc = window.XsdUtils.parse(xsdText);
-      const enums = window.XsdUtils.extractEnums(doc);
+      return { nav, body };
+    }
 
+    /* ── JSON ─────────────────────────────────────────────── */
+    renderEnumerations(schema, schemaRaw) {
+      const format = this.card?.format?.toUpperCase();
+      if (format === 'XML' || format === 'XSD') {
+        this.renderEnumerationsXsd(schemaRaw);
+        return;
+      }
+      const enums = SchemaUtils.extractEnums(schema);
       if (!enums.length) {
-        this.setHTML('enumeraciones-body', `<p style="color:var(--gray-500)">${t("enums.none")}</p>`);
+        this.setHTML('enumeraciones-body', `<p style="color:var(--gray-500)">${t('enums.none')}</p>`);
         this.setHTML('snav-btns-enumeraciones', '');
         return;
       }
-      
-
       let bodyHtml = '';
       let navHtml = '';
-
-      enums.forEach((enumItem, index) => {
-        const info = getEnumInfo(enumItem.field);
-        const enumTable = buildEnumTable(enumItem.field);
-        const snippet = window.XsdUtils.extractXsdSnippet(xsdText, enumItem.enumName);
-        const id = `enum-${enumItem.enumName}`;
-        navHtml += `<button class="snav-btn" data-enum="${enumItem.defName}" onclick="scrollToBlock('${id}', this)">${this.escape(enumItem.field)}</button>`;
-        bodyHtml += `
-          <div class="block-wrap" id="${id}">
-            <div class="block-grid">
-              <div class="code-panel">
-                <div class="code-header">${this.escape(enumItem.field)}</div>
-                <pre class="code-pre">${this.escape(snippet)}</pre>
-              </div>
-              <div>
-                <div class="explanation-box">
-                  <p class="explanation-box__description">
-                    <strong>Español:</strong> ${info?.esp || t('noDesc')}
-                  </p>
-                  <p class="explanation-box__text explanation-box__text--spaced">
-                    <strong>English:</strong> ${info?.eng || t('noDesc')}
-                  </p>
-                </div>
-                <div class="tech-details">
-                  <h4 class="tech-details__title">📌 Detalles Técnicos</h4>
-                  <p>
-                    <strong>${t("tech.type")}</strong>
-                    <span class="tag tag--type">${this.escape(enumItem.type || 'xs:string')}</span>
-                  </p>
-                  <p>
-                    <strong>${t("enums.usedIn")}</strong>
-                    <span class="tag tech-details__used-in">${this.escape(enumItem.path || '')}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <h4>${t("enums.allowed", {n: enumItem.values.length})}</h4>
-            <div class="tech-details__values">${enumTable}</div>
-            <div class="block-divider"></div>
-          </div>
-        `;
+      enums.forEach((enumItem) => {
+        const name = enumItem.defName || enumItem.field;
+        const block = this.buildEnumBlock({
+          name,
+          field: enumItem.field,
+          snippet: JSON.stringify({ [name]: enumItem.raw }, null, 2),
+          type: enumItem.type || enumItem.raw?.type || 'string',
+          path: enumItem.path,
+          valuesCount: (enumItem.values || []).length,
+          names: [enumItem.defName, enumItem.field]
+        });
+        navHtml += block.nav;
+        bodyHtml += block.body;
       });
       this.setHTML('enumeraciones-body', bodyHtml);
       this.setHTML('snav-btns-enumeraciones', navHtml);
-    } catch (error) {
-      this.setHTML('enumeraciones-body', `<div class="info-box">${this.escape(error.message)}</div>`);
-      this.setHTML('snav-btns-enumeraciones', '');
     }
-  }
+
+    /* ── XSD ──────────────────────────────────────────────── */
+    renderEnumerationsXsd(xsdText) {
+      if (!this.getElement('enumeraciones-body')) { return; }
+      try {
+        const doc = window.XsdUtils.parse(xsdText);
+        const enums = window.XsdUtils.extractEnums(doc);
+        if (!enums.length) {
+          this.setHTML('enumeraciones-body', `<p style="color:var(--gray-500)">${t('enums.none')}</p>`);
+          this.setHTML('snav-btns-enumeraciones', '');
+          return;
+        }
+        let bodyHtml = '';
+        let navHtml = '';
+        enums.forEach((enumItem) => {
+          const block = this.buildEnumBlock({
+            name: enumItem.enumName,
+            field: enumItem.field,
+            snippet: window.XsdUtils.extractXsdSnippet(xsdText, enumItem.enumName),
+            type: enumItem.type || 'xs:string',
+            path: enumItem.path,
+            valuesCount: (enumItem.values || []).length,
+            names: [enumItem.enumName, enumItem.defName, enumItem.field]
+          });
+          navHtml += block.nav;
+          bodyHtml += block.body;
+        });
+        this.setHTML('enumeraciones-body', bodyHtml);
+        this.setHTML('snav-btns-enumeraciones', navHtml);
+      } catch (error) {
+        this.setHTML('enumeraciones-body', `<div class="info-box">${this.escape(error.message)}</div>`);
+        this.setHTML('snav-btns-enumeraciones', '');
+      }
+    }
 
   /* =====================================================
     Ejemplos

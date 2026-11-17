@@ -197,43 +197,94 @@ const XsdUtils = (() => {
     return "";
   }
 
+  function localName(value) {
+    const text = String(value || "");
+    return text.includes(":") ? text.split(":").pop() : text;
+  }
+
+  /* Hijos xs:element de un complexType (ignora los de otros complexType anidados) */
+  function getChildElements(typeNode) {
+    const result = [];
+    const visit = (node) => {
+      Array.from(node.childNodes || []).forEach((child) => {
+        if (child.nodeType !== 1 || child.namespaceURI !== XSD_NS) { return; }
+        if (child.localName === "element") {
+          result.push(child);
+          return;                                   // Su contenido es de otro nivel
+        }
+        if (child.localName === "complexType" || child.localName === "simpleType") { return; }
+        visit(child);                               // sequence, choice, all, complexContent…
+      });
+    };
+    visit(typeNode);
+    return result;
+  }
+
+  /* Todas las rutas completas donde se usa enumName */
   function getEnumUsage(doc, enumName) {
     const usage = [];
+    const schema = doc.documentElement;
+    const roots = Array.from(schema.childNodes || []).filter(
+      (n) => n.nodeType === 1 && n.namespaceURI === XSD_NS && n.localName === "element" && n.getAttribute("name"),
+    );
 
-    const elements = doc.getElementsByTagNameNS(XSD_NS, "element");
-
-    for (let i = 0; i < elements.length; i++) {
-      const el = elements[i];
-
-      if (el.getAttribute("type") !== enumName) {
-        continue;
-      }
-
-      const elementName = el.getAttribute("name") || "";
-
-      let ancestor = el.parentNode;
-
-      let complexTypeName = "";
-
-      while (ancestor && ancestor.nodeType === 1) {
-        if (
-          ancestor.localName === "complexType" &&
-          ancestor.getAttribute("name")
-        ) {
-          complexTypeName = ancestor.getAttribute("name");
-
-          break;
+    const walkType = (typeNode, path, visiting) => {
+      // Herencia: <xs:extension base="OtroTipo"> → también sus elementos
+      const extension = typeNode.getElementsByTagNameNS(XSD_NS, "extension")[0];
+      if (extension) {
+        const baseName = localName(extension.getAttribute("base"));
+        const baseNode = getTypeNode(doc, baseName);
+        if (baseNode && baseNode.localName === "complexType" && !visiting.has(baseName)) {
+          walkType(baseNode, path, new Set([...visiting, baseName]));
         }
-
-        ancestor = ancestor.parentNode;
       }
 
-      usage.push(
-        complexTypeName ? `${complexTypeName}.${elementName}` : elementName,
-      );
-    }
+      getChildElements(typeNode).forEach((el) => {
+        const name = el.getAttribute("name") || localName(el.getAttribute("ref"));
+        if (!name) { return; }
+        const max = el.getAttribute("maxOccurs");
+        const repeated = max === "unbounded" || Number(max) > 1;
+        const elementPath = `${path}.${name}${repeated ? "[0]" : ""}`;
+        const typeName = localName(el.getAttribute("type"));
 
-    return usage;
+        if (typeName === enumName) {
+          usage.push(elementPath);
+          return;
+        }
+        // Tipo en línea
+        const inline = Array.from(el.childNodes || []).find(
+          (c) => c.nodeType === 1 && c.localName === "complexType",
+        );
+        if (inline) {
+          walkType(inline, elementPath, visiting);
+          return;
+        }
+        // Tipo con nombre (evita bucles en tipos recursivos)
+        if (!typeName || visiting.has(typeName)) { return; }
+        const typeNode = getTypeNode(doc, typeName);
+        if (typeNode && typeNode.localName === "complexType") {
+          walkType(typeNode, elementPath, new Set([...visiting, typeName]));
+        }
+      });
+    };
+
+    roots.forEach((root) => {
+      const rootName = root.getAttribute("name");
+      const typeName = localName(root.getAttribute("type"));
+      if (typeName === enumName) {
+        usage.push(rootName);
+        return;
+      }
+      const inline = Array.from(root.childNodes || []).find(
+        (c) => c.nodeType === 1 && c.localName === "complexType",
+      );
+      const typeNode = inline || getTypeNode(doc, typeName);
+      if (typeNode && typeNode.localName === "complexType") {
+        walkType(typeNode, rootName, new Set([typeName].filter(Boolean)));
+      }
+    });
+
+    return Array.from(new Set(usage));
   }
 
   function getEnumerations(doc, enumNames) {
@@ -282,7 +333,7 @@ const XsdUtils = (() => {
 
       results.push({
         field: name,
-        path: getEnumUsage(doc, name).join(", "),
+        path: getEnumUsage(doc, name),
         type: "xs:string",
         description,
         values,

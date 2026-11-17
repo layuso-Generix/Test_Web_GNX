@@ -11,6 +11,8 @@
   Convención de pestañas (igual que BaseRenderer):
     botón  → .tab-btn[data-tab="<tab>"]
     panel  → .tab-panel#tab-<tab>
+  Convención de ids (igual que los renderers):
+    bloque → block-<Nombre>    enum → enum-<Nombre>
 ========================================================= */
 (function () {
   'use strict';
@@ -58,7 +60,10 @@
     // Pequeña espera: la pestaña recién activada tiene que estar visible
     setTimeout(() => {
       const el = document.getElementById(id);
-      if (!el) return;
+      if (!el) {
+        console.warn(`[sidebar] Elemento no encontrado: #${id}`);
+        return;
+      }
       el.scrollIntoView({ behavior: SCROLL_BEHAVIOR, block: 'start' });
       setActiveNav(findNavButton(id));
     }, 50);
@@ -74,29 +79,19 @@
   function getNavTargetId(btn) {
     if (!btn) return '';
     if (btn.dataset.target) return btn.dataset.target;
-    if (btn.dataset.block) return `block-${btn.dataset.block}`;
-    if (btn.dataset.enum) return `enum-${btn.dataset.enum}`;
-    const href = btn.getAttribute('href');
-    if (href && href.startsWith('#') && href.length > 1) return href.slice(1);
     const onclick = btn.getAttribute('onclick') || '';
     const match = onclick.match(/scrollToBlock\(\s*['"]([^'"]+)['"]/);
-    return match ? match[1] : '';
+    if (match) return match[1];
+    const href = btn.getAttribute('href');
+    if (href && href.startsWith('#') && href.length > 1) return href.slice(1);
+    return '';
   }
 
   /** Busca el botón del menú que corresponde a un id de bloque. */
   function findNavButton(targetId) {
     if (!targetId) return null;
-    const [, kind, name] = targetId.match(/^(block|enum)-(.+)$/) || [];
-    const selectors = [`${NAV_SELECTOR}[data-target="${cssValue(targetId)}"]`];
-    if (kind === 'enum') selectors.push(`${NAV_SELECTOR}[data-enum="${cssValue(name)}"]`);
-    if (kind === 'block') selectors.push(`${NAV_SELECTOR}[data-block="${cssValue(name)}"]`);
-    selectors.push(`${NAV_SELECTOR}[href="#${cssValue(targetId)}"]`);
-
-    for (const sel of selectors) {
-      const btn = document.querySelector(sel);
-      if (btn) return btn;
-    }
-    // Último recurso: botones con onclick="scrollToBlock('id', this)"
+    const direct = document.querySelector(`${NAV_SELECTOR}[data-target="${cssValue(targetId)}"]`);
+    if (direct) return direct;
     return Array.from(document.querySelectorAll(NAV_SELECTOR))
       .find((btn) => getNavTargetId(btn) === targetId) || null;
   }
@@ -119,10 +114,14 @@ function scrollToBlock(blockId, button) {
   }
 
   /* ── Enlaces 🔗 entre pestañas ────────────────────────── */
+  function safeId(name) {
+    return String(name || '').replace(/[^\w-]/g, '_');
+  }
+
   function goToRef(kind, name) {
     if (!name) return;
     const tab = kind === 'enum' ? TAB_ENUMS : TAB_STRUCTURE;
-    const targetId = `${kind === 'enum' ? 'enum' : 'block'}-${name}`;
+    const targetId = `${kind === 'enum' ? 'enum' : 'block'}-${safeId(name)}`;
     const cardId = window.Router && window.Router.getCurrentCardId();
 
     if (cardId) {

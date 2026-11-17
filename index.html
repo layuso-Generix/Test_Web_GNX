@@ -6,6 +6,8 @@
   <title>Generix · E-Invoicing · Developer Documentation</title>
   <link rel="icon" href="Assets/logo-black.png" type="image/png" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500,600,700&display=swap">
 </head>
 <body>
   <!-- ═══ TOPBAR ══════════════════════════════════════════ -->
@@ -79,7 +81,7 @@
             <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
             <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
           </div>
-          <div class="card" >
+          <div class="card" onclick="showAeat()">
             <div class="card-icon">AEAT</div>
             <div class="card-meta"><span class="badge badge-cat" data-i18n="res.aeat.badge">Documentación</span></div>
             <h3 data-i18n="res.aeat.title">Documentación AEAT</h3>
@@ -90,6 +92,24 @@
       </div>
     </section>
   </section>
+
+  <!-- ═══ FORMAT VIEW ═══ -->
+<section id="view-format" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" id="fmtCrumb"></span>
+      </div>
+      <h1 id="fmtTitle"></h1>
+      <p class="ddesc" id="fmtDesc"></p>
+    </div>
+  </section>
+  <div class="vers-section">
+    <div id="fmtGrid" class="file-grid"></div>
+  </div>
+</section>
+
 
 <!-- ═══ DETAIL VIEW ═════════════════════════════════════ -->
   <section id="view-detail" class="view">
@@ -170,11 +190,40 @@
       </div>
     </section>
     <div class="vers-section">
-      <div id="versStatus" class="vers-status">Cargando…</div>
+      <div class="file-toolbar">
+        <div id="versStatus" class="aeat-status"></div>
+        <button class="btn-refresh" type="button"
+                onclick="VersionsRenderer.render({refresh:true})"
+                data-i18n="btn.refresh">↻ Actualizar</button>
+      </div>
+      <!-- <div id="versStatus" class="vers-status">Cargando…</div> -->
       <div id="versQuick" class="vers-quick"></div>
       <div id="versContainer"></div>
     </div>
   </section>
+<!-- ═══ AEAT VIEW ═══ -->
+<section id="view-aeat" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="aeat.title">Documentaci&oacute;n AEAT</span>
+      </div>
+      <h1 data-i18n="aeat.title">Documentaci&oacute;n AEAT</h1>
+      <p class="ddesc" data-i18n="aeat.subtitle">Documentaci&oacute;n oficial de la AEAT relacionada con la facturaci&oacute;n electr&oacute;nica, organizada por ley. Cualquier carpeta o fichero que se a&ntilde;ada aparece aqu&iacute; autom&aacute;ticamente.</p>
+    </div>
+  </section>
+  <div class="vers-section">
+    <div class="file-toolbar">
+      <div id="aeatStatus" class="aeat-status"></div>
+      <button class="btn-refresh" type="button"
+              onclick="AeatRenderer.render({refresh:true})"
+              data-i18n="btn.refresh">↻ Actualizar</button>
+    </div>
+    <div id="aeatQuick" class="vers-quick"></div>
+    <div id="aeatContainer"></div>
+  </div>
+</section>
 <!-- ═══ VALIDACION VIEW ═══ -->
   <section id="view-validacion" style="display:none">
     <section class="dh">
@@ -270,6 +319,7 @@
   <script src="src/utils/enum-utils.js"></script>
 
   <script src="src/services/github-service.js"></script>
+  <script src="src/services/markdown-loader.js"></script>
 
   <script src="src/renderers/renderer-factory.js"></script>
   <script src="src/renderers/base-renderer.js"></script>

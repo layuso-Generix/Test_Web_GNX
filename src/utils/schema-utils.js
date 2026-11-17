@@ -39,61 +39,77 @@ function trimSchema(prop, trimEnums = true) {
 }
 
 function extractEnums(schema) {
-  const results = [];
-  const seen = new Set();
-  const walk = (obj, path, refName) => {
-    if (!obj || typeof obj !== 'object') {return;}
-    if (obj.$ref) {
-      const resolved = resolvePointer(obj.$ref, schema);
-      if (resolved) {walk(resolved, path, obj.$ref.split('/').pop());}
-      return;
+  const byName = new Map();            // nombre del enum → item
+  const order = [];                    // orden de aparición
+
+  const addUsage = (name, obj, path) => {
+    if (!byName.has(name)) {
+      const field = path ? path.split('.').pop().replace(/\[0\]$/, '') : name;
+      byName.set(name, {
+        field,
+        path: [],
+        type: obj.type || 'string',
+        description: obj.description || '',
+        values: obj.enum,
+        default: obj.default,
+        raw: obj,
+        defName: name
+      });
+      order.push(name);
     }
-    if (Array.isArray(obj.enum)) {
-      const key = path.split('.').pop().replace('[]', '');
-      if (!seen.has(path)) {
-        seen.add(path);
-        results.push({
-          field: key,
-          path,
-          type: obj.type || 'string',
-          description: obj.description || '',
-          values: obj.enum,
-          default: obj.default,
-          raw: obj,
-          defName: refName || key
-        });
-      }
-      return;
-    }
-    if (obj.properties) {
-      Object.entries(obj.properties)
-        .forEach(([key, value]) => {
-          walk(value, path
-            ? `${path}.${key}`
-            : key
-          );
-        });
-    }
-    if (obj.items) {walk(obj.items, `${path}[]`);}
-    if (obj.$defs) {
-      Object.entries(obj.$defs)
-        .forEach(([key, value]) => {
-          walk(value, key);
-        });
-    }
-    if (obj.definitions) {
-      Object.entries(obj.definitions)
-        .forEach(([key, value]) => {
-          walk(value, key);
-        });
+    if (path) {
+      const item = byName.get(name);
+      if (!item.path.includes(path)) { item.path.push(path); }
     }
   };
-  walk(schema, '');
-  return Object.values(results.reduce((acc, item) => {
-    const key = item.defName || item.field;
-    if (!acc[key]) {acc[key] = item;}
-    return acc;
-  }, {}));;
+
+  const walk = (obj, path, refName, visiting) => {
+    if (!obj || typeof obj !== 'object') { return; }
+
+    if (obj.$ref) {
+      const name = obj.$ref.split('/').pop();
+      if (visiting.has(name)) { return; }             // Tipo recursivo
+      const resolved = resolvePointer(obj.$ref, schema);
+      if (resolved) { walk(resolved, path, name, new Set([...visiting, name])); }
+      return;
+    }
+
+    if (Array.isArray(obj.enum)) {
+      const field = path.split('.').pop().replace(/\[0\]$/, '');
+      addUsage(refName || field, obj, path);
+      return;
+    }
+
+    ['allOf', 'anyOf', 'oneOf'].forEach((key) => {
+      if (Array.isArray(obj[key])) {
+        obj[key].forEach((sub) => walk(sub, path, refName, visiting));
+      }
+    });
+
+    if (obj.properties) {
+      Object.entries(obj.properties).forEach(([key, value]) => {
+        walk(value, path ? `${path}.${key}` : key, null, visiting);
+      });
+    }
+
+    if (obj.items) {
+      // La raíz no puede llevar [0] sin nombre
+      walk(obj.items, path ? `${path}[0]` : path, null, visiting);
+    }
+  };
+
+  // 1. Rutas reales desde la raíz
+  walk(schema, '', null, new Set());
+
+  // 2. Enums definidos pero no alcanzados desde la raíz
+  const defs = { ...(schema.definitions || {}), ...(schema.$defs || {}) };
+  Object.entries(defs).forEach(([name, def]) => {
+    if (def && Array.isArray(def.enum) && !byName.has(name)) {
+      addUsage(name, def, '');
+    }
+  });
+
+  return order.map((name) => byName.get(name));
 }
 
 function getFieldType(definition) {

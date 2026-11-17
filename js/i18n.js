@@ -43,7 +43,11 @@ const I18N = {
   'val.selectPlaceholder':'— Selecciona un mensaje —','val.loadError':'Error cargando mensajes',
   'vstatus.syntaxInvalid':'❌ JSON inválido (error de sintaxis)','vstatus.schemaLoadFail':'⚠️ No se pudo cargar el esquema','vstatus.valid':'✅ JSON válido','vstatus.invalid':'❌ JSON inválido',
   'vmeta.noStatus.badge':'Sin estado','vmeta.noStatus.title':'Esperando validación','vmeta.noStatus.text':'Sube un fichero para lanzar la validación.','vmeta.ok.badge':'Válido','vmeta.ok.title':'Validación completada','vmeta.ok.text':'El fichero cumple con el esquema.','vmeta.err.badge':'Inválido','vmeta.err.title':'Se detectaron errores','vmeta.err.text':'El fichero no cumple con el esquema.','vmeta.warn.badge':'Atención','vmeta.warn.title':'No se pudo validar','vmeta.info.badge':'Info','vmeta.info.title':'Estado',
-  'vtable.num':'#','vtable.field':'Campo','vtable.error':'Error','vviewer.title':'📄 JSON validado','tech.properties': 'Propiedades:'
+  'vtable.num':'#','card.comingSoon': 'Próximamente','vtable.field':'Campo','vtable.error':'Error','vviewer.title':'📄 JSON validado','tech.properties': 'Propiedades:','btn.download': 'Descargar',
+  'btn.refresh': '↻ Actualizar','btn.viewFolderGithub': 'Ver carpeta en GitHub','files.truncated': '… (contenido truncado)','files.previewFail': 'No se pudo cargar la vista previa: ','versions.general': 'General','versions.loadFail': 'No se pudieron cargar las versiones',
+  'aeat.title': 'Documentación AEAT','aeat.files': 'Ficheros disponibles','aeat.count': '{n} fichero(s) en {m} carpeta(s) de ley','aeat.general': 'General','aeat.emptyTitle': 'Carpeta vacía o aún no creada',
+  'aeat.subtitle': 'Documentación oficial de la AEAT relacionada con la facturación electrónica, organizada por ley. El listado se genera desde el repositorio: cualquier carpeta o fichero que se añada aparece aquí automáticamente.',
+  'aeat.emptyBody': 'No se han encontrado ficheros en {path}. En cuanto se añada documentación al repositorio, aparecerá aquí automáticamente.','aeat.loadFail': 'No se pudo cargar la documentación'
  },
  en: {
   'nav.contact':'Contact',
@@ -80,7 +84,11 @@ const I18N = {
   'val.selectPlaceholder':'— Select a message —','val.loadError':'Error loading messages',
   'vstatus.syntaxInvalid':'❌ Invalid JSON (syntax error)','vstatus.schemaLoadFail':'⚠️ Could not load the schema','vstatus.valid':'✅ Valid JSON','vstatus.invalid':'❌ Invalid JSON',
   'vmeta.noStatus.badge':'No status','vmeta.noStatus.title':'Waiting for validation','vmeta.noStatus.text':'Upload a file to run validation.','vmeta.ok.badge':'Valid','vmeta.ok.title':'Validation completed','vmeta.ok.text':'The file complies with the schema.','vmeta.err.badge':'Invalid','vmeta.err.title':'Errors detected','vmeta.err.text':'The file does not comply with the schema.','vmeta.warn.badge':'Warning','vmeta.warn.title':'Could not validate','vmeta.info.badge':'Info','vmeta.info.title':'Status',
-  'vtable.num':'#','vtable.field':'Field','vtable.error':'Error','vviewer.title':'📄 Validated JSON','tech.properties': 'Properties:'
+  'vtable.num':'#','card.comingSoon': 'Coming soon','vtable.field':'Field','vtable.error':'Error','vviewer.title':'📄 Validated JSON','tech.properties': 'Properties:','btn.download': 'Download',
+  'btn.refresh': '↻ Refresh','btn.viewFolderGithub': 'View folder on GitHub','files.truncated': '… (content truncated)','files.previewFail': 'Could not load preview: ','versions.general': 'General','versions.loadFail': 'Could not load versions',
+  'aeat.title': 'AEAT Documentation','aeat.files': 'Available files','aeat.count': '{n} file(s) in {m} law folder(s)','aeat.general': 'General','aeat.emptyTitle': 'Folder empty or not created yet',
+  'aeat.subtitle': 'Official AEAT documentation on electronic invoicing, organised by law. The list is generated from the repository: any folder or file added appears here automatically.',
+  'aeat.emptyBody': 'No files found in {path}. As soon as documentation is added to the repository, it will appear here automatically.','aeat.loadFail': 'Could not load the documentation'
  }
 };
 
@@ -103,12 +111,13 @@ function getLocalized(obj, base){
   return obj[LANG] || obj[I18N_DEFAULT] || Object.values(obj)[0] || '';
 }
 function setLang(l){
-  if(!I18N_LANGS.includes(l)) return;
-  try{ localStorage.setItem(SITE_CONFIG.storageKey, l); }catch(e){}
+  if (!I18N_LANGS.includes(l) || l === LANG) return;
+  try { localStorage.setItem(SITE_CONFIG.storageKey, l); } catch(e){}
   LANG = l;
+  window.LANG = l;
   applyStaticI18n();
-  if (window._currentSection) openEndpoint(window._currentSection.id);
-  else if (typeof renderGrid === 'function') renderGrid(SITE_CONFIG.sections);
+  if (typeof renderGrid === 'function') renderGrid(SITE_CONFIG.sections);
+  if (window.Router) window.Router.refresh();   // Repinta la vista actual manteniendo pestaña
 }
 function localizeNode(node){
   if (Array.isArray(node)) { node.forEach(localizeNode); return node; }
@@ -140,7 +149,11 @@ function applyStaticI18n(){
     const close = () => { langSwitch.classList.remove('open'); current.setAttribute('aria-expanded', 'false'); };
     current.onclick = e => { e.stopPropagation(); const open = langSwitch.classList.toggle('open'); current.setAttribute('aria-expanded', open ? 'true' : 'false'); };
     menu.querySelectorAll('.lang-option').forEach(op => { op.onclick = e => { e.stopPropagation(); setLang(op.dataset.lang); close(); }; });
-    document.addEventListener('click', close);
+    // Antes se añadía un listener nuevo en cada llamada; ahora solo una vez
+    if (!langSwitch.dataset.closeBound) {
+      document.addEventListener('click', close);
+      langSwitch.dataset.closeBound = '1';
+    }
   }
 }
 window.t = t; window.LANG = LANG; window.I18N = I18N; window.setLang = setLang; window.localizeNode = localizeNode; window.getLocalized = getLocalized;

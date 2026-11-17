@@ -1,18 +1,21 @@
 /* =========================================================
   router.js — Navegación por hash de la web de E-Invoicing
   ┌─────────────────────────────────────────────────────┐
-  │  Responsabilidad:                                   │
+  │  Rutas:                                             │
+  │   #                         portada                 │
+  │   #versions #validator #aeat                        │
+  │   #json  #xml  #ubl         vista de un formato     │
+  │   #json/invoice-json[/<tab>[/<ancla>]]   ficha      │
+  │                                                     │
+  │  Compatibilidad: #invoice-json (ruta antigua) se    │
+  │  redirige sola a #json/invoice-json.                │
+  │                                                     │
   │  - Única fuente de verdad de la URL.                │
-  │  - Rutas: #, #versions, #validator, #aeat,          │
-  │           #<cardId>[/<tab>[/<ancla>]]               │
-  │  - Una sola carga por card (sin doble render).      │
+  │  - Una sola carga por ficha.                        │
   │  - Atrás / Adelante / Recargar coherentes.          │
-  │  - Anclas internas (#bloques, #block-X, #enum-X).   │
-  │  - Sin lógica de renderizado.                       │
   └─────────────────────────────────────────────────────┘
   Depende de (en tiempo de ejecución):
-  - window.AppViews        (app.js)
-  - window.findCardById    (app.js)
+  - window.AppViews, findCardById, getCardsByFormat (app.js)
   - activateDetailTab / scrollToElementId / initScrollSpy (sidebar-navigation.js)
   ========================================================= */
 (function () {
@@ -21,7 +24,7 @@
   /* ── Estado ───────────────────────────────────────────── */
   let currentRoute = null;     // Última ruta procesada (string sin '#')
   let stableRoute = '';        // Última ruta "real" (no ancla) para restaurar la URL
-  let currentCardId = null;    // Card renderizada actualmente en view-detail
+  let currentCardId = null;    // Ficha renderizada actualmente en view-detail
   let renderToken = 0;         // Evita pintar resultados de navegaciones antiguas
 
   /* ── Rutas fijas (alias incluidos) ────────────────────── */
@@ -36,16 +39,34 @@
     aeat: 'aeat'
   };
 
-  /* ── Utilidades de ruta ───────────────────────────────── */
+  /* ── Utilidades ───────────────────────────────────────── */
   function parseRoute(rawHash) {
     let clean = String(rawHash || '').replace(/^#\/?/, '').trim();
-    try { clean = decodeURIComponent(clean); } catch (e) { /* hash mal codificado: se usa tal cual */ }
-    const [view = '', tab = '', anchor = ''] = clean.split('/');
-    return { raw: clean, view, tab, anchor };
+    try { clean = decodeURIComponent(clean); } catch (e) { /* hash mal codificado */ }
+    return { raw: clean, segments: clean ? clean.split('/') : [] };
   }
 
+  function findCard(id) {
+    return id && typeof window.findCardById === 'function' ? window.findCardById(id) : null;
+  }
+
+  function getFormats() {
+    return typeof window.getCardsByFormat === 'function' ? window.getCardsByFormat() : {};
+  }
+
+  function formatOf(card) {
+    return String(card.format || '').toLowerCase();
+  }
+
+  /**
+   * Construye una ruta. Si el primer valor es una ficha,
+   * le antepone su formato:  buildRoute('invoice-json', 'estructura')
+   *                       →  'json/invoice-json/estructura'
+   */
   function buildRoute(view, tab, anchor) {
-    return [view, tab, anchor].filter(Boolean).join('/');
+    const card = findCard(view);
+    const base = card ? `${formatOf(card)}/${card.id}` : view;
+    return [base, tab, anchor].filter(Boolean).join('/');
   }
 
   function getRoute() {
@@ -71,8 +92,6 @@
   }
 
   /* ── API pública de navegación ────────────────────────── */
-
-  /** Navega a una ruta (añade entrada al historial salvo replace:true). */
   function navigate(route, { replace = false } = {}) {
     route = route || '';
     if (route !== getRoute()) {
@@ -81,33 +100,20 @@
     return handleRoute({ force: true });
   }
 
-  /** Vuelve a pintar la vista actual (p. ej. al cambiar de idioma). */
   function refresh() {
     return handleRoute({ force: true, rerender: true });
   }
 
-  /** Actualiza la pestaña/ancla en la URL sin recargar nada ni crear historial. */
+  /** Actualiza pestaña/ancla en la URL sin recargar ni crear historial. */
   function replaceAnchor(anchor, tab) {
     if (!currentCardId) return;
     writeUrl(buildRoute(currentCardId, tab || getActiveTab(), anchor), { replace: true });
     stableRoute = currentRoute;
   }
 
-  /* ── Núcleo ───────────────────────────────────────────── */
-  async function handleRoute({ force = false, rerender = false } = {}) {
-    const route = parseRoute(location.hash);
-    if (!force && route.raw === currentRoute) return;
-    currentRoute = route.raw;
-
+  /* ── Vistas ───────────────────────────────────────────── */
+  async function showStatic(viewName) {
     const views = window.AppViews;
-    if (!views) {
-      console.error('[router] AppViews no disponible. Revisa el orden de carga de app.js.');
-      return;
-    }
-
-    /* 1. Rutas fijas */
-    if (Object.prototype.hasOwnProperty.call(STATIC_ROUTES, route.view)) {
-      const viewName = STATIC_ROUTES[route.view];
       currentCardId = null;
       renderToken++;
       const ok = await views[viewName]();
@@ -117,66 +123,107 @@
         await views.index();
       }
       stableRoute = currentRoute;
-      return;
   }
 
-    /* 2. Cards */
-    const card = typeof window.findCardById === 'function'
-      ? window.findCardById(route.view)
-      : null;
+  async function showFormat(fmtKey) {
+      currentCardId = null;
+      renderToken++;
+    await window.AppViews.format(fmtKey);
+      stableRoute = currentRoute;
+    }
 
-    if (card) {
+  async function showCard(card, tab, anchor, rerender) {
       const needsRender = rerender || card.id !== currentCardId;
       if (needsRender) {
         const token = ++renderToken;
         currentCardId = card.id;
-        await views.card(card);
+      await window.AppViews.card(card);
         if (token !== renderToken) return;   // Ha empezado otra navegación
       }
-      // Sin pestaña en la URL → pestaña principal (la primera).
-      // Así "Atrás" desde #card/estructura vuelve a #card correctamente.
-      const tab = route.tab || getDefaultTab();
-      if (tab && typeof window.activateDetailTab === 'function') {
-        window.activateDetailTab(tab);
+    // Sin pestaña en la URL → pestaña principal
+    const activeTab = tab || getDefaultTab();
+    if (activeTab && typeof window.activateDetailTab === 'function') {
+      window.activateDetailTab(activeTab);
       }
-      if (route.anchor && typeof window.scrollToElementId === 'function') {
-        window.scrollToElementId(route.anchor);
-      } else if (!needsRender && !route.tab) {
+    if (anchor && typeof window.scrollToElementId === 'function') {
+      window.scrollToElementId(anchor);
+    } else if (!needsRender && !tab) {
         window.scrollTo({ top: 0, behavior: 'auto' });
       }
       if (typeof window.initScrollSpy === 'function') {
         window.initScrollSpy();
       }
       stableRoute = currentRoute;
+  }
+
+  /* ── Núcleo ───────────────────────────────────────────── */
+  async function handleRoute({ force = false, rerender = false } = {}) {
+    const route = parseRoute(location.hash);
+    if (!force && route.raw === currentRoute) return;
+    currentRoute = route.raw;
+
+    if (!window.AppViews) {
+      console.error('[router] AppViews no disponible. Revisa el orden de carga de app.js.');
+      return;
+    }
+    const [first = '', second = '', third = '', fourth = ''] = route.segments;
+
+    /* 1. Rutas fijas */
+    if (route.segments.length <= 1 && Object.prototype.hasOwnProperty.call(STATIC_ROUTES, first)) {
+      await showStatic(STATIC_ROUTES[first]);
       return;
     }
 
-    /* 3. Anclas internas (#bloques, #block-X, #enum-X…) */
-    if (!route.tab && route.raw && document.getElementById(route.raw)) {
-      handleInPageAnchor(route.raw);
+    /* 2. Formato (#json) o ficha dentro de un formato (#json/invoice-json/…) */
+    const fmtKey = first.toUpperCase();
+    if (getFormats()[fmtKey]) {
+      if (!second) {
+        await showFormat(fmtKey);
+        return;
+      }
+      const card = findCard(second);
+      if (card && !card.comingSoon && formatOf(card) === first.toLowerCase()) {
+        await showCard(card, third, fourth, rerender);
+        return;
+      }
+      // Ficha inexistente, inactiva o de otro formato → vista del formato
+      writeUrl(first.toLowerCase(), { replace: true });
+      await showFormat(fmtKey);
       return;
   }
 
-    /* 4. Ruta desconocida */
+    /* 3. Ruta antigua #invoice-json[/tab[/ancla]] → #json/invoice-json[/…] */
+    const legacy = findCard(first);
+    if (legacy && !legacy.comingSoon) {
+      writeUrl(buildRoute(legacy.id, second, third), { replace: true });
+      await showCard(legacy, second, third, rerender);
+      return;
+    }
+
+    /* 4. Anclas internas (#documentation-section, #recursos-section…) */
+    if (route.segments.length === 1 && document.getElementById(first)) {
+      handleInPageAnchor(first);
+      return;
+    }
+
+    /* 5. Ruta desconocida */
     console.warn(`[router] Ruta no encontrada: ${route.raw}`);
     currentCardId = null;
     writeUrl('', { replace: true });
     stableRoute = '';
-    await views.index();
+    await window.AppViews.index();
 }
 
   function handleInPageAnchor(id) {
     const el = document.getElementById(id);
     const indexView = document.getElementById('view-index');
 
-    // Si el ancla está en la portada y la portada no se ve, se muestra primero
     if (indexView && indexView.contains(el) && indexView.style.display === 'none') {
       currentCardId = null;
       window.AppViews.index({ scroll: false });
       stableRoute = '';
     }
-
-    // Se restaura la URL anterior: el ancla no es una ruta
+    // El ancla no es una ruta: se restaura la URL anterior
     writeUrl(stableRoute, { replace: true });
 
     if (typeof window.scrollToElementId === 'function') {
@@ -191,10 +238,16 @@
     return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
   }
 
+  function targetRoute(target) {
+    return target.dataset.route != null
+      ? target.dataset.route
+      : buildRoute(target.dataset.cardId);
+  }
+
   function onDocumentClick(event) {
     if (event.defaultPrevented || isModifiedClick(event)) return;
 
-    // Pestañas de la vista detalle → la pestaña queda en la URL
+    // Pestañas de la ficha → la pestaña queda en la URL
     const tabBtn = event.target.closest('#view-detail .tab-btn[data-tab]');
     if (tabBtn && currentCardId) {
       navigate(buildRoute(currentCardId, tabBtn.dataset.tab));
@@ -206,7 +259,7 @@
     if (!target || target.matches('a[href]')) return;
 
       event.preventDefault();
-    navigate(target.dataset.route != null ? target.dataset.route : target.dataset.cardId);
+    navigate(targetRoute(target));
   }
 
   function onDocumentKeydown(event) {
@@ -215,11 +268,10 @@
     if (!target || target.matches('a[href], button, input, select, textarea')) return;
 
     event.preventDefault();
-    navigate(target.dataset.route != null ? target.dataset.route : target.dataset.cardId);
+    navigate(targetRoute(target));
   }
 
   function initRouter() {
-    // hashchange y popstate pueden dispararse juntos: handleRoute deduplica por ruta
     window.addEventListener('hashchange', () => handleRoute());
     window.addEventListener('popstate', () => handleRoute());
     document.addEventListener('click', onDocumentClick);
