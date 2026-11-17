@@ -69,8 +69,35 @@
       try {
         const raw = await window.GithubService.getFileText(`${examplesRoot()}/catalog.json`);
         const catalog = JSON.parse(raw);
+        // Carpeta y extensión de cada formato
+        const FOLDER = { xml: 'Xml', json: 'Json', ubl: 'Ubl' };
+        const EXT = { xml: 'xml', json: 'json', ubl: 'xml' };
+        const root = examplesRoot();
+
+        // Ficheros que existen en el repo: solo se muestran los casos que tienen fichero
+        let existing = null;
+        try {
+          const tree = await window.GithubService.loadRepoTree();
+          existing = new Set(tree.filter((i) => i.type === 'blob').map((i) => i.path));
+        } catch (e) { /* sin listado: se muestran todos */ }
+
+        const fileFor = (c) => {
+          if (c.files && c.files[this.format]) return c.files[this.format];   // formato antiguo
+          if (!c.file) return '';
+          const rel = `${FOLDER[this.format] || this.format}/${c.file}.${EXT[this.format] || this.format}`;
+          return !existing || existing.has(`${root}/${rel}`) ? rel : '';
+        };
+
         this.groups = (catalog.groups || [])
-          .map((g) => ({ ...g, cases: (g.cases || []).filter((c) => c.files && c.files[this.format]) }))
+          .map((g) => ({
+            ...g,
+            cases: (g.cases || [])
+              .map((c) => {
+                const rel = fileFor(c);
+                return rel ? { ...c, files: { ...(c.files || {}), [this.format]: rel } } : null;
+              })
+              .filter(Boolean)
+          }))
           .filter((g) => g.cases.length);
         this.paintChips();
         this.paint();

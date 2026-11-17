@@ -21,10 +21,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "F-2026-014",
-          "files": {
-            "xml": "Xml/C001_01_ordinaria.xml",
-            "json": "Json/C001_01_ordinaria.json"
-          }
+          "file": "C001_01_ordinaria"
         },
         {
           "id": "C002",
@@ -40,10 +37,7 @@
           "issuer_en": "Third-party issuer (TE)",
           "docType": "380",
           "label": "GNX-LAB-002",
-          "files": {
-            "xml": "Xml/C002_02_tercero.xml",
-            "json": "Json/C002_02_tercero.json"
-          }
+          "file": "C002_02_tercero"
         },
         {
           "id": "C003",
@@ -59,10 +53,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "F-2026-014",
-          "files": {
-            "xml": "Xml/C003_03_copia.xml",
-            "json": "Json/C003_03_copia.json"
-          }
+          "file": "C003_03_copia"
         },
         {
           "id": "C007",
@@ -78,10 +69,7 @@
           "issuer_en": "Recipient (RE)",
           "docType": "389",
           "label": "AF-2026-009",
-          "files": {
-            "xml": "Xml/C007_07_autofactura.xml",
-            "json": "Json/C007_07_autofactura.json"
-          }
+          "file": "C007_07_autofactura"
         }
       ]
     },
@@ -104,10 +92,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-2026-004",
-          "files": {
-            "xml": "Xml/C004_04_rect_diferencias.xml",
-            "json": "Json/C004_04_rect_diferencias.json"
-          }
+          "file": "C004_04_rect_diferencias"
         },
         {
           "id": "C005",
@@ -123,10 +108,7 @@
           "issuer_en": "Seller (EM) · Method: By substitution (S) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-005",
-          "files": {
-            "xml": "Xml/C005_05_rect_sustitucion.xml",
-            "json": "Json/C005_05_rect_sustitucion.json"
-          }
+          "file": "C005_05_rect_sustitucion"
         },
         {
           "id": "C008",
@@ -142,10 +124,7 @@
           "issuer_en": "Recipient (RE) · Method: By differences (I) · Reason: R4",
           "docType": "471",
           "label": "RAF-LAB-008",
-          "files": {
-            "xml": "Xml/C008_08_rect_destinatario_i.xml",
-            "json": "Json/C008_08_rect_destinatario_i.json"
-          }
+          "file": "C008_08_rect_destinatario_i"
         },
         {
           "id": "C009",
@@ -161,10 +140,7 @@
           "issuer_en": "Recipient (RE) · Method: By substitution (S) · Reason: R4",
           "docType": "471",
           "label": "RAF-LAB-009",
-          "files": {
-            "xml": "Xml/C009_09_rect_destinatario_s.xml",
-            "json": "Json/C009_09_rect_destinatario_s.json"
-          }
+          "file": "C009_09_rect_destinatario_s"
         },
         {
           "id": "C010",
@@ -180,10 +156,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-010",
-          "files": {
-            "xml": "Xml/C010_10_rect_iva_combinado.xml",
-            "json": "Json/C010_10_rect_iva_combinado.json"
-          }
+          "file": "C010_10_rect_iva_combinado"
         },
         {
           "id": "C026",
@@ -199,10 +172,7 @@
           "issuer_en": "Seller (EM) · Method: By substitution (S) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-026",
-          "files": {
-            "xml": "Xml/C026_14_rect_recargo.xml",
-            "json": "Json/C026_14_rect_recargo.json"
-          }
+          "file": "C026_14_rect_recargo"
         },
         {
           "id": "C035",
@@ -218,10 +188,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R1",
           "docType": "384",
           "label": "R-LAB-035",
-          "files": {
-            "xml": "Xml/C035_c_l2a_r1.xml",
-            "json": "Json/C035_c_l2a_r1.json"
-          }
+          "file": "C035_c_l2a_r1"
         },
         {
           "id": "C036",
@@ -237,9 +204,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R2",
           "docType": "384",
           "label": "R-LAB-036",
-          "files": {
-            "xml": "Xml/C036_c_l2a_r2.xml"
-          }
+          "file": "C036_c_l2a_r2"
         },
         {
           "id": "C037",
@@ -255,9 +220,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R3",
           "docType": "384",
           "label": "R-LAB-037",
-          "files": {
-            "xml": "Xml/C037_c_l2a_r3.xml"
-          }
+          "file": "C037_c_l2a_r3"
         },
         {
           "id": "C038",
@@ -273,9 +236,7 @@
           "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-038",
-          "files": {
-            "xml": "Xml/C038_c_l2a_r4.xml"
-          }
+          "file": "C038_c_l2a_r4"
         }
       ]
     },
@@ -298,9 +259,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "388",
           "label": "C-LAB-006",
-          "files": {
-            "xml": "Xml/C006_06_canje.xml"
-          }
+          "file": "C006_06_canje"
         }
       ]
     },
@@ -323,9 +282,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-011",
-          "files": {
-            "xml": "Xml/C011_11_iva.xml"
-          }
+          "file": "C011_11_iva"
         },
         {
           "id": "C039",
@@ -341,9 +298,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-039",
-          "files": {
-            "xml": "Xml/C039_c_l3a_01.xml"
-          }
+          "file": "C039_c_l3a_01"
         },
         {
           "id": "C040",
@@ -359,9 +314,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-040",
-          "files": {
-            "xml": "Xml/C040_c_l3a_02.xml"
-          }
+          "file": "C040_c_l3a_02"
         },
         {
           "id": "C041",
@@ -377,9 +330,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-041",
-          "files": {
-            "xml": "Xml/C041_c_l3a_03.xml"
-          }
+          "file": "C041_c_l3a_03"
         },
         {
           "id": "C042",
@@ -395,9 +346,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-042",
-          "files": {
-            "xml": "Xml/C042_c_l3a_04.xml"
-          }
+          "file": "C042_c_l3a_04"
         },
         {
           "id": "C043",
@@ -413,9 +362,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-043",
-          "files": {
-            "xml": "Xml/C043_c_l3a_05.xml"
-          }
+          "file": "C043_c_l3a_05"
         },
         {
           "id": "C044",
@@ -431,9 +378,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-044",
-          "files": {
-            "xml": "Xml/C044_c_l3a_06.xml"
-          }
+          "file": "C044_c_l3a_06"
         },
         {
           "id": "C045",
@@ -449,9 +394,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-045",
-          "files": {
-            "xml": "Xml/C045_c_l3a_07.xml"
-          }
+          "file": "C045_c_l3a_07"
         },
         {
           "id": "C046",
@@ -467,9 +410,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-046",
-          "files": {
-            "xml": "Xml/C046_c_l3a_08.xml"
-          }
+          "file": "C046_c_l3a_08"
         },
         {
           "id": "C047",
@@ -485,9 +426,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-047",
-          "files": {
-            "xml": "Xml/C047_c_l3a_09.xml"
-          }
+          "file": "C047_c_l3a_09"
         },
         {
           "id": "C048",
@@ -503,9 +442,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-048",
-          "files": {
-            "xml": "Xml/C048_c_l3a_11.xml"
-          }
+          "file": "C048_c_l3a_11"
         },
         {
           "id": "C049",
@@ -521,9 +458,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-049",
-          "files": {
-            "xml": "Xml/C049_c_l3a_14.xml"
-          }
+          "file": "C049_c_l3a_14"
         },
         {
           "id": "C050",
@@ -539,9 +474,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-050",
-          "files": {
-            "xml": "Xml/C050_c_l3a_15.xml"
-          }
+          "file": "C050_c_l3a_15"
         }
       ]
     },
@@ -564,9 +497,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-012",
-          "files": {
-            "xml": "Xml/C012_11_igic.xml"
-          }
+          "file": "C012_11_igic"
         },
         {
           "id": "C051",
@@ -582,9 +513,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-051",
-          "files": {
-            "xml": "Xml/C051_c_l3b_01.xml"
-          }
+          "file": "C051_c_l3b_01"
         },
         {
           "id": "C052",
@@ -600,9 +529,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-052",
-          "files": {
-            "xml": "Xml/C052_c_l3b_02.xml"
-          }
+          "file": "C052_c_l3b_02"
         },
         {
           "id": "C053",
@@ -618,9 +545,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-053",
-          "files": {
-            "xml": "Xml/C053_c_l3b_03.xml"
-          }
+          "file": "C053_c_l3b_03"
         },
         {
           "id": "C054",
@@ -636,9 +561,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-054",
-          "files": {
-            "xml": "Xml/C054_c_l3b_04.xml"
-          }
+          "file": "C054_c_l3b_04"
         },
         {
           "id": "C055",
@@ -654,9 +577,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-055",
-          "files": {
-            "xml": "Xml/C055_c_l3b_05.xml"
-          }
+          "file": "C055_c_l3b_05"
         },
         {
           "id": "C056",
@@ -672,9 +593,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-056",
-          "files": {
-            "xml": "Xml/C056_c_l3b_06.xml"
-          }
+          "file": "C056_c_l3b_06"
         },
         {
           "id": "C057",
@@ -690,9 +609,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-057",
-          "files": {
-            "xml": "Xml/C057_c_l3b_07.xml"
-          }
+          "file": "C057_c_l3b_07"
         },
         {
           "id": "C058",
@@ -708,9 +625,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-058",
-          "files": {
-            "xml": "Xml/C058_c_l3b_08.xml"
-          }
+          "file": "C058_c_l3b_08"
         },
         {
           "id": "C059",
@@ -726,9 +641,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-059",
-          "files": {
-            "xml": "Xml/C059_c_l3b_09.xml"
-          }
+          "file": "C059_c_l3b_09"
         },
         {
           "id": "C060",
@@ -744,9 +657,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-060",
-          "files": {
-            "xml": "Xml/C060_c_l3b_11.xml"
-          }
+          "file": "C060_c_l3b_11"
         },
         {
           "id": "C061",
@@ -762,9 +673,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-061",
-          "files": {
-            "xml": "Xml/C061_c_l3b_14.xml"
-          }
+          "file": "C061_c_l3b_14"
         },
         {
           "id": "C062",
@@ -780,9 +689,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-062",
-          "files": {
-            "xml": "Xml/C062_c_l3b_15.xml"
-          }
+          "file": "C062_c_l3b_15"
         },
         {
           "id": "C063",
@@ -798,9 +705,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-063",
-          "files": {
-            "xml": "Xml/C063_c_l3b_17.xml"
-          }
+          "file": "C063_c_l3b_17"
         },
         {
           "id": "C064",
@@ -816,9 +721,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-064",
-          "files": {
-            "xml": "Xml/C064_c_l3b_18.xml"
-          }
+          "file": "C064_c_l3b_18"
         },
         {
           "id": "C065",
@@ -834,9 +737,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-065",
-          "files": {
-            "xml": "Xml/C065_c_l3b_19.xml"
-          }
+          "file": "C065_c_l3b_19"
         }
       ]
     },
@@ -859,9 +760,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-013",
-          "files": {
-            "xml": "Xml/C013_11_ipsi.xml"
-          }
+          "file": "C013_11_ipsi"
         },
         {
           "id": "C066",
@@ -877,9 +776,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-066",
-          "files": {
-            "xml": "Xml/C066_c_l3c_01.xml"
-          }
+          "file": "C066_c_l3c_01"
         },
         {
           "id": "C067",
@@ -895,9 +792,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-067",
-          "files": {
-            "xml": "Xml/C067_c_l3c_08.xml"
-          }
+          "file": "C067_c_l3c_08"
         },
         {
           "id": "C068",
@@ -913,9 +808,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-068",
-          "files": {
-            "xml": "Xml/C068_c_l3c_11.xml"
-          }
+          "file": "C068_c_l3c_11"
         },
         {
           "id": "C069",
@@ -931,9 +824,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-069",
-          "files": {
-            "xml": "Xml/C069_c_l3c_19.xml"
-          }
+          "file": "C069_c_l3c_19"
         },
         {
           "id": "C070",
@@ -949,9 +840,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-070",
-          "files": {
-            "xml": "Xml/C070_c_l3c_20.xml"
-          }
+          "file": "C070_c_l3c_20"
         }
       ]
     },
@@ -974,9 +863,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-014",
-          "files": {
-            "xml": "Xml/C014_12_categoria_s.xml"
-          }
+          "file": "C014_12_categoria_s"
         },
         {
           "id": "C015",
@@ -992,9 +879,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-015",
-          "files": {
-            "xml": "Xml/C015_12_categoria_z.xml"
-          }
+          "file": "C015_12_categoria_z"
         },
         {
           "id": "C016",
@@ -1010,9 +895,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-016",
-          "files": {
-            "xml": "Xml/C016_12_categoria_e.xml"
-          }
+          "file": "C016_12_categoria_e"
         },
         {
           "id": "C017",
@@ -1028,9 +911,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-017",
-          "files": {
-            "xml": "Xml/C017_12_categoria_ae.xml"
-          }
+          "file": "C017_12_categoria_ae"
         },
         {
           "id": "C018",
@@ -1046,9 +927,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-018",
-          "files": {
-            "xml": "Xml/C018_12_categoria_o.xml"
-          }
+          "file": "C018_12_categoria_o"
         },
         {
           "id": "C019",
@@ -1064,9 +943,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-019",
-          "files": {
-            "xml": "Xml/C019_12_categoria_g.xml"
-          }
+          "file": "C019_12_categoria_g"
         },
         {
           "id": "C020",
@@ -1082,9 +959,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-020",
-          "files": {
-            "xml": "Xml/C020_12_categoria_l.xml"
-          }
+          "file": "C020_12_categoria_l"
         },
         {
           "id": "C021",
@@ -1100,9 +975,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-021",
-          "files": {
-            "xml": "Xml/C021_12_categoria_m.xml"
-          }
+          "file": "C021_12_categoria_m"
         },
         {
           "id": "C022",
@@ -1118,9 +991,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-022",
-          "files": {
-            "xml": "Xml/C022_12_categoria_n.xml"
-          }
+          "file": "C022_12_categoria_n"
         },
         {
           "id": "C023",
@@ -1136,9 +1007,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-023",
-          "files": {
-            "xml": "Xml/C023_12_categoria_d.xml"
-          }
+          "file": "C023_12_categoria_d"
         },
         {
           "id": "C024",
@@ -1154,9 +1023,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-024",
-          "files": {
-            "xml": "Xml/C024_12_categoria_f.xml"
-          }
+          "file": "C024_12_categoria_f"
         }
       ]
     },
@@ -1179,9 +1046,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "RE-2026-001",
-          "files": {
-            "xml": "Xml/C025_13_recargo.xml"
-          }
+          "file": "C025_13_recargo"
         }
       ]
     },
@@ -1204,9 +1069,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-027",
-          "files": {
-            "xml": "Xml/C027_15_retencion.xml"
-          }
+          "file": "C027_15_retencion"
         },
         {
           "id": "C034",
@@ -1222,9 +1085,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-034",
-          "files": {
-            "xml": "Xml/C034_17_terceros_rete.xml"
-          }
+          "file": "C034_17_terceros_rete"
         },
         {
           "id": "C071",
@@ -1240,9 +1101,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-071",
-          "files": {
-            "xml": "Xml/C071_c_l5_01.xml"
-          }
+          "file": "C071_c_l5_01"
         },
         {
           "id": "C072",
@@ -1258,9 +1117,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-072",
-          "files": {
-            "xml": "Xml/C072_c_l5_02.xml"
-          }
+          "file": "C072_c_l5_02"
         },
         {
           "id": "C073",
@@ -1276,9 +1133,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-073",
-          "files": {
-            "xml": "Xml/C073_c_l5_03.xml"
-          }
+          "file": "C073_c_l5_03"
         },
         {
           "id": "C074",
@@ -1294,9 +1149,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-074",
-          "files": {
-            "xml": "Xml/C074_c_l5_04.xml"
-          }
+          "file": "C074_c_l5_04"
         },
         {
           "id": "C075",
@@ -1312,9 +1165,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-075",
-          "files": {
-            "xml": "Xml/C075_c_l5_05.xml"
-          }
+          "file": "C075_c_l5_05"
         },
         {
           "id": "C076",
@@ -1330,9 +1181,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-076",
-          "files": {
-            "xml": "Xml/C076_c_l5_06.xml"
-          }
+          "file": "C076_c_l5_06"
         },
         {
           "id": "C077",
@@ -1348,9 +1197,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-077",
-          "files": {
-            "xml": "Xml/C077_c_l5_07.xml"
-          }
+          "file": "C077_c_l5_07"
         },
         {
           "id": "C078",
@@ -1366,9 +1213,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-078",
-          "files": {
-            "xml": "Xml/C078_c_l5_08.xml"
-          }
+          "file": "C078_c_l5_08"
         },
         {
           "id": "C079",
@@ -1384,9 +1229,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-079",
-          "files": {
-            "xml": "Xml/C079_c_l5_09.xml"
-          }
+          "file": "C079_c_l5_09"
         },
         {
           "id": "C080",
@@ -1402,9 +1245,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-080",
-          "files": {
-            "xml": "Xml/C080_c_l5_10.xml"
-          }
+          "file": "C080_c_l5_10"
         },
         {
           "id": "C081",
@@ -1420,9 +1261,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-081",
-          "files": {
-            "xml": "Xml/C081_c_l5_11.xml"
-          }
+          "file": "C081_c_l5_11"
         }
       ]
     },
@@ -1445,9 +1284,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-028",
-          "files": {
-            "xml": "Xml/C028_16_iee_linea.xml"
-          }
+          "file": "C028_16_iee_linea"
         },
         {
           "id": "C029",
@@ -1463,9 +1300,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-029",
-          "files": {
-            "xml": "Xml/C029_16_iee_documento.xml"
-          }
+          "file": "C029_16_iee_documento"
         },
         {
           "id": "C085",
@@ -1481,9 +1316,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-085",
-          "files": {
-            "xml": "Xml/C085_c_l9_ieh_linea.xml"
-          }
+          "file": "C085_c_l9_ieh_linea"
         },
         {
           "id": "C086",
@@ -1499,9 +1332,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-086",
-          "files": {
-            "xml": "Xml/C086_c_l9_ieh_documento.xml"
-          }
+          "file": "C086_c_l9_ieh_documento"
         },
         {
           "id": "C087",
@@ -1517,9 +1348,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-087",
-          "files": {
-            "xml": "Xml/C087_c_l9_iece_linea.xml"
-          }
+          "file": "C087_c_l9_iece_linea"
         },
         {
           "id": "C088",
@@ -1535,9 +1364,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-088",
-          "files": {
-            "xml": "Xml/C088_c_l9_iece_documento.xml"
-          }
+          "file": "C088_c_l9_iece_documento"
         },
         {
           "id": "C089",
@@ -1553,9 +1380,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-089",
-          "files": {
-            "xml": "Xml/C089_c_l9_iepi_linea.xml"
-          }
+          "file": "C089_c_l9_iepi_linea"
         },
         {
           "id": "C090",
@@ -1571,9 +1396,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-090",
-          "files": {
-            "xml": "Xml/C090_c_l9_iepi_documento.xml"
-          }
+          "file": "C090_c_l9_iepi_documento"
         },
         {
           "id": "C091",
@@ -1589,9 +1412,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-091",
-          "files": {
-            "xml": "Xml/C091_c_l9_iea_linea.xml"
-          }
+          "file": "C091_c_l9_iea_linea"
         },
         {
           "id": "C092",
@@ -1607,9 +1428,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-092",
-          "files": {
-            "xml": "Xml/C092_c_l9_iea_documento.xml"
-          }
+          "file": "C092_c_l9_iea_documento"
         },
         {
           "id": "C093",
@@ -1625,9 +1444,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-093",
-          "files": {
-            "xml": "Xml/C093_c_l9_iet_linea.xml"
-          }
+          "file": "C093_c_l9_iet_linea"
         },
         {
           "id": "C094",
@@ -1643,9 +1460,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-094",
-          "files": {
-            "xml": "Xml/C094_c_l9_iet_documento.xml"
-          }
+          "file": "C094_c_l9_iet_documento"
         },
         {
           "id": "C095",
@@ -1661,9 +1476,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-095",
-          "files": {
-            "xml": "Xml/C095_c_l9_ielc_linea.xml"
-          }
+          "file": "C095_c_l9_ielc_linea"
         },
         {
           "id": "C096",
@@ -1679,9 +1492,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-096",
-          "files": {
-            "xml": "Xml/C096_c_l9_ielc_documento.xml"
-          }
+          "file": "C096_c_l9_ielc_documento"
         },
         {
           "id": "C097",
@@ -1697,9 +1508,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-097",
-          "files": {
-            "xml": "Xml/C097_c_l9_iee_linea.xml"
-          }
+          "file": "C097_c_l9_iee_linea"
         },
         {
           "id": "C098",
@@ -1715,9 +1524,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-098",
-          "files": {
-            "xml": "Xml/C098_c_l9_iee_documento.xml"
-          }
+          "file": "C098_c_l9_iee_documento"
         },
         {
           "id": "C099",
@@ -1733,9 +1540,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-099",
-          "files": {
-            "xml": "Xml/C099_c_l9_iec_linea.xml"
-          }
+          "file": "C099_c_l9_iec_linea"
         },
         {
           "id": "C100",
@@ -1751,9 +1556,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-100",
-          "files": {
-            "xml": "Xml/C100_c_l9_iec_documento.xml"
-          }
+          "file": "C100_c_l9_iec_documento"
         },
         {
           "id": "C101",
@@ -1769,9 +1572,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-101",
-          "files": {
-            "xml": "Xml/C101_c_l9_iep_linea.xml"
-          }
+          "file": "C101_c_l9_iep_linea"
         },
         {
           "id": "C102",
@@ -1787,9 +1588,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-102",
-          "files": {
-            "xml": "Xml/C102_c_l9_iep_documento.xml"
-          }
+          "file": "C102_c_l9_iep_documento"
         },
         {
           "id": "C103",
@@ -1805,9 +1604,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-103",
-          "files": {
-            "xml": "Xml/C103_c_l9_iede_linea.xml"
-          }
+          "file": "C103_c_l9_iede_linea"
         },
         {
           "id": "C104",
@@ -1823,9 +1620,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-104",
-          "files": {
-            "xml": "Xml/C104_c_l9_iede_documento.xml"
-          }
+          "file": "C104_c_l9_iede_documento"
         },
         {
           "id": "C105",
@@ -1841,9 +1636,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-105",
-          "files": {
-            "xml": "Xml/C105_c_l9_imptas_linea.xml"
-          }
+          "file": "C105_c_l9_imptas_linea"
         },
         {
           "id": "C106",
@@ -1859,9 +1652,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-106",
-          "files": {
-            "xml": "Xml/C106_c_l9_imptas_documento.xml"
-          }
+          "file": "C106_c_l9_imptas_documento"
         },
         {
           "id": "C107",
@@ -1877,9 +1668,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-107",
-          "files": {
-            "xml": "Xml/C107_c_l9_resto_linea.xml"
-          }
+          "file": "C107_c_l9_resto_linea"
         },
         {
           "id": "C108",
@@ -1895,9 +1684,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-108",
-          "files": {
-            "xml": "Xml/C108_c_l9_resto_documento.xml"
-          }
+          "file": "C108_c_l9_resto_documento"
         }
       ]
     },
@@ -1920,9 +1707,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-030",
-          "files": {
-            "xml": "Xml/C030_17_terceros_iedmt.xml"
-          }
+          "file": "C030_17_terceros_iedmt"
         },
         {
           "id": "C031",
@@ -1938,9 +1723,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-031",
-          "files": {
-            "xml": "Xml/C031_17_terceros_otros.xml"
-          }
+          "file": "C031_17_terceros_otros"
         },
         {
           "id": "C032",
@@ -1956,9 +1739,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-032",
-          "files": {
-            "xml": "Xml/C032_17_terceros_supl.xml"
-          }
+          "file": "C032_17_terceros_supl"
         },
         {
           "id": "C033",
@@ -1974,9 +1755,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-033",
-          "files": {
-            "xml": "Xml/C033_17_terceros_mino.xml"
-          }
+          "file": "C033_17_terceros_mino"
         }
       ]
     },
@@ -1999,9 +1778,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-082",
-          "files": {
-            "xml": "Xml/C082_c_l6_01.xml"
-          }
+          "file": "C082_c_l6_01"
         },
         {
           "id": "C083",
@@ -2017,9 +1794,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-083",
-          "files": {
-            "xml": "Xml/C083_c_l6_02.xml"
-          }
+          "file": "C083_c_l6_02"
         },
         {
           "id": "C084",
@@ -2035,9 +1810,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-084",
-          "files": {
-            "xml": "Xml/C084_c_l6_04.xml"
-          }
+          "file": "C084_c_l6_04"
         },
         {
           "id": "C109",
@@ -2053,9 +1826,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-109",
-          "files": {
-            "xml": "Xml/C109_c_l6_03_sin_referencia.xml"
-          }
+          "file": "C109_c_l6_03_sin_referencia"
         }
       ]
     },
@@ -2078,9 +1849,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-110",
-          "files": {
-            "xml": "Xml/C110_c_l8_info.xml"
-          }
+          "file": "C110_c_l8_info"
         },
         {
           "id": "C111",
@@ -2096,9 +1865,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-111",
-          "files": {
-            "xml": "Xml/C111_c_l10_qr_verifactu.xml"
-          }
+          "file": "C111_c_l10_qr_verifactu"
         },
         {
           "id": "C112",
@@ -2114,9 +1881,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-112",
-          "files": {
-            "xml": "Xml/C112_c_l10_qr_ticketbai.xml"
-          }
+          "file": "C112_c_l10_qr_ticketbai"
         },
         {
           "id": "C113",
@@ -2132,9 +1897,7 @@
           "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-113",
-          "files": {
-            "xml": "Xml/C113_c_l10_aut.xml"
-          }
+          "file": "C113_c_l10_aut"
         }
       ]
     }
