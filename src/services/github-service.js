@@ -265,7 +265,7 @@ class GithubService {
   async getFileText(path) {
     const clean = this._cleanPath(path);
     return this._cached(`file:${clean}`, async () => {
-      const response = await fetch(this.getRawUrl(clean));
+      const response = await fetch(this.getRawUrl(clean), { cache: 'no-cache' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} · ${clean}`);
       }

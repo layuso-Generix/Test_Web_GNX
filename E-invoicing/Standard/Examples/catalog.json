@@ -1,10 +1,11 @@
 {
-  "version": 1,
+  "version": 2,
   "source": "INDICE.html",
   "groups": [
     {
       "id": "G01",
       "title": "Emisión, copias y expedidor",
+      "title_en": "Issuance, copies and issuer",
       "cases": [
         {
           "id": "C001",
@@ -13,6 +14,7 @@
           "send": "Identificar vendedor y comprador; serie/número, fecha, líneas, base, IVA y total. Expedidor EM y tipo 380.",
           "check": "Conciliar los datos del maestro de clientes y el total con el asiento.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "F-2026-014",
           "files": {
@@ -26,6 +28,7 @@
           "send": "Indicar TE y la lista ThirdParty con nombre y NIF del expedidor material; mantener el vendedor real en SellerParty.",
           "check": "Distinguir la expedición material de la mera transmisión técnica con un certificado.",
           "issuer": "Tercero expedidor (TE)",
+          "issuer_en": "Third-party issuer (TE)",
           "docType": "380",
           "label": "GNX-LAB-002",
           "files": {
@@ -39,6 +42,7 @@
           "send": "Conservar número, fecha y partes de la original; indicar COPIA en InvoiceClass.",
           "check": "No registrar una segunda venta. Comparar con C001.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "F-2026-014",
           "files": {
@@ -52,6 +56,7 @@
           "send": "Indicar RE, tipo 389 y la mención «facturación por el destinatario»; conservar ambas partes.",
           "check": "Confirmar acuerdo y procedimiento de aceptación aplicables; no confundir con inversión del sujeto pasivo.",
           "issuer": "Destinatario (RE)",
+          "issuer_en": "Recipient (RE)",
           "docType": "389",
           "label": "AF-2026-009",
           "files": {
@@ -63,6 +68,7 @@
     {
       "id": "G02",
       "title": "Rectificación y abonos",
+      "title_en": "Corrections and credit notes",
       "cases": [
         {
           "id": "C004",
@@ -71,6 +77,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R4",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-2026-004",
           "files": {
@@ -84,6 +91,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad S. Indicar base y cuota correctas y, para esta modalidad con documento único, la base y cuota originales rectificadas; añadir el recargo original si procede.",
           "check": "Conciliar los valores nuevos con los originales; no contabilizar los dos como ventas adicionales. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por sustitución (S) · Motivo: R4",
+          "issuer_en": "Seller (EM) · Method: By substitution (S) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-005",
           "files": {
@@ -97,6 +105,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad I. Indicar base y cuota de la diferencia, con su signo. Mantener vendedor y comprador; incluir la mención de expedición por el destinatario.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Destinatario (RE) · Modalidad: Por diferencias (I) · Motivo: R4",
+          "issuer_en": "Recipient (RE) · Method: By differences (I) · Reason: R4",
           "docType": "471",
           "label": "RAF-LAB-008",
           "files": {
@@ -110,6 +119,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad S. Indicar base y cuota correctas y, para esta modalidad con documento único, la base y cuota originales rectificadas; añadir el recargo original si procede. Mantener vendedor y comprador; incluir la mención de expedición por el destinatario.",
           "check": "Conciliar los valores nuevos con los originales; no contabilizar los dos como ventas adicionales. Validar el motivo de rectificación.",
           "issuer": "Destinatario (RE) · Modalidad: Por sustitución (S) · Motivo: R4",
+          "issuer_en": "Recipient (RE) · Method: By substitution (S) · Reason: R4",
           "docType": "471",
           "label": "RAF-LAB-009",
           "files": {
@@ -123,6 +133,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R4",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-010",
           "files": {
@@ -136,6 +147,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad S. Indicar base y cuota correctas y, para esta modalidad con documento único, la base y cuota originales rectificadas; añadir el recargo original si procede.",
           "check": "Conciliar los valores nuevos con los originales; no contabilizar los dos como ventas adicionales. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por sustitución (S) · Motivo: R4",
+          "issuer_en": "Seller (EM) · Method: By substitution (S) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-026",
           "files": {
@@ -149,6 +161,7 @@
           "send": "Número y fecha de la rectificada; motivo R1 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R1",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R1",
           "docType": "384",
           "label": "R-LAB-035",
           "files": {
@@ -162,6 +175,7 @@
           "send": "Número y fecha de la rectificada; motivo R2 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R2",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R2",
           "docType": "384",
           "label": "R-LAB-036",
           "files": {
@@ -175,6 +189,7 @@
           "send": "Número y fecha de la rectificada; motivo R3 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R3",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R3",
           "docType": "384",
           "label": "R-LAB-037",
           "files": {
@@ -188,6 +203,7 @@
           "send": "Número y fecha de la rectificada; motivo R4 y modalidad I. Indicar base y cuota de la diferencia, con su signo.",
           "check": "Verificar que la diferencia no se contabiliza como el nuevo total. Validar el motivo de rectificación.",
           "issuer": "Vendedor (EM) · Modalidad: Por diferencias (I) · Motivo: R4",
+          "issuer_en": "Seller (EM) · Method: By differences (I) · Reason: R4",
           "docType": "384",
           "label": "R-LAB-038",
           "files": {
@@ -199,6 +215,7 @@
     {
       "id": "G03",
       "title": "Canje de simplificadas",
+      "title_en": "Replacement of simplified invoices",
       "cases": [
         {
           "id": "C006",
@@ -207,6 +224,7 @@
           "send": "Relacionar número y fecha de cada simplificada sustituida. Informar las líneas, impuestos y totales de la factura de canje.",
           "check": "Conciliar ambas referencias y evitar contabilizar tres ventas. No confundir el canje (388) con la rectificación por sustitución (384/S).",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "388",
           "label": "C-LAB-006",
           "files": {
@@ -218,6 +236,7 @@
     {
       "id": "G04",
       "title": "Regímenes de IVA",
+      "title_en": "VAT regimes",
       "cases": [
         {
           "id": "C011",
@@ -226,6 +245,7 @@
           "send": "Indicar IVA y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-011",
           "files": {
@@ -239,6 +259,7 @@
           "send": "Indicar IVA y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-039",
           "files": {
@@ -252,6 +273,7 @@
           "send": "Indicar IVA y la clave 02 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-040",
           "files": {
@@ -265,6 +287,7 @@
           "send": "Indicar IVA y la clave 03 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-041",
           "files": {
@@ -278,6 +301,7 @@
           "send": "Indicar IVA y la clave 04 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-042",
           "files": {
@@ -291,6 +315,7 @@
           "send": "Indicar IVA y la clave 05 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-043",
           "files": {
@@ -304,6 +329,7 @@
           "send": "Indicar IVA y la clave 06 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-044",
           "files": {
@@ -317,6 +343,7 @@
           "send": "Indicar IVA y la clave 07 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-045",
           "files": {
@@ -330,6 +357,7 @@
           "send": "Indicar IVA y la clave 08 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-046",
           "files": {
@@ -343,6 +371,7 @@
           "send": "Indicar IVA y la clave 09 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-047",
           "files": {
@@ -356,6 +385,7 @@
           "send": "Indicar IVA y la clave 11 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-048",
           "files": {
@@ -369,6 +399,7 @@
           "send": "Indicar IVA y la clave 14 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-049",
           "files": {
@@ -382,6 +413,7 @@
           "send": "Indicar IVA y la clave 15 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-050",
           "files": {
@@ -393,6 +425,7 @@
     {
       "id": "G05",
       "title": "Regímenes de IGIC",
+      "title_en": "IGIC regimes",
       "cases": [
         {
           "id": "C012",
@@ -401,6 +434,7 @@
           "send": "Indicar IGIC y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-012",
           "files": {
@@ -414,6 +448,7 @@
           "send": "Indicar IGIC y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-051",
           "files": {
@@ -427,6 +462,7 @@
           "send": "Indicar IGIC y la clave 02 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-052",
           "files": {
@@ -440,6 +476,7 @@
           "send": "Indicar IGIC y la clave 03 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-053",
           "files": {
@@ -453,6 +490,7 @@
           "send": "Indicar IGIC y la clave 04 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-054",
           "files": {
@@ -466,6 +504,7 @@
           "send": "Indicar IGIC y la clave 05 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-055",
           "files": {
@@ -479,6 +518,7 @@
           "send": "Indicar IGIC y la clave 06 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-056",
           "files": {
@@ -492,6 +532,7 @@
           "send": "Indicar IGIC y la clave 07 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-057",
           "files": {
@@ -505,6 +546,7 @@
           "send": "Indicar IGIC y la clave 08 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-058",
           "files": {
@@ -518,6 +560,7 @@
           "send": "Indicar IGIC y la clave 09 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-059",
           "files": {
@@ -531,6 +574,7 @@
           "send": "Indicar IGIC y la clave 11 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-060",
           "files": {
@@ -544,6 +588,7 @@
           "send": "Indicar IGIC y la clave 14 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-061",
           "files": {
@@ -557,6 +602,7 @@
           "send": "Indicar IGIC y la clave 15 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-062",
           "files": {
@@ -570,6 +616,7 @@
           "send": "Indicar IGIC y la clave 17 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-063",
           "files": {
@@ -583,6 +630,7 @@
           "send": "Indicar IGIC y la clave 18 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-064",
           "files": {
@@ -596,6 +644,7 @@
           "send": "Indicar IGIC y la clave 19 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-065",
           "files": {
@@ -607,6 +656,7 @@
     {
       "id": "G06",
       "title": "Regímenes de IPSI",
+      "title_en": "IPSI regimes",
       "cases": [
         {
           "id": "C013",
@@ -615,6 +665,7 @@
           "send": "Indicar IPSI y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-013",
           "files": {
@@ -628,6 +679,7 @@
           "send": "Indicar IPSI y la clave 01 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-066",
           "files": {
@@ -641,6 +693,7 @@
           "send": "Indicar IPSI y la clave 08 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-067",
           "files": {
@@ -654,6 +707,7 @@
           "send": "Indicar IPSI y la clave 11 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-068",
           "files": {
@@ -667,6 +721,7 @@
           "send": "Indicar IPSI y la clave 19 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-069",
           "files": {
@@ -680,6 +735,7 @@
           "send": "Indicar IPSI y la clave 20 en la línea, su categoría, base, porcentaje y cuota. Verificar desglose y menciones que correspondan al régimen.",
           "check": "Confirmar territorio, régimen aplicable y justificantes con una operación real. La cifra del ejemplo no determina el tipo legal.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-070",
           "files": {
@@ -691,6 +747,7 @@
     {
       "id": "G07",
       "title": "Tratamiento fiscal de la operación",
+      "title_en": "Tax treatment of the operation",
       "cases": [
         {
           "id": "C014",
@@ -699,6 +756,7 @@
           "send": "Indicar la categoría S en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-014",
           "files": {
@@ -712,6 +770,7 @@
           "send": "Indicar la categoría Z en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Tipo cero no equivale a exento ni a no sujeto.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-015",
           "files": {
@@ -725,6 +784,7 @@
           "send": "Indicar la categoría E en línea y desglose; consignar base, tipo y cuota. Justificar el tratamiento y, cuando proceda, el código o texto de exención y la mención legal.",
           "check": "Verificar la causa de exención con la prestación real.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-016",
           "files": {
@@ -738,6 +798,7 @@
           "send": "Indicar la categoría AE en línea y desglose; consignar base, tipo y cuota. Justificar el tratamiento y, cuando proceda, el código o texto de exención y la mención legal.",
           "check": "El destinatario liquida el impuesto cuando procede; revisar la mención y el régimen.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-017",
           "files": {
@@ -751,6 +812,7 @@
           "send": "Identificar la no sujeción en la línea y en el desglose. Informar la razón aplicable. En el ejemplo se omite el porcentaje de línea y la cuota del desglose es cero.",
           "check": "Distinguir no sujeción de exención.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-018",
           "files": {
@@ -764,6 +826,7 @@
           "send": "Indicar la categoría G en línea y desglose; consignar base, tipo y cuota. Justificar el tratamiento y, cuando proceda, el código o texto de exención y la mención legal.",
           "check": "Verificar destino y justificantes de exportación.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-019",
           "files": {
@@ -777,6 +840,7 @@
           "send": "Indicar la categoría L en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-020",
           "files": {
@@ -790,6 +854,7 @@
           "send": "Indicar la categoría M en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-021",
           "files": {
@@ -803,6 +868,7 @@
           "send": "Indicar la categoría N en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-022",
           "files": {
@@ -816,6 +882,7 @@
           "send": "Indicar la categoría D en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-023",
           "files": {
@@ -829,6 +896,7 @@
           "send": "Indicar la categoría F en línea y desglose; consignar base, tipo y cuota. Informar la clave de régimen del impuesto y las menciones aplicables.",
           "check": "Contrastar categoría y régimen con la operación; no tomar automáticamente el porcentaje simulado.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-024",
           "files": {
@@ -840,6 +908,7 @@
     {
       "id": "G08",
       "title": "Recargo de equivalencia",
+      "title_en": "Equivalence surcharge",
       "cases": [
         {
           "id": "C025",
@@ -848,6 +917,7 @@
           "send": "Indicar base, tipo y cuota de IVA; además, porcentaje y cuota de recargo en el desglose.",
           "check": "Comprobar que el recargo se ha sumado una sola vez y que corresponde al cliente y al artículo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "RE-2026-001",
           "files": {
@@ -859,6 +929,7 @@
     {
       "id": "G09",
       "title": "Retenciones",
+      "title_en": "Withholdings",
       "cases": [
         {
           "id": "C027",
@@ -867,6 +938,7 @@
           "send": "Informar familia IRPF, concepto L5 01, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-027",
           "files": {
@@ -880,6 +952,7 @@
           "send": "Informar familia IRPF, concepto L5 01, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-034",
           "files": {
@@ -893,6 +966,7 @@
           "send": "Informar familia IRPF, concepto L5 01, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-071",
           "files": {
@@ -906,6 +980,7 @@
           "send": "Informar familia IRPF, concepto L5 02, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-072",
           "files": {
@@ -919,6 +994,7 @@
           "send": "Informar familia IRPF, concepto L5 03, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-073",
           "files": {
@@ -932,6 +1008,7 @@
           "send": "Informar familia IRPF, concepto L5 04, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-074",
           "files": {
@@ -945,6 +1022,7 @@
           "send": "Informar familia IRPF, concepto L5 05, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-075",
           "files": {
@@ -958,6 +1036,7 @@
           "send": "Informar familia IRPF, concepto L5 06, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-076",
           "files": {
@@ -971,6 +1050,7 @@
           "send": "Informar familia IRPF, concepto L5 07, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-077",
           "files": {
@@ -984,6 +1064,7 @@
           "send": "Informar familia RIS, concepto L5 08, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-078",
           "files": {
@@ -997,6 +1078,7 @@
           "send": "Informar familia RIS, concepto L5 09, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-079",
           "files": {
@@ -1010,6 +1092,7 @@
           "send": "Informar familia RIS, concepto L5 10, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-080",
           "files": {
@@ -1023,6 +1106,7 @@
           "send": "Informar familia IRPF, concepto L5 11, base, porcentaje y cuota retenida. Consignar la retención total y su descripción; descontarla del importe a pagar.",
           "check": "Confirmar el porcentaje real y quién percibe la renta. El 15 % y las empresas del paquete son ficticios; no duplicar la retención como otro cargo.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-081",
           "files": {
@@ -1034,6 +1118,7 @@
     {
       "id": "G10",
       "title": "Impuestos específicos y tasas",
+      "title_en": "Special taxes and fees",
       "cases": [
         {
           "id": "C028",
@@ -1042,6 +1127,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-028",
           "files": {
@@ -1055,6 +1141,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-029",
           "files": {
@@ -1068,6 +1155,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-085",
           "files": {
@@ -1081,6 +1169,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-086",
           "files": {
@@ -1094,6 +1183,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-087",
           "files": {
@@ -1107,6 +1197,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-088",
           "files": {
@@ -1120,6 +1211,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-089",
           "files": {
@@ -1133,6 +1225,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-090",
           "files": {
@@ -1146,6 +1239,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-091",
           "files": {
@@ -1159,6 +1253,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-092",
           "files": {
@@ -1172,6 +1267,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-093",
           "files": {
@@ -1185,6 +1281,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-094",
           "files": {
@@ -1198,6 +1295,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-095",
           "files": {
@@ -1211,6 +1309,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-096",
           "files": {
@@ -1224,6 +1323,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-097",
           "files": {
@@ -1237,6 +1337,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-098",
           "files": {
@@ -1250,6 +1351,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-099",
           "files": {
@@ -1263,6 +1365,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-100",
           "files": {
@@ -1276,6 +1379,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-101",
           "files": {
@@ -1289,6 +1393,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-102",
           "files": {
@@ -1302,6 +1407,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-103",
           "files": {
@@ -1315,6 +1421,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-104",
           "files": {
@@ -1328,6 +1435,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-105",
           "files": {
@@ -1341,6 +1449,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-106",
           "files": {
@@ -1354,6 +1463,7 @@
           "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-107",
           "files": {
@@ -1367,6 +1477,7 @@
           "send": "En los cargos generales: motivo e importe, tratamiento fiscal del cargo y detalle del impuesto específico (código, base, tipo y cuota según proceda).",
           "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-108",
           "files": {
@@ -1378,6 +1489,7 @@
     {
       "id": "G11",
       "title": "Importes por cuenta de terceros",
+      "title_en": "Amounts on behalf of third parties",
       "cases": [
         {
           "id": "C030",
@@ -1386,6 +1498,7 @@
           "send": "Consignar IEDMT, motivo e importe del cargo. Desglosar base, porcentaje y cuota del tributo cuando proceda.",
           "check": "Conciliar el importe con el pago o cobro por cuenta ajena; no confundir con la empresa que expide la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-030",
           "files": {
@@ -1399,6 +1512,7 @@
           "send": "Consignar OTROS, motivo e importe del cargo. Desglosar base, porcentaje y cuota del tributo cuando proceda.",
           "check": "Conciliar el importe con el pago o cobro por cuenta ajena; no confundir con la empresa que expide la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-031",
           "files": {
@@ -1412,6 +1526,7 @@
           "send": "Consignar SUPL, motivo e importe del cargo.",
           "check": "Conciliar el importe con el pago o cobro por cuenta ajena; no confundir con la empresa que expide la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-032",
           "files": {
@@ -1425,6 +1540,7 @@
           "send": "Consignar MINO, motivo e importe de la minoración.",
           "check": "Conciliar el importe con el pago o cobro por cuenta ajena; no confundir con la empresa que expide la factura.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-033",
           "files": {
@@ -1436,6 +1552,7 @@
     {
       "id": "G12",
       "title": "Inmuebles y catastro",
+      "title_en": "Real estate and cadastre",
       "cases": [
         {
           "id": "C082",
@@ -1444,6 +1561,7 @@
           "send": "Identificar el inmueble y, al informar el bloque catastral, su referencia y la clave de situación 01.",
           "check": "Comprobar la localización y que la referencia corresponde al inmueble.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-082",
           "files": {
@@ -1457,6 +1575,7 @@
           "send": "Identificar el inmueble y, al informar el bloque catastral, su referencia y la clave de situación 02.",
           "check": "Comprobar la localización y que la referencia corresponde al inmueble.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-083",
           "files": {
@@ -1470,6 +1589,7 @@
           "send": "Identificar el inmueble y, al informar el bloque catastral, su referencia y la clave de situación 04.",
           "check": "Comprobar la localización y que la referencia corresponde al inmueble.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-084",
           "files": {
@@ -1483,6 +1603,7 @@
           "send": "Sería necesario identificar la situación 03 sin inventar un número catastral; el esquema exige número si se abre el bloque.",
           "check": "No aprobar como cubierto. Consultar la representación y probarla antes de implantarla.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-109",
           "files": {
@@ -1494,6 +1615,7 @@
     {
       "id": "G13",
       "title": "Información y justificantes",
+      "title_en": "Information and supporting documents",
       "cases": [
         {
           "id": "C110",
@@ -1502,6 +1624,7 @@
           "send": "Informar el texto relevante en la línea a la que se refiere.",
           "check": "Sustituir el texto ilustrativo por la mención exigible en la operación.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-110",
           "files": {
@@ -1515,6 +1638,7 @@
           "send": "Informar el sistema VERIFACTU y la URL correspondiente al QR fiscal.",
           "check": "El dominio example.invalid es deliberadamente inerte; sustituirlo por una URL verificable de prueba.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-111",
           "files": {
@@ -1528,6 +1652,7 @@
           "send": "Informar el sistema TICKETBAI y la URL correspondiente al QR fiscal.",
           "check": "El dominio example.invalid es deliberadamente inerte; sustituirlo por una URL verificable de prueba.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-112",
           "files": {
@@ -1541,6 +1666,7 @@
           "send": "Indicar referencia de la autorización y, en su caso, descripción.",
           "check": "Verificar titular, número y alcance del acuerdo o autorización real.",
           "issuer": "Vendedor (EM)",
+          "issuer_en": "Seller (EM)",
           "docType": "380",
           "label": "GNX-LAB-113",
           "files": {
