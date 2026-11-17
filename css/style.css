@@ -1007,4 +1007,10 @@
   .ex-issuer { display:none; }
 }
 .badge-Examples { background:#e0f2fe; color:#0369a1; }
-
+.val-status-file {
+  margin-top: 4px;
+  font-size: .82rem;
+  color: var(--gray-500);
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  word-break: break-all;
+}

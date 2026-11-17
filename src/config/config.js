@@ -76,7 +76,8 @@ const SITE_CONFIG = {
           description_es: 'Documentación técnica del estándar XML de factura.',
           description_en: 'Technical documentation for the invoice XML standard.',
           group: 'Invoice', format: 'XML', icon: 'INV', category: 'Standard',
-          dir: 'E-invoicing/Standard/Invoice/Xml'
+          dir: 'E-invoicing/Standard/Invoice/Xml',
+          validatorSchema: 'E-invoicing/Standard/Invoice/Xml/GNX_Schema_xml.xsd',
         },
         { id: 'response-xml',
           folder: 'Response / Xml',
