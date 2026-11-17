@@ -100,10 +100,8 @@ class BaseRenderer {
           ? t('loading')
           : 'Loading...';
       }
-      if (breadcrumb) {
-        breadcrumb.textContent =
-          this.getCardTitle(card);
-      }
+        this.setBreadcrumb(card);
+
       if (description) { description.textContent = '';}
       [
         'desc-body',
@@ -160,10 +158,8 @@ class BaseRenderer {
             title.textContent = finalTitle;
         }
 
-        if (breadcrumb) {
-            breadcrumb.textContent =
-                this.getCardTitle(card);
-        }
+        this.setBreadcrumb(card);
+
 
         if (description) {
             description.textContent =
@@ -385,6 +381,32 @@ class BaseRenderer {
             element.textContent = text;
         }
     }
+        /* =====================================================
+       Miga de pan: Documentación / <Formato> / <Ficha>
+       ===================================================== */
+    setBreadcrumb(card) {
+        const name = document.getElementById('d-breadcrumb-name');
+        if (!name || !card) { return; }
+        name.textContent = this.getCardTitle(card);
+
+        const fmt = String(card.format || '').toUpperCase();
+        let link = document.getElementById('d-breadcrumb-fmt');
+        if (!fmt) {
+            if (link) { link.previousElementSibling?.remove(); link.remove(); }
+            return;
+        }
+        // Se crea una sola vez: "<a>XML</a><span>/</span>" justo antes del nombre
+        if (!link) {
+            link = document.createElement('a');
+            link.id = 'd-breadcrumb-fmt';
+            const sep = document.createElement('span');
+            sep.textContent = '/';
+            name.before(link, sep);
+        }
+        link.textContent = fmt;
+        link.href = `#${fmt.toLowerCase()}`;
+    }
+
 }
 
 /* =========================================================
