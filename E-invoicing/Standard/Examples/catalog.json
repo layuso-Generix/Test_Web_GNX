@@ -22,7 +22,8 @@
           "docType": "380",
           "label": "F-2026-014",
           "files": {
-            "xml": "Xml/C001_01_ordinaria.xml"
+            "xml": "Xml/C001_01_ordinaria.xml",
+            "json": "Json/C001_01_ordinaria.json"
           }
         },
         {
@@ -40,7 +41,8 @@
           "docType": "380",
           "label": "GNX-LAB-002",
           "files": {
-            "xml": "Xml/C002_02_tercero.xml"
+            "xml": "Xml/C002_02_tercero.xml",
+            "json": "Json/C002_02_tercero.json"
           }
         },
         {
@@ -58,7 +60,8 @@
           "docType": "380",
           "label": "F-2026-014",
           "files": {
-            "xml": "Xml/C003_03_copia.xml"
+            "xml": "Xml/C003_03_copia.xml",
+            "json": "Json/C003_03_copia.json"
           }
         },
         {
@@ -76,7 +79,8 @@
           "docType": "389",
           "label": "AF-2026-009",
           "files": {
-            "xml": "Xml/C007_07_autofactura.xml"
+            "xml": "Xml/C007_07_autofactura.xml",
+            "json": "Json/C007_07_autofactura.json"
           }
         }
       ]
@@ -101,7 +105,8 @@
           "docType": "384",
           "label": "R-2026-004",
           "files": {
-            "xml": "Xml/C004_04_rect_diferencias.xml"
+            "xml": "Xml/C004_04_rect_diferencias.xml",
+            "json": "Json/C004_04_rect_diferencias.json"
           }
         },
         {
@@ -119,7 +124,8 @@
           "docType": "384",
           "label": "R-LAB-005",
           "files": {
-            "xml": "Xml/C005_05_rect_sustitucion.xml"
+            "xml": "Xml/C005_05_rect_sustitucion.xml",
+            "json": "Json/C005_05_rect_sustitucion.json"
           }
         },
         {
@@ -137,7 +143,8 @@
           "docType": "471",
           "label": "RAF-LAB-008",
           "files": {
-            "xml": "Xml/C008_08_rect_destinatario_i.xml"
+            "xml": "Xml/C008_08_rect_destinatario_i.xml",
+            "json": "Json/C008_08_rect_destinatario_i.json"
           }
         },
         {
@@ -155,7 +162,8 @@
           "docType": "471",
           "label": "RAF-LAB-009",
           "files": {
-            "xml": "Xml/C009_09_rect_destinatario_s.xml"
+            "xml": "Xml/C009_09_rect_destinatario_s.xml",
+            "json": "Json/C009_09_rect_destinatario_s.json"
           }
         },
         {
@@ -173,7 +181,8 @@
           "docType": "384",
           "label": "R-LAB-010",
           "files": {
-            "xml": "Xml/C010_10_rect_iva_combinado.xml"
+            "xml": "Xml/C010_10_rect_iva_combinado.xml",
+            "json": "Json/C010_10_rect_iva_combinado.json"
           }
         },
         {
@@ -191,7 +200,8 @@
           "docType": "384",
           "label": "R-LAB-026",
           "files": {
-            "xml": "Xml/C026_14_rect_recargo.xml"
+            "xml": "Xml/C026_14_rect_recargo.xml",
+            "json": "Json/C026_14_rect_recargo.json"
           }
         },
         {
@@ -209,7 +219,8 @@
           "docType": "384",
           "label": "R-LAB-035",
           "files": {
-            "xml": "Xml/C035_c_l2a_r1.xml"
+            "xml": "Xml/C035_c_l2a_r1.xml",
+            "json": "Json/C035_c_l2a_r1.json"
           }
         },
         {
