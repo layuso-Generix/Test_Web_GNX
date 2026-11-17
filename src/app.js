@@ -16,7 +16,7 @@
 
 /* ── Estado global ──────────────────────────────────────── */
 // const _VIEWS = ['view-index', 'view-detail', 'view-versions', 'view-validacion', 'view-respuestas', 'view-aeat'];
-const _VIEWS = ['view-index', 'view-format', 'view-detail', 'view-versions', 'view-validacion', 'view-respuestas', 'view-aeat'];
+const _VIEWS = ['view-index', 'view-format', 'view-detail', 'view-versions', 'view-validacion', 'view-respuestas', 'view-aeat', 'view-examples'];
 const _DEFAULT_TITLE = 'Generix · E-Invoicing · Developer Documentation';
 let _currentSection = null;   // Card actualmente abierta
 

@@ -129,6 +129,23 @@ const SITE_CONFIG = {
           comingSoon: true
         }
       ]
+    },
+    { section: 'EXAMPLES',
+      icon: '🧪',
+      cards: [
+        { id: 'examples-json', folder: 'Examples / Json',
+          title_es: 'Ejemplos JSON', title_en: 'JSON Examples',
+          description_es: 'Facturas de ejemplo por casuística: rectificativas, regímenes, retenciones, impuestos especiales…',
+          description_en: 'Sample invoices by scenario: corrections, regimes, withholdings, special taxes…',
+          group: 'Examples', format: 'JSON', icon: 'EX', category: 'Examples',
+          dir: 'E-invoicing/Standard/Examples/Json' },
+        { id: 'examples-xml', folder: 'Examples / Xml',
+          title_es: 'Ejemplos XML', title_en: 'XML Examples',
+          description_es: 'Facturas de ejemplo por casuística: rectificativas, regímenes, retenciones, impuestos especiales…',
+          description_en: 'Sample invoices by scenario: corrections, regimes, withholdings, special taxes…',
+          group: 'Examples', format: 'XML', icon: 'EX', category: 'Examples',
+          dir: 'E-invoicing/Standard/Examples/Xml' }
+      ]
     }
   ]
 };

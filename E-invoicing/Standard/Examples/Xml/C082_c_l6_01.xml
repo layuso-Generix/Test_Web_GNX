@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoiceGNX>
+  <FileHeader>
+    <SchemaVersion>GNX-SPFE-2026-11-14</SchemaVersion>
+    <Modality>I</Modality>
+    <InvoiceIssuerType>EM</InvoiceIssuerType>
+  </FileHeader>
+  <Invoices>
+    <Parties>
+      <SellerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000018</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000018</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Proveedor Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 1</Address>
+            <PostCode>28001</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </SellerParty>
+      <BuyerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000026</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000026</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Cliente Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 2</Address>
+            <PostCode>28002</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </BuyerParty>
+    </Parties>
+    <Invoice>
+      <InvoiceHeader>
+        <InvoiceNumber>GNX-LAB-082</InvoiceNumber>
+        <InvoiceDocumentType>380</InvoiceDocumentType>
+        <InvoiceClass>ORIGINAL</InvoiceClass>
+      </InvoiceHeader>
+      <InvoiceIssueData>
+        <IssueDate>2026-11-14</IssueDate>
+        <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+      </InvoiceIssueData>
+      <TaxesOutputs>
+        <Tax>
+          <TaxOperationType>S</TaxOperationType>
+          <TaxRate>21</TaxRate>
+          <TaxableBase>
+            <TotalAmount>100</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
+            <TotalAmount>21</TotalAmount>
+          </TaxAmount>
+        </Tax>
+      </TaxesOutputs>
+      <InvoiceTotals>
+        <TotalNetAmount>100</TotalNetAmount>
+        <TotalGrossAmount>100</TotalGrossAmount>
+        <TotalTaxOutputs>21</TotalTaxOutputs>
+        <InvoiceTotal>121</InvoiceTotal>
+        <TotalPayableAmount>121</TotalPayableAmount>
+      </InvoiceTotals>
+      <Items>
+        <InvoiceLine>
+          <SequenceNumber>1</SequenceNumber>
+          <ItemDescription>Servicio de mantenimiento</ItemDescription>
+          <Quantity>1</Quantity>
+          <UnitOfMeasure>C62</UnitOfMeasure>
+          <NotesReferences>
+            <CadastralReference>
+              <CadastralReferenceNumber>1234567VK4713S0001AB</CadastralReferenceNumber>
+              <CadastralReferenceSituation>01</CadastralReferenceSituation>
+            </CadastralReference>
+          </NotesReferences>
+          <TaxesOutputs>
+            <Tax>
+              <TaxTypeCode>IVA</TaxTypeCode>
+              <TaxRegimeCode>11</TaxRegimeCode>
+              <TaxOperationType>S</TaxOperationType>
+              <TaxRate>21</TaxRate>
+            </Tax>
+          </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
+          <TotalCost>100</TotalCost>
+        </InvoiceLine>
+      </Items>
+      <PaymentDetails>
+        <Installment>
+          <InstallmentDueDate>2026-12-14</InstallmentDueDate>
+          <PaymentTermsNote>Pago al vencimiento.</PaymentTermsNote>
+        </Installment>
+      </PaymentDetails>
+    </Invoice>
+  </Invoices>
+</InvoiceGNX>

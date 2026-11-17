@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoiceGNX>
+  <FileHeader>
+    <SchemaVersion>GNX-SPFE-2026-11-14</SchemaVersion>
+    <Modality>I</Modality>
+    <InvoiceIssuerType>EM</InvoiceIssuerType>
+  </FileHeader>
+  <Invoices>
+    <Parties>
+      <SellerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000018</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000018</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Proveedor Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 1</Address>
+            <PostCode>28001</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </SellerParty>
+      <BuyerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000026</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000026</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Cliente Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 2</Address>
+            <PostCode>28002</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </BuyerParty>
+    </Parties>
+    <Invoice>
+      <InvoiceHeader>
+        <InvoiceNumber>GNX-LAB-094</InvoiceNumber>
+        <InvoiceDocumentType>380</InvoiceDocumentType>
+        <InvoiceClass>ORIGINAL</InvoiceClass>
+      </InvoiceHeader>
+      <InvoiceIssueData>
+        <IssueDate>2026-11-14</IssueDate>
+        <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+      </InvoiceIssueData>
+      <TaxesOutputs>
+        <Tax>
+          <TaxOperationType>S</TaxOperationType>
+          <TaxRate>21</TaxRate>
+          <TaxableBase>
+            <TotalAmount>105</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
+            <TotalAmount>22.05</TotalAmount>
+          </TaxAmount>
+        </Tax>
+      </TaxesOutputs>
+      <InvoiceTotals>
+        <GeneralCharges>
+          <Charge>
+            <ChargeReason>Impuesto especial sobre las labores del tabaco.</ChargeReason>
+            <ChargeAmount>5</ChargeAmount>
+            <ChargeTax>
+              <TaxTypeCode>S</TaxTypeCode>
+              <TaxRate>21</TaxRate>
+            </ChargeTax>
+            <SpecificTax>
+              <TaxTypeCode>IET</TaxTypeCode>
+              <TaxableBase>100</TaxableBase>
+              <TaxRate>5</TaxRate>
+              <TaxAmount>5</TaxAmount>
+            </SpecificTax>
+          </Charge>
+        </GeneralCharges>
+        <TotalGeneralCharges>5</TotalGeneralCharges>
+        <TotalNetAmount>100</TotalNetAmount>
+        <TotalGrossAmount>105</TotalGrossAmount>
+        <TotalTaxOutputs>22.05</TotalTaxOutputs>
+        <InvoiceTotal>127.05</InvoiceTotal>
+        <TotalPayableAmount>127.05</TotalPayableAmount>
+      </InvoiceTotals>
+      <Items>
+        <InvoiceLine>
+          <SequenceNumber>1</SequenceNumber>
+          <ItemDescription>Servicio de mantenimiento</ItemDescription>
+          <Quantity>1</Quantity>
+          <UnitOfMeasure>C62</UnitOfMeasure>
+          <TaxesOutputs>
+            <Tax>
+              <TaxTypeCode>IVA</TaxTypeCode>
+              <TaxRegimeCode>01</TaxRegimeCode>
+              <TaxOperationType>S</TaxOperationType>
+              <TaxRate>21</TaxRate>
+            </Tax>
+          </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
+          <TotalCost>100</TotalCost>
+        </InvoiceLine>
+      </Items>
+      <PaymentDetails>
+        <Installment>
+          <InstallmentDueDate>2026-12-14</InstallmentDueDate>
+          <PaymentTermsNote>Pago al vencimiento.</PaymentTermsNote>
+        </Installment>
+      </PaymentDetails>
+    </Invoice>
+  </Invoices>
+</InvoiceGNX>

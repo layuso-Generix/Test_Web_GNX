@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoiceGNX>
+  <FileHeader>
+    <SchemaVersion>GNX-SPFE-2026-11-14</SchemaVersion>
+    <Modality>I</Modality>
+    <InvoiceIssuerType>EM</InvoiceIssuerType>
+  </FileHeader>
+  <Invoices>
+    <Parties>
+      <SellerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>B00000018</TaxIdentificationNumber>
+        </TaxIdentification>
+        <LegalEntity>
+          <CorporateName>Proveedor Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 1</Address>
+            <PostCode>28001</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </SellerParty>
+      <BuyerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>B00000026</TaxIdentificationNumber>
+        </TaxIdentification>
+        <LegalEntity>
+          <CorporateName>Cliente Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 2</Address>
+            <PostCode>28002</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </BuyerParty>
+    </Parties>
+    <Invoice>
+      <InvoiceHeader>
+        <InvoiceNumber>GNX-LAB-058</InvoiceNumber>
+        <InvoiceDocumentType>380</InvoiceDocumentType>
+        <InvoiceClass>ORIGINAL</InvoiceClass>
+      </InvoiceHeader>
+      <InvoiceIssueData>
+        <IssueDate>2026-11-14</IssueDate>
+        <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+      </InvoiceIssueData>
+      <TaxesOutputs>
+        <Tax>
+          <TaxOperationType>M</TaxOperationType>
+          <TaxRate>4</TaxRate>
+          <TaxableBase>
+            <TotalAmount>100</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
+            <TotalAmount>4</TotalAmount>
+          </TaxAmount>
+        </Tax>
+      </TaxesOutputs>
+      <InvoiceTotals>
+        <TotalNetAmount>100</TotalNetAmount>
+        <TotalGrossAmount>100</TotalGrossAmount>
+        <TotalTaxOutputs>4</TotalTaxOutputs>
+        <InvoiceTotal>104</InvoiceTotal>
+        <TotalPayableAmount>104</TotalPayableAmount>
+      </InvoiceTotals>
+      <Items>
+        <InvoiceLine>
+          <SequenceNumber>1</SequenceNumber>
+          <ItemDescription>Operación de ensayo de mapeo IGIC / 08</ItemDescription>
+          <Quantity>1</Quantity>
+          <UnitOfMeasure>C62</UnitOfMeasure>
+          <TaxesOutputs>
+            <Tax>
+              <TaxTypeCode>IGIC</TaxTypeCode>
+              <TaxRegimeCode>08</TaxRegimeCode>
+              <TaxOperationType>M</TaxOperationType>
+              <TaxRate>4</TaxRate>
+            </Tax>
+          </TaxesOutputs>
+          <TaxesOutputs>
+            <Tax>
+              <TaxTypeCode>IPSI</TaxTypeCode>
+              <TaxRegimeCode>01</TaxRegimeCode>
+              <TaxOperationType>M</TaxOperationType>
+              <TaxRate>4</TaxRate>
+            </Tax>
+          </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
+          <TotalCost>100</TotalCost>
+        </InvoiceLine>
+      </Items>
+      <PaymentDetails>
+        <Installment>
+          <InstallmentDueDate>2026-12-14</InstallmentDueDate>
+          <PaymentTermsNote>Pago al vencimiento.</PaymentTermsNote>
+        </Installment>
+      </PaymentDetails>
+    </Invoice>
+  </Invoices>
+</InvoiceGNX>

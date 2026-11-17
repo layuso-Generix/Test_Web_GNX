@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<InvoiceGNX>
+  <FileHeader>
+    <SchemaVersion>GNX-SPFE-2026-11-14</SchemaVersion>
+    <Modality>I</Modality>
+    <InvoiceIssuerType>EM</InvoiceIssuerType>
+  </FileHeader>
+  <Invoices>
+    <Parties>
+      <SellerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000018</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000018</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Proveedor Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 1</Address>
+            <PostCode>28001</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </SellerParty>
+      <BuyerParty>
+        <TaxIdentification>
+          <TaxIdentificationNumber>ESB00000026</TaxIdentificationNumber>
+        </TaxIdentification>
+        <PartyIdentification>B00000026</PartyIdentification>
+        <LegalEntity>
+          <CorporateName>Cliente Ejemplo SL</CorporateName>
+          <Address>
+            <Address>Calle de la Muestra 2</Address>
+            <PostCode>28002</PostCode>
+            <Town>Madrid</Town>
+            <CountryCode>ES</CountryCode>
+          </Address>
+        </LegalEntity>
+      </BuyerParty>
+    </Parties>
+    <Invoice>
+      <InvoiceHeader>
+        <InvoiceNumber>GNX-LAB-019</InvoiceNumber>
+        <InvoiceDocumentType>380</InvoiceDocumentType>
+        <InvoiceClass>ORIGINAL</InvoiceClass>
+      </InvoiceHeader>
+      <InvoiceIssueData>
+        <IssueDate>2026-11-14</IssueDate>
+        <InvoiceCurrencyCode>EUR</InvoiceCurrencyCode>
+      </InvoiceIssueData>
+      <TaxesOutputs>
+        <Tax>
+          <TaxOperationType>G</TaxOperationType>
+          <TaxExemptionReason>Exportación de bienes fuera de la Unión.</TaxExemptionReason>
+          <TaxExemptionReasonCode>VATEX-EU-G</TaxExemptionReasonCode>
+          <TaxRate>0</TaxRate>
+          <TaxableBase>
+            <TotalAmount>100</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
+            <TotalAmount>0</TotalAmount>
+          </TaxAmount>
+        </Tax>
+      </TaxesOutputs>
+      <InvoiceTotals>
+        <TotalNetAmount>100</TotalNetAmount>
+        <TotalGrossAmount>100</TotalGrossAmount>
+        <TotalTaxOutputs>0</TotalTaxOutputs>
+        <InvoiceTotal>100</InvoiceTotal>
+        <TotalPayableAmount>100</TotalPayableAmount>
+      </InvoiceTotals>
+      <Items>
+        <InvoiceLine>
+          <SequenceNumber>1</SequenceNumber>
+          <ItemDescription>Bien de prueba destinado a exportación</ItemDescription>
+          <Quantity>1</Quantity>
+          <UnitOfMeasure>C62</UnitOfMeasure>
+          <TaxesOutputs>
+            <Tax>
+              <TaxTypeCode>IVA</TaxTypeCode>
+              <TaxRegimeCode>02</TaxRegimeCode>
+              <TaxOperationType>G</TaxOperationType>
+              <TaxExemptionReasonCode>VATEX-EU-G</TaxExemptionReasonCode>
+              <TaxRate>0</TaxRate>
+            </Tax>
+          </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
+          <TotalCost>100</TotalCost>
+        </InvoiceLine>
+      </Items>
+      <PaymentDetails>
+        <Installment>
+          <InstallmentDueDate>2026-12-14</InstallmentDueDate>
+          <PaymentTermsNote>Pago al vencimiento.</PaymentTermsNote>
+        </Installment>
+      </PaymentDetails>
+    </Invoice>
+  </Invoices>
+</InvoiceGNX>

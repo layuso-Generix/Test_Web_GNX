@@ -176,7 +176,30 @@
       </div>
     </div>
   </section>
-
+<!-- ═══ EXAMPLES VIEW ═══ (pegar junto a las demás vistas) -->
+<section id="view-examples" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><a id="exCrumbFmt" href="#"></a>
+        <span>/</span><span class="cur" id="exCrumbCur"></span>
+      </div>
+      <h1 id="exTitle"></h1>
+      <p class="ddesc" id="exDesc"></p>
+    </div>
+  </section>
+  <div class="vers-section">
+    <div class="ex-toolbar">
+      <div class="ex-search-row">
+        <input id="exSearch" type="search" autocomplete="off">
+        <span id="exCount"></span>
+      </div>
+      <div id="exChips" class="ex-chips"></div>
+    </div>
+    <div id="exList"></div>
+  </div>
+</section>
 <!-- ═══ VERSIONS VIEW ═══ -->
   <section id="view-versions" style="display:none">
     <section class="dh">
@@ -327,6 +350,7 @@
   <script src="src/renderers/response-renderer.js"></script>
   <script src="src/renderers/status-renderer.js"></script>
   <script src="src/renderers/versions-renderer.js"></script>
+  <script src="src/renderers/examples-renderer.js"></script>
 
 
   <script src="src/router/router.js"></script>
