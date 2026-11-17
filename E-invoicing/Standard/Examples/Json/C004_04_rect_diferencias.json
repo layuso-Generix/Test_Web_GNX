@@ -1,0 +1,107 @@
+{
+  "InvoiceGNX": {
+    "FileHeader": {
+      "SchemaVersion": "GNX-SPFE-2026-11-14",
+      "Modality": "I",
+      "InvoiceIssuerType": "EM"
+    },
+    "Invoices": [
+      {
+        "Parties": {
+          "SellerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "ESB00000018"
+            },
+            "PartyIdentification": "B00000018",
+            "LegalEntity": {
+              "CorporateName": "Proveedor Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 1",
+                "Town": "Madrid",
+                "PostCode": "28001",
+                "CountryCode": "ES"
+              }
+            }
+          },
+          "BuyerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "ESB00000026"
+            },
+            "PartyIdentification": "B00000026",
+            "LegalEntity": {
+              "CorporateName": "Cliente Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 2",
+                "Town": "Madrid",
+                "PostCode": "28002",
+                "CountryCode": "ES"
+              }
+            }
+          }
+        },
+        "Invoice": [
+          {
+            "InvoiceHeader": {
+              "InvoiceNumber": "R-2026-004",
+              "InvoiceDocumentType": "384",
+              "InvoiceClass": "ORIGINAL",
+              "Corrective": {
+                "ReasonCode": "R4",
+                "CorrectionMethod": "I",
+                "InvoiceNumber": "F-2026-014",
+                "InvoiceIssueDate": "2026-11-10"
+              }
+            },
+            "InvoiceIssueData": {
+              "IssueDate": "2026-11-14",
+              "InvoiceCurrencyCode": "EUR"
+            },
+            "Items": [
+              {
+                "InvoiceLine": {
+                  "SequenceNumber": "1",
+                  "ItemDescription": "Servicio de mantenimiento",
+                  "Quantity": -1,
+                  "UnitOfMeasure": "C62",
+                  "NetUnitPrice": 20,
+                  "TaxesOutputs": [
+                    {
+                      "Tax": {
+                        "TaxTypeCode": "IVA",
+                        "TaxRegimeCode": "01",
+                        "TaxOperationType": "S",
+                        "TaxRate": 21
+                      }
+                    }
+                  ],
+                  "TotalCost": -20
+                }
+              }
+            ],
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "S",
+                  "TaxRate": 21,
+                  "TaxableBase": {
+                    "TotalAmount": -20
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": -4.2
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": -20,
+              "TotalGrossAmount": -20,
+              "TotalTaxOutputs": -4.2,
+              "InvoiceTotal": -24.2,
+              "TotalPayableAmount": -24.2
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

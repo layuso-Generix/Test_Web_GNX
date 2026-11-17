@@ -1,0 +1,128 @@
+{
+  "InvoiceGNX": {
+    "FileHeader": {
+      "SchemaVersion": "GNX-SPFE-2026-11-14",
+      "Modality": "I",
+      "InvoiceIssuerType": "EM"
+    },
+    "Invoices": [
+      {
+        "Parties": {
+          "SellerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "ESB00000018"
+            },
+            "PartyIdentification": "B00000018",
+            "LegalEntity": {
+              "CorporateName": "Proveedor Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 1",
+                "Town": "Madrid",
+                "PostCode": "28001",
+                "CountryCode": "ES"
+              }
+            }
+          },
+          "BuyerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "ESB00000026"
+            },
+            "PartyIdentification": "B00000026",
+            "LegalEntity": {
+              "CorporateName": "Cliente Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 2",
+                "Town": "Madrid",
+                "PostCode": "28002",
+                "CountryCode": "ES"
+              }
+            }
+          }
+        },
+        "Invoice": [
+          {
+            "InvoiceHeader": {
+              "InvoiceNumber": "GNX-LAB-029",
+              "InvoiceDocumentType": "380",
+              "InvoiceClass": "ORIGINAL"
+            },
+            "InvoiceIssueData": {
+              "IssueDate": "2026-11-14",
+              "InvoiceCurrencyCode": "EUR"
+            },
+            "Items": [
+              {
+                "InvoiceLine": {
+                  "SequenceNumber": "1",
+                  "ItemDescription": "Servicio de mantenimiento",
+                  "Quantity": 1,
+                  "UnitOfMeasure": "C62",
+                  "NetUnitPrice": 100,
+                  "TaxesOutputs": [
+                    {
+                      "Tax": {
+                        "TaxTypeCode": "IVA",
+                        "TaxRegimeCode": "01",
+                        "TaxOperationType": "S",
+                        "TaxRate": 21
+                      }
+                    }
+                  ],
+                  "TotalCost": 100
+                }
+              }
+            ],
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "S",
+                  "TaxRate": 21,
+                  "TaxableBase": {
+                    "TotalAmount": 105
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": 22.05
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "GeneralCharges": [
+                {
+                  "Charge": {
+                    "ChargeReason": "Impuesto especial sobre la electricidad",
+                    "ChargeAmount": 5,
+                    "ChargeTax": {
+                      "TaxTypeCode": "S",
+                      "TaxRate": 21
+                    },
+                    "SpecificTax": {
+                      "TaxTypeCode": "IEE",
+                      "TaxAmount": 5,
+                      "TaxableBase": 100,
+                      "TaxRate": 5
+                    }
+                  }
+                }
+              ],
+              "TotalGeneralCharges": 5,
+              "TotalNetAmount": 100,
+              "TotalGrossAmount": 105,
+              "TotalTaxOutputs": 22.05,
+              "InvoiceTotal": 127.05,
+              "TotalPayableAmount": 127.05
+            },
+            "PaymentDetails": [
+              {
+                "Installment": {
+                  "InstallmentDueDate": "2026-12-14",
+                  "PaymentTermsNote": "Pago al vencimiento."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

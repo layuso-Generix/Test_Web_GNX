@@ -1,0 +1,115 @@
+{
+  "InvoiceGNX": {
+    "FileHeader": {
+      "SchemaVersion": "GNX-SPFE-2026-11-14",
+      "Modality": "I",
+      "InvoiceIssuerType": "EM"
+    },
+    "Invoices": [
+      {
+        "Parties": {
+          "SellerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "B00000018"
+            },
+            "LegalEntity": {
+              "CorporateName": "Proveedor Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 1",
+                "Town": "Madrid",
+                "PostCode": "28001",
+                "CountryCode": "ES"
+              }
+            }
+          },
+          "BuyerParty": {
+            "TaxIdentification": {
+              "TaxIdentificationNumber": "B00000026"
+            },
+            "LegalEntity": {
+              "CorporateName": "Cliente Ejemplo SL",
+              "Address": {
+                "Address": "Calle de la Muestra 2",
+                "Town": "Madrid",
+                "PostCode": "28002",
+                "CountryCode": "ES"
+              }
+            }
+          }
+        },
+        "Invoice": [
+          {
+            "InvoiceHeader": {
+              "InvoiceNumber": "GNX-LAB-067",
+              "InvoiceDocumentType": "380",
+              "InvoiceClass": "ORIGINAL"
+            },
+            "InvoiceIssueData": {
+              "IssueDate": "2026-11-14",
+              "InvoiceCurrencyCode": "EUR"
+            },
+            "Items": [
+              {
+                "InvoiceLine": {
+                  "SequenceNumber": "1",
+                  "ItemDescription": "Operación de ensayo de mapeo IPSI / 08",
+                  "Quantity": 1,
+                  "UnitOfMeasure": "C62",
+                  "NetUnitPrice": 100,
+                  "TaxesOutputs": [
+                    {
+                      "Tax": {
+                        "TaxTypeCode": "IPSI",
+                        "TaxRegimeCode": "08",
+                        "TaxOperationType": "L",
+                        "TaxRate": 7
+                      }
+                    },
+                    {
+                      "Tax": {
+                        "TaxTypeCode": "IGIC",
+                        "TaxRegimeCode": "01",
+                        "TaxOperationType": "L",
+                        "TaxRate": 7
+                      }
+                    }
+                  ],
+                  "TotalCost": 100
+                }
+              }
+            ],
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "L",
+                  "TaxRate": 7,
+                  "TaxableBase": {
+                    "TotalAmount": 100
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": 7
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": 100,
+              "TotalGrossAmount": 100,
+              "TotalTaxOutputs": 7,
+              "InvoiceTotal": 107,
+              "TotalPayableAmount": 107
+            },
+            "PaymentDetails": [
+              {
+                "Installment": {
+                  "InstallmentDueDate": "2026-12-14",
+                  "PaymentTermsNote": "Pago al vencimiento."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
