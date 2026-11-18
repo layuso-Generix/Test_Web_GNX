@@ -140,8 +140,50 @@ class GithubService {
     });
   }
 
+  // async _loadTreeFromJsdelivr() {
+  //   const url = `https://data.jsdelivr.com/v1/packages/gh/${CONFIG.owner}/${CONFIG.repo}@${CONFIG.branch}?structure=flat`;
+  //   const response = await fetch(url);
+  //   if (!response.ok) {
+  //     throw new Error(`jsDelivr ${response.status}`);
+  //   }
+  //   const data = await response.json();
+  //   const blobs = (data.files || []).map((file) => ({
+  //     path: this._cleanPath(file.name),
+  //     type: 'blob',
+  //     size: file.size
+  //   }));
+
+  //   // jsDelivr solo lista ficheros: se deducen las carpetas
+  //   const dirs = new Set();
+  //   blobs.forEach(({ path }) => {
+  //     const parts = path.split('/');
+  //     for (let i = 1; i < parts.length; i++) {
+  //       dirs.add(parts.slice(0, i).join('/'));
+  //     }
+  //   });
+  //   const trees = Array.from(dirs).map((path) => ({ path, type: 'tree' }));
+  //   return [...trees, ...blobs];
+  // }
+    /** SHA del último commit de la rama (1 petición a GitHub, va a la caché 10 min) */
+  async _latestSha() {
+    const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/commits/${CONFIG.branch}`;
+    const response = await fetch(url, {
+      headers: { ...this.getHeaders(), Accept: 'application/vnd.github.sha' },
+      cache: 'no-cache'
+    });
+    if (!response.ok) throw new Error(`GitHub API ${response.status}`);
+    return (await response.text()).trim();
+  }
+
   async _loadTreeFromJsdelivr() {
-    const url = `https://data.jsdelivr.com/v1/packages/gh/${CONFIG.owner}/${CONFIG.repo}@${CONFIG.branch}?structure=flat`;
+    // Se pide el listado de un commit concreto: jsDelivr no puede devolver una copia antigua
+    let ref = CONFIG.branch;
+    try {
+      ref = await this._latestSha();
+    } catch (e) {
+      console.warn('[GithubService] No se pudo obtener el último commit; se usa la rama (puede estar desactualizada).', e);
+    }
+    const url = `https://data.jsdelivr.com/v1/packages/gh/${CONFIG.owner}/${CONFIG.repo}@${ref}?structure=flat`;
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`jsDelivr ${response.status}`);
@@ -152,7 +194,6 @@ class GithubService {
       type: 'blob',
       size: file.size
     }));
-
     // jsDelivr solo lista ficheros: se deducen las carpetas
     const dirs = new Set();
     blobs.forEach(({ path }) => {
