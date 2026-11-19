@@ -93,7 +93,8 @@
                     "Parties": {
                       "required": [
                         "ThirdParty"
-                      ]
+                      ],
+                      "description": "El expedidor TE requiere al menos un tercero en Parties.ThirdParty."
                     }
                   }
                 }
@@ -133,7 +134,8 @@
                                 "enum": [
                                   "389",
                                   "471"
-                                ]
+                                ],
+                                "description": "El expedidor RE admite los tipos 389, 471."
                               }
                             },
                             "required": [
@@ -182,7 +184,8 @@
                                   "380",
                                   "384",
                                   "388"
-                                ]
+                                ],
+                                "description": "El expedidor EM admite los tipos 380, 384, 388."
                               }
                             },
                             "required": [
@@ -231,7 +234,8 @@
                                   "380",
                                   "384",
                                   "388"
-                                ]
+                                ],
+                                "description": "El expedidor TE admite los tipos 380, 384, 388."
                               }
                             },
                             "required": [
@@ -282,7 +286,8 @@
                             ]
                           }
                         ]
-                      }
+                      },
+                      "description": "ThirdParty solo se admite cuando InvoiceIssuerType es TE."
                     }
                   }
                 }
@@ -394,7 +399,12 @@
                 "LegalEntity": {
                   "required": [
                     "Address"
-                  ]
+                  ],
+                  "properties": {
+                    "Address": {
+                      "$ref": "#/definitions/FiscalPostalAddress"
+                    }
+                  }
                 }
               }
             }
@@ -411,7 +421,12 @@
                 "LegalEntity": {
                   "required": [
                     "Address"
-                  ]
+                  ],
+                  "properties": {
+                    "Address": {
+                      "$ref": "#/definitions/FiscalPostalAddress"
+                    }
+                  }
                 }
               }
             }
@@ -994,7 +1009,8 @@
                       "AdditionalPrecedingInvoices"
                     ]
                   }
-                ]
+                ],
+                "description": "El tipo 388 requiere una referencia previa. Informa PreviousInvoiceNumber con InvoiceIssueData.PreviousInvoiceDate, o incluye al menos una referencia completa en AdditionalPrecedingInvoices."
               }
             }
           }
@@ -1059,6 +1075,160 @@
             "required": [
               "TaxesWithheld"
             ]
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "Items": {
+                    "type": "array",
+                    "contains": {
+                      "type": "object",
+                      "properties": {
+                        "InvoiceLine": {
+                          "type": "object",
+                          "properties": {
+                            "TaxesOutputs": {
+                              "type": "array",
+                              "contains": {
+                                "type": "object",
+                                "properties": {
+                                  "Tax": {
+                                    "anyOf": [
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "TaxOperationType": {
+                                            "enum": [
+                                              "AE",
+                                              "D",
+                                              "F"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "TaxOperationType"
+                                        ]
+                                      },
+                                      {
+                                        "type": "object",
+                                        "properties": {
+                                          "TaxTypeCode": {
+                                            "enum": [
+                                              "IVA",
+                                              "IGIC"
+                                            ]
+                                          },
+                                          "TaxRegimeCode": {
+                                            "enum": [
+                                              "03",
+                                              "05",
+                                              "07",
+                                              "09"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "TaxTypeCode",
+                                          "TaxRegimeCode"
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "Tax"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "TaxesOutputs"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "InvoiceLine"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "Items"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "TaxesOutputs": {
+                    "type": "array",
+                    "contains": {
+                      "type": "object",
+                      "properties": {
+                        "Tax": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "TaxOperationType": {
+                                  "enum": [
+                                    "AE",
+                                    "D",
+                                    "F"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "TaxOperationType"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "TaxTypeCode": {
+                                  "enum": [
+                                    "IVA",
+                                    "IGIC"
+                                  ]
+                                },
+                                "TaxRegimeCode": {
+                                  "enum": [
+                                    "03",
+                                    "05",
+                                    "07",
+                                    "09"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "TaxTypeCode",
+                                "TaxRegimeCode"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "Tax"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "TaxesOutputs"
+                ]
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "InvoiceHeader": {
+                "$ref": "#/definitions/RegulatoryNotes"
+              }
+            }
           }
         }
       ],
@@ -1179,7 +1349,8 @@
           "then": {
             "required": [
               "Corrective"
-            ]
+            ],
+            "description": "Los tipos 384 y 471 requieren el bloque Corrective."
           },
           "else": {
             "not": {
@@ -1190,7 +1361,27 @@
                   ]
                 }
               ]
-            }
+            },
+            "description": "Corrective solo se admite en los tipos 384 y 471."
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "InvoiceDocumentType": {
+                "enum": [
+                  "389",
+                  "471"
+                ]
+              }
+            },
+            "required": [
+              "InvoiceDocumentType"
+            ]
+          },
+          "then": {
+            "$ref": "#/definitions/RegulatoryNotes"
           }
         }
       ]
@@ -1252,8 +1443,12 @@
             }
           },
           "additionalProperties": false,
-          "description": "BG-24 · RECT:IMPORTES: Base, Cuota y CuotaRecargo originales si procede en S.",
+          "description": "BG-24 y L2.C del anexo I. En la sustitución en factura única se informa al menos un importe original aplicable. Cada clave identifica la clase de importe. El anexo no fija una pareja obligatoria de clases.",
           "minProperties": 1
+        },
+        "SingleInvoiceReplacement": {
+          "type": "boolean",
+          "description": "Dato de control GNX para el método S. Verdadero u omitido indica una rectificación por sustitución en factura única. Falso indica que se documenta en varias facturas. No se traslada como término UBL."
         }
       },
       "required": [
@@ -1288,8 +1483,57 @@
                   "required": [
                     "CorrectiveAmounts"
                   ]
+                },
+                {
+                  "required": [
+                    "SingleInvoiceReplacement"
+                  ]
                 }
               ]
+            },
+            "description": "El método I excluye los importes originales y el indicador de sustitución."
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "CorrectionMethod": {
+                "const": "S"
+              }
+            },
+            "required": [
+              "CorrectionMethod"
+            ]
+          },
+          "then": {
+            "if": {
+              "type": "object",
+              "properties": {
+                "SingleInvoiceReplacement": {
+                  "const": false
+                }
+              },
+              "required": [
+                "SingleInvoiceReplacement"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "CorrectiveAmounts"
+                    ]
+                  }
+                ]
+              },
+              "description": "Los importes RECT:IMPORTES corresponden a la sustitución en factura única."
+            },
+            "else": {
+              "required": [
+                "CorrectiveAmounts"
+              ],
+              "description": "La sustitución en factura única requiere al menos un importe original de L2.C."
             }
           }
         }
@@ -3076,8 +3320,66 @@
       "required": [
         "TaxAmount"
       ]
+    },
+    "FiscalPostalAddress": {
+      "if": {
+        "type": "object",
+        "properties": {
+          "CountryCode": {
+            "const": "ES"
+          }
+        },
+        "required": [
+          "CountryCode"
+        ]
+      },
+      "then": {
+        "required": [
+          "Town",
+          "PostCode",
+          "Province"
+        ],
+        "description": "El domicilio español del vendedor o comprador requiere municipio, código postal y provincia (anexo I, BT-37 a BT-39 y BT-52 a BT-54)."
+      }
+    },
+    "RegulatoryNotes": {
+      "required": [
+        "Notes"
+      ],
+      "properties": {
+        "Notes": {
+          "type": "array",
+          "contains": {
+            "type": "object",
+            "properties": {
+              "Note": {
+                "type": "object",
+                "properties": {
+                  "SubjectCode": {
+                    "const": "REG"
+                  },
+                  "Text": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  }
+                },
+                "required": [
+                  "SubjectCode",
+                  "Text"
+                ]
+              }
+            },
+            "required": [
+              "Note"
+            ]
+          },
+          "description": "Se requiere al menos una nota reglamentaria con SubjectCode REG y texto."
+        }
+      },
+      "description": "La factura requiere una mención reglamentaria en InvoiceHeader.Notes (BT-21 y BT-22)."
     }
   },
   "additionalProperties": false,
-  "description": "Contrato de integración derivado del esquema GNX. Cada Invoice genera un Invoice UBL. Usar validación Draft-07 con formatos activos y controles del conversor documentados en el Excel. No es un esquema oficial de la AEAT."
+  "description": "Contrato de integración derivado del esquema GNX. Cada Invoice genera un Invoice UBL. Usar validación Draft-07 con formatos activos y controles del conversor documentados en el Excel. No es un esquema oficial de la AEAT.",
+  "$comment": "Revisión GNX 2026-11-19 (anexo I de la Orden HAC/1028/2026)."
 }

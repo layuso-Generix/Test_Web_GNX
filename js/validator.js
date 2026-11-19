@@ -114,12 +114,33 @@
   const pathOf = (pointer) => (pointer || '').split('/').slice(1)
     .reduce((p, part) => child(p, part.replace(/~1/g, '/').replace(/~0/g, '~')), '$');
 
+  function requiredChoices(branches) {
+    return Array.isArray(branches) && branches.length > 0 &&
+      branches.every(b => Object.keys(b).length === 1 && Array.isArray(b.required) && b.required.length === 1);
+  }
+
+  function relevantErrors(errors) {
+    const details = (errors || []).filter(e => e.keyword !== 'if');
+    const choices = details.filter(e => e.keyword === 'anyOf' && requiredChoices(e.schema));
+    const lists = details.filter(e => e.keyword === 'contains');
+    return details.filter(e => {
+      // Los fallos de candidatos de contains no invalidan individualmente cada nota.
+      if (lists.some(list => e.instancePath.startsWith(list.instancePath + '/') &&
+          e.schemaPath.startsWith(list.schemaPath + '/'))) return false;
+      // En una disyunción de campos basta una alternativa.
+      return e.keyword !== 'required' || !choices.some(choice => choice.instancePath === e.instancePath &&
+        e.schemaPath.startsWith(choice.schemaPath + '/'));
+    });
+  }
+
+  const pointerKey = key => key.replace(/~/g, '~0').replace(/\//g, '~1');
+
   function explain(e) {
     const p = e.params || {};
     let at = pathOf(e.instancePath), ptr = e.instancePath || '', msg;
     switch (e.keyword) {
       case 'required': at = child(at, p.missingProperty); msg = 'falta este campo obligatorio.'; break;
-      case 'additionalProperties': at = child(at, p.additionalProperty); ptr += `/${p.additionalProperty}`; msg = 'el schema no admite esta propiedad.'; break;
+      case 'additionalProperties': at = child(at, p.additionalProperty); ptr += '/' + pointerKey(p.additionalProperty); msg = 'el schema no admite esta propiedad.'; break;
       case 'type': msg = `se esperaba ${TYPES[p.type] || p.type}.`;
         if (p.type === 'array') msg += ' Si hay un solo elemento, usa [ { … } ].'; break;
       case 'enum': {
@@ -134,15 +155,33 @@
       case 'pattern': msg = p.pattern === '\\S' ? 'se requiere al menos un carácter que no sea espacio.' : `no cumple el patrón ${p.pattern}.`; break;
       case 'multipleOf': msg = (e.schema === 0.01) ? 'el importe debe ser múltiplo de 0,01 (sin fracciones de céntimo).' : `se requiere un múltiplo de ${e.schema}.`; break;
       case 'minItems': msg = `la lista requiere al menos ${p.limit} elemento(s).`; break;
+      case 'minProperties': msg = `el objeto requiere al menos ${p.limit} propiedad(es).`; break;
+      case 'contains': msg = e.parentSchema?.description || e.message; break;
       case 'maxItems': msg = `la lista permite como máximo ${p.limit} elemento(s).`; break;
       case 'minLength': msg = `longitud mínima: ${p.limit} caracteres.`; break;
       case 'maxLength': msg = `longitud máxima: ${p.limit} caracteres.`; break;
       case 'minimum': case 'maximum': case 'exclusiveMinimum': case 'exclusiveMaximum':
         msg = `el valor debe cumplir ${p.comparison} ${p.limit}.`; break;
       case 'dependencies': msg = `al informar ${p.property} también se requiere ${p.missingProperty}.`; break;
-      case 'not': msg = 'esta combinación de campos no está permitida aquí.'; break;
-      case 'anyOf': case 'oneOf': msg = 'debe cumplirse una de las alternativas del schema.'; break;
+      case 'not': {
+        const branches = e.schema?.anyOf;
+        const present = requiredChoices(branches)
+          ? branches.map(b => b.required[0]).filter(k => Object.prototype.hasOwnProperty.call(e.data ?? {}, k)) : [];
+        if (present.length === 1) {
+          at = child(at, present[0]);
+          ptr += '/' + pointerKey(present[0]);
+        }
+        msg = present.length ? 'no se admite en este contexto: ' + present.join(', ') + '.' : 'esta combinación de campos no está permitida aquí.';
+        break;
+      }
+      case 'anyOf': msg = requiredChoices(e.schema)
+        ? 'se requiere al menos una de estas propiedades: ' + e.schema.map(b => b.required[0]).join(', ') + '.'
+        : 'debe cumplirse al menos una de las alternativas del schema.'; break;
+      case 'oneOf': msg = 'debe cumplirse exactamente una de las alternativas del schema.'; break;
       default: msg = e.message || `regla no cumplida: ${e.keyword}`;
+    }
+    if (['required', 'not', 'enum', 'anyOf'].includes(e.keyword) && e.parentSchema?.description) {
+      msg += ' ' + e.parentSchema.description;
     }
     return { path: at, pointer: ptr, message: msg };
   }
@@ -200,7 +239,7 @@
         const { lines, map } = serializeWithMap(data);
         if (validate(data)) return { status: 'valid', errors: [], viewer: lines.join('\n'), lines: [] };
         const unique = new Map();
-        (validate.errors || []).filter((e) => e.keyword !== 'if')
+        relevantErrors(validate.errors)
           .map(explain).forEach((e) => unique.set(`${e.path}|${e.message}`, e));
         const errors = [...unique.values()];
         // Línea del error: la del propio nodo o, si no existe (campo que falta), la del padre
@@ -211,6 +250,14 @@
       async compile(schemaPath) {
         if (compiled.has(schemaPath)) return compiled.get(schemaPath);
         const schema = JSON.parse(await window.GithubService.getFileText(schemaPath));
+        const isGnxSpfe = /(?:^|\/)GNX_Invoice_Schema_Json\.json(?:[?#].*)?$/i.test(schemaPath) ||
+          (schema.properties?.InvoiceGNX && /\bGNX\b.*\bSPFE\b/i.test(schema.title || ''));
+        if (isGnxSpfe && (schema.$schema !== 'http://json-schema.org/draft-07/schema#' ||
+            schema.definitions?.Parties?.properties?.ThirdParty?.type !== 'array' ||
+            !schema.definitions?.FiscalPostalAddress || !schema.definitions?.RegulatoryNotes ||
+            !schema.definitions?.Corrective?.properties?.SingleInvoiceReplacement)) {
+          throw new Error('La factura GNX requiere el esquema SPFE revisado según el anexo I. Actualiza ' + schemaPath);
+        }
         const is2020 = /2019-09|2020-12/.test(schema.$schema || '');
         const [{ default: Ajv }, { default: addFormats }] = await Promise.all([
           import(is2020 ? AJV2020_URL : AJV_URL), import(FORMATS_URL)]);
