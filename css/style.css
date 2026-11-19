@@ -986,7 +986,7 @@
 }
 .ex-case summary::-webkit-details-marker { display:none; }
 .ex-case summary::after { content:"▸"; margin-left:auto; color:var(--gray-500); transition:transform .2s; }
-.ex-case[open] summary::after { transform:rotate(90deg); color:var(--generix-orange); }
+.ex-case[open] > summary::after { transform:rotate(90deg); color:var(--generix-orange); }
 .ex-id { font-family:var(--font-mono, ui-monospace, Consolas, monospace); font-size:.8rem; color:var(--gray-500); min-width:44px; }
 .ex-title { font-weight:600; color:var(--generix-dark); }
 .ex-issuer { font-size:.8rem; color:var(--gray-500); }
@@ -1014,3 +1014,24 @@
   font-family: var(--font-mono, ui-monospace, Consolas, monospace);
   word-break: break-all;
 }
+
+.ex-template-content { padding: 0 clamp(10px, 2vw, 24px) 14px; }
+.ex-template-content h3 { margin: 16px 0 10px; font-size: 1rem; color: var(--generix-dark); }
+.ex-template-content .ex-base { padding: 12px 16px; border-left: 3px solid var(--generix-orange); background: var(--gray-100); }
+.ex-n { font-size: .82rem; color: var(--gray-500); white-space: nowrap; }
+.ex-feedback:not(:empty) { display: block; margin-top: 8px; }
+@media (max-width: 600px) {
+  .ex-template summary { flex-wrap: wrap; gap: 6px 10px; }
+  .ex-template summary .ex-title { flex: 1; min-width: 45%; }
+  #exSearch { min-width: 0; flex-basis: 100%; }
+}
+.ex-template-content ul { margin: 6px 0 12px; padding-left: 22px; }
+.ex-template-content h4 { margin: 12px 0 6px; }
+.ex-regimes { margin-top: 14px; font-size: .9rem; color: var(--generix-dark); }
+.ex-regimes > summary { font-weight: 600; background: var(--gray-100); border-radius: 8px; }
+.ex-regimes[open] > summary::after { transform: rotate(90deg); }
+.ex-regimes > p { margin: 12px 0; }
+.ex-scroll { overflow: auto; }
+.ex-scroll table { width: 100%; border-collapse: collapse; }
+.ex-scroll th, .ex-scroll td { padding: 8px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+.ex-jump { cursor: pointer; border: 0; background: none; font: inherit; text-decoration: underline; color: var(--generix-dark); }

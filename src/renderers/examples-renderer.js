@@ -10,190 +10,253 @@
 (function () {
   'use strict';
 
-  /* Textos de la vista (no dependen de i18n.js) */
-  const UI = {
-    es: { loading: 'Cargando…', search: 'Buscar por ID, caso, tipo o texto…', loadFail: 'No se pudo cargar el catálogo de ejemplos',
-          all: 'Todos', count: '{n} caso(s)', none: 'No hay ejemplos que coincidan con la búsqueda.',
-          send: 'Qué enviar', check: 'Qué comprobar', download: 'Descargar', view: 'Ver contenido', hide: 'Ocultar',
-          copy: 'Copiar', copied: '✓ Copiado', pending: 'Traducción pendiente' },
-    en: { loading: 'Loading…', search: 'Search by ID, case, type or text…', loadFail: 'Could not load the examples catalog',
-          all: 'All', count: '{n} case(s)', none: 'No examples match your search.',
-          send: 'What to send', check: 'What to check', download: 'Download', view: 'View content', hide: 'Hide',
-          copy: 'Copy', copied: '✓ Copied', pending: 'Translation pending' }
-  };
-  const ui = (key, params) => {
-    const dict = UI[window.LANG] || UI.es;
-    return String(dict[key] ?? UI.es[key] ?? key)
-      .replace(/\{(\w+)\}/g, (_, k) => (params && params[k] != null ? params[k] : ''));
-  };
-  /** Texto en el idioma activo: obj.title_en → obj.title */
-  const loc = (obj, field) => (window.LANG && window.LANG !== 'es' && obj[`${field}_${window.LANG}`]) || obj[field] || '';
-  const isTranslated = (c) => !window.LANG || window.LANG === 'es' || Boolean(c[`title_${window.LANG}`]);
+  const root = (CONFIG.examplesPath || 'E-invoicing/Standard/Examples').replace(/\/+$/, '');
+  const local = location.protocol === 'file:';
+  const ui = (es, en) => window.LANG === 'en' ? en : es;
+  const loc = (obj, key) => (window.LANG === 'en' && obj[key + '_en']) || obj[key] || '';
+  const norm = value => String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const total = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+  const subCount = n => total(n, ui('subejemplo', 'subexample'), ui('subejemplos', 'subexamples'));
+  const templateCount = n => total(n, ui('plantilla', 'template'), ui('plantillas', 'templates'));
+  let offlineLoad;
 
-  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const examplesRoot = () => String(CONFIG.examplesPath || 'E-invoicing/Standard/Examples').replace(/\/+$/, '');
+  async function read(relativePath) {
+    const response = await fetch(root + '/' + relativePath);
+    if (!response.ok) throw new Error(relativePath + ' (HTTP ' + response.status + ')');
+    return response.text();
+  }
+
+  function loadCatalog() {
+    if (!local) return read('catalog.json').then(JSON.parse);
+    if (!offlineLoad) {
+      offlineLoad = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = root + '/catalog-offline.js';
+        script.onload = () => resolve(window.GNXOfflineExamples.catalog);
+        script.onerror = () => {
+          offlineLoad = null;
+          reject(new Error(script.src));
+        };
+        document.head.append(script);
+      });
+    }
+    return offlineLoad;
+  }
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.style.cssText = 'position:fixed;left:-10000px;top:0';
+      const focus = document.activeElement;
+      document.body.append(field);
+      try {
+        field.select();
+        if (!document.execCommand('copy')) throw new Error(ui('No se pudo copiar', 'Copy failed'));
+      } finally {
+        field.remove();
+        focus?.focus({preventScroll:true});
+      }
+    }
+  }
 
   class ExamplesRenderer {
-    constructor() {
-      this.card = null;
-      this.format = 'xml';
-      this.groups = [];
-      this.query = '';
-      this.group = '';
-    }
-
     $(id) { return document.getElementById(id); }
 
-    async render({ card }) {
-      this.card = card;
-      this.format = String(card.format || 'xml').toLowerCase();
-      showView('view-examples');
-      document.title = `${localizedSectionTitle(card)} · Generix`;
-
-      const crumbFmt = this.$('exCrumbFmt');
-      crumbFmt.textContent = card.format;
-      crumbFmt.href = `#${this.format}`;
-      this.$('exTitle').textContent = localizedSectionTitle(card);
-      this.$('exCrumbCur').textContent = localizedSectionTitle(card);
-      this.$('exDesc').textContent = localizedSectionDesc(card);
-      this.$('exList').innerHTML = `<p class="ex-empty">${esc(ui('loading'))}</p>`;
-      this.$('exChips').innerHTML = '';
-      this.$('exCount').textContent = '';
-
-      const search = this.$('exSearch');
-      search.value = this.query = '';
-      search.placeholder = ui('search');
-      search.oninput = () => { this.query = search.value; this.paint(); };
+    async render({card}) {
+      this.format = card.format.toLowerCase();
+      this.query = '';
       this.group = '';
-
+      showView('view-examples');
+      const title = localizedSectionTitle(card);
+      document.title = title + ' · Generix';
+      this.$('exCrumbFmt').textContent = card.format;
+      this.$('exCrumbFmt').href = '#' + this.format;
+      this.$('exTitle').textContent = this.$('exCrumbCur').textContent = title;
+      this.$('exDesc').textContent = localizedSectionDesc(card);
+      this.$('exChips').replaceChildren();
+      this.$('exCount').textContent = '';
+      const list = this.$('exList');
+      const renderKey = Symbol();
+      list.renderKey = renderKey;
+      list.textContent = ui('Cargando…', 'Loading…');
+      const search = this.$('exSearch');
+      search.value = '';
+      search.placeholder = ui('Buscar plantilla, subejemplo, código o texto…', 'Search templates, subexamples, codes or text…');
+      search.setAttribute('aria-label', search.placeholder);
+      search.oninput = null;
       try {
-        const raw = await window.GithubService.getFileText(`${examplesRoot()}/catalog.json`);
-        const catalog = JSON.parse(raw);
-                // Carpeta y extensión de cada formato
-        const FOLDER = { xml: 'Xml', json: 'Json', ubl: 'Ubl' };
-        const EXT = { xml: 'xml', json: 'json', ubl: 'xml' };
-
-        // El catálogo es la fuente de verdad: no se depende del listado de jsDelivr
-        const fileFor = (c) => {
-          if (c.files && c.files[this.format]) return c.files[this.format];   // formato antiguo
-          if (!c.file) return '';
-          return `${FOLDER[this.format] || this.format}/${c.file}.${EXT[this.format] || this.format}`;
+        const catalog = await loadCatalog();
+        if (list.renderKey !== renderKey) return;
+        this.groups = catalog.groups;
+        this.regimes = catalog.regimes;
+        this.regimeNote = catalog.regimeNote;
+        this.cases = new Map();
+        for (const group of this.groups) {
+          for (const item of group.cases) this.cases.set(item.id, {...item, group: group.id});
+        }
+        this.templates = catalog.templates;
+        search.oninput = () => { this.query = search.value.trim(); this.paint(); };
+        list.onclick = event => {
+          const jump = event.target.closest('[data-template]');
+          if (jump) {
+            search.value = this.query = this.group = '';
+            this.paintChips();
+            this.paint();
+            const target = this.$('template-' + jump.dataset.template);
+            target.open = true;
+            target.querySelector('summary').focus();
+            target.scrollIntoView({block:'start'});
+            return;
+          }
+          const button = event.target.closest('[data-ex-action]');
+          if (button) this.act(button);
         };
-
-        this.groups = (catalog.groups || [])
-          .map((g) => ({
-            ...g,
-            cases: (g.cases || [])
-              .map((c) => {
-                const rel = fileFor(c);
-                return rel ? { ...c, files: { ...(c.files || {}), [this.format]: rel } } : null;
-              })
-              .filter(Boolean)
-          }))
-          .filter((g) => g.cases.length);
         this.paintChips();
         this.paint();
       } catch (error) {
-        this.$('exList').innerHTML = `
-          <div class="highlight-box"><strong>${esc(ui('loadFail'))}</strong><br>${esc(error.message)}</div>`;
+        if (list.renderKey === renderKey) list.textContent = ui('Error al cargar el catálogo', 'Could not load catalog') + ' · ' + error.message;
       }
     }
 
     paintChips() {
-      const total = this.groups.reduce((n, g) => n + g.cases.length, 0);
-      const chip = (id, label, n) =>
-        `<button type="button" class="ex-chip${this.group === id ? ' active' : ''}" data-group="${esc(id)}">${esc(label)} <span>${n}</span></button>`;
-      this.$('exChips').innerHTML =
-        chip('', ui('all'), total) + this.groups.map((g) => chip(g.id, loc(g, 'title'), g.cases.length)).join('');
-      this.$('exChips').querySelectorAll('.ex-chip').forEach((b) => {
-        b.onclick = () => { this.group = b.dataset.group; this.paintChips(); this.paint(); };
-      });
+      const chip = (id, title, n) => `<button type="button" class="ex-chip${this.group === id ? ' active' : ''}"
+        aria-pressed="${this.group === id}" data-group="${esc(id)}">${esc(title)} <span>${n}</span></button>`;
+      const bar = this.$('exChips');
+      bar.innerHTML = chip('', ui('Todos', 'All'), this.cases.size) +
+        this.groups.map(g => chip(g.id, loc(g, 'title'), g.cases.length)).join('');
+      bar.onclick = event => {
+        const button = event.target.closest('[data-group]');
+        if (!button) return;
+        this.group = button.dataset.group;
+        this.paintChips();
+        this.paint();
+      };
     }
 
-    matches(c) {
-      if (!this.query) return true;
-      // Busca en los dos idiomas: el cliente encuentra el caso escriba como escriba
-      const hay = norm(['id', 'title', 'description', 'send', 'check', 'issuer', 'docType', 'label']
-        .flatMap((f) => [c[f], c[`${f}_en`]]).join(' '));
-      return norm(this.query).split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
+    casePath(c) {
+      return c.files?.[this.format] || (this.format === 'json' ? 'Json/' : 'Xml/') + c.file + '.' + this.format;
     }
 
     paint() {
-      const list = this.$('exList');
-      let shown = 0;
-      const html = this.groups
-        .filter((g) => !this.group || g.id === this.group)
-        .map((g) => {
-          const cases = g.cases.filter((c) => this.matches(c));
-          if (!cases.length) return '';
-          shown += cases.length;
-          return `
-            <section class="ex-group" id="ex-${esc(g.id)}">
-              <h3>${esc(loc(g, 'title'))} <small>${cases.length}</small></h3>
-              ${cases.map((c) => this.caseHtml(c)).join('')}
-            </section>`;
+      const words = norm(this.query).split(/\s+/).filter(Boolean);
+      let templates = 0, cases = 0;
+      const sections = new Map(this.groups.map(g => [g.id, []]));
+      for (const t of this.templates) {
+        const children = t.cases.map(id => this.cases.get(id)).filter(c => {
+          if (this.group && c.group !== this.group) return false;
+          if (!words.length) return true;
+          const searchable = norm([t.id, t.title, t.title_en, ...Object.values(c)].join(' '));
+          return words.every(w => searchable.includes(w));
+        });
+        if (!children.length) continue;
+        templates++;
+        cases += children.length;
+        const base = this.cases.get(t.baseCase);
+        sections.get(t.group).push(`<details class="ex-case ex-template" id="template-${esc(t.id)}" ${words.length ? 'open' : ''}>
+          <summary><span class="ex-id">${esc(t.id)}</span><span class="ex-title">${esc(loc(t,'title'))}</span>
+            <span class="ex-n">${subCount(children.length)}</span></summary>
+          <div class="ex-template-content">
+            <div class="ex-body ex-base"><p><strong>${ui('Ejemplo principal','Main example')}</strong>
+              · ${esc(base.id)} · ${esc(loc(base,'title'))}</p>
+              <p>${esc(loc(t,'description'))}</p>
+              <p><strong>${ui('Qué enviar', 'What to send')}</strong> · ${esc(loc(base,'send'))}</p>
+              <p><strong>${ui('Qué comprobar', 'What to check')}</strong> · ${esc(loc(base,'check'))}</p>
+              <p><strong>${ui('Expedidor', 'Issuer')}</strong> · ${esc(t.issuerDetails)}</p>
+              <h4>${ui('Códigos del ejemplo descargable', 'Codes in the downloadable example')}</h4>
+              <ul>${t.codes.map(code => `<li>${esc(code)}</li>`).join('')}</ul>
+              ${this.actions(t.files[this.format], this.casePath(base))}
+            </div>
+            <h3>${ui('Subejemplos','Subexamples')}</h3>
+            ${children.map(c => this.caseHtml(c)).join('')}
+            ${this.regimesHtml()}
+          </div></details>`);
+      }
+      const html = this.groups.map(g => {
+        const items = sections.get(g.id);
+        return items.length ? `<section class="ex-group"><h3>${esc(loc(g,'title'))} <small>${templateCount(items.length)}</small></h3>${items.join('')}</section>` : '';
         }).join('');
+      this.$('exCount').textContent = templateCount(templates) + ' · ' + subCount(cases);
+      this.$('exList').innerHTML = html || `<p class="ex-empty">${ui('No hay coincidencias.', 'No matches found.')}</p>`;
+    }
 
-      this.$('exCount').textContent = ui('count', { n: shown });
-      list.innerHTML = html || `<p class="ex-empty">${esc(ui('none'))}</p>`;
-      list.querySelectorAll('[data-ex-action]').forEach((btn) => {
-        btn.onclick = (e) => { e.preventDefault(); this[btn.dataset.exAction](btn.dataset.path, btn); };
-      });
+    regimesHtml() {
+      const tables = this.regimes.map(group => `<h4>${esc(group.title)}</h4><div class="ex-scroll"><table>
+        <thead><tr><th>${ui('Clave','Code')}</th><th>${ui('Significado','Meaning')}</th><th>${ui('Plantilla','Template')}</th></tr></thead>
+        <tbody>${group.rows.map(([code, meaning, id]) => `<tr><td>${esc(code)}</td><td>${esc(meaning)}</td>
+        <td><button type="button" class="ex-jump" data-template="${esc(id)}">${esc(id)}</button></td></tr>`).join('')}</tbody>
+        </table></div>`).join('');
+      return `<details class="ex-regimes"><summary>${ui('Todos los regímenes','All regimes')} · IVA (12), IGIC (15), IPSI (5)</summary>
+        <p>${esc(this.regimeNote)}</p>${tables}</details>`;
+    }
+
+    actions(path, source) {
+      const button = (action, title, primary = false) => `<button type="button" class="file-btn${primary ? ' file-btn--primary' : ''}"
+        data-ex-action="${action}"${action === 'view' ? ' aria-expanded="false"' : ''}>${esc(title)}</button>`;
+      return `<div class="ex-actions" data-path="${esc(path)}" data-source="${esc(source)}">
+          ${button('download', ui('Descargar', 'Download') + ' ' + this.format.toUpperCase(), true)}
+          ${button('view', ui('Ver contenido', 'View content'))}
+          ${button('copy', ui('Copiar', 'Copy'))}
+        </div><span class="ex-feedback" role="status"></span><pre class="ex-pre" hidden></pre>`;
     }
 
     caseHtml(c) {
-      const path = `${examplesRoot()}/${c.files[this.format]}`;
-      const fileName = path.split('/').pop();
-      const row = (label, value) => (value ? `<p><strong>${esc(label)}:</strong> ${esc(value)}</p>` : '');
-      const issuer = loc(c, 'issuer');
-      return `
-        <details class="ex-case" id="${esc(c.id)}">
-          <summary>
-            <span class="ex-id">${esc(c.id)}</span>
-            <span class="ex-title">${esc(loc(c, 'title'))}</span>
-            ${c.docType ? `<span class="badge badge-cat" title="L1">${esc(c.docType)}</span>` : ''}
-            ${issuer ? `<span class="ex-issuer">${esc(issuer)}</span>` : ''}
-            ${isTranslated(c) ? '' : `<span class="ex-pending" title="${esc(ui('pending'))}">ES</span>`}
-          </summary>
-          <div class="ex-body">
-            ${loc(c, 'description') ? `<p>${esc(loc(c, 'description'))}</p>` : ''}
-            ${row(ui('send'), loc(c, 'send'))}
-            ${row(ui('check'), loc(c, 'check'))}
-            <div class="ex-actions">
-              <a class="file-btn file-btn--primary" download="${esc(fileName)}" target="_blank" rel="noopener"
-                 href="${window.GithubService.getRawUrl(path)}">${esc(ui('download'))}</a>
-              <button type="button" class="file-btn" data-ex-action="toggle" data-path="${esc(path)}">${esc(ui('view'))}</button>
-              <button type="button" class="file-btn" data-ex-action="copy" data-path="${esc(path)}">${esc(ui('copy'))}</button>
-            </div>
-            <pre class="ex-pre" hidden></pre>
-          </div>
-        </details>`;
+      const row = (label, field) => loc(c, field) ? `<p><strong>${label}</strong> · ${esc(loc(c, field))}</p>` : '';
+      const path = this.casePath(c);
+      return `<details class="ex-case" id="${esc(c.id)}">
+        <summary><span class="ex-id">${esc(c.id)}</span><span class="ex-title">${esc(loc(c,'title'))}</span>
+          <span class="badge badge-cat" title="L1">${esc(c.docType)}</span>
+          <span class="ex-issuer">${esc(loc(c,'issuer'))}</span></summary>
+        <div class="ex-body"><p>${esc(loc(c,'description'))}</p>
+          ${row(ui('Pendiente','Pending'),'pending')}
+          <h4>${ui('Desglose de los importes del ejemplo','Example amount breakdown')}</h4>
+          <ul>${c.amounts.map(amount => `<li>${esc(amount)}</li>`).join('')}</ul>
+          ${row(ui('Qué enviar','What to send'),'send')}${row(ui('Qué comprobar','What to check'),'check')}
+          ${this.actions(path, path)}</div></details>`;
     }
 
-    async toggle(path, btn) {
-      const pre = btn.closest('.ex-body').querySelector('.ex-pre');
-      if (!pre.hidden) { pre.hidden = true; btn.textContent = ui('view'); return; }
-      pre.hidden = false;
-      btn.textContent = ui('hide');
-      if (pre.dataset.loaded) return;
-      pre.textContent = ui('loading');
-      try {
-        pre.textContent = await window.GithubService.getFileText(path);
-        pre.dataset.loaded = '1';
-      } catch (error) {
-        pre.textContent = error.message;
+    async act(button) {
+      const bar = button.closest('.ex-actions');
+      const feedback = bar.nextElementSibling;
+      const pre = feedback.nextElementSibling;
+      const {path, source} = bar.dataset;
+      feedback.textContent = '';
+      const action = button.dataset.exAction;
+      if (action === 'view' && !pre.hidden) {
+        pre.hidden = true;
+        button.textContent = ui('Ver contenido', 'View content');
+        button.setAttribute('aria-expanded', 'false');
+        return;
       }
-    }
-
-    async copy(path, btn) {
-      const label = btn.textContent;
+      button.disabled = true;
       try {
-        await navigator.clipboard.writeText(await window.GithubService.getFileText(path));
-        btn.textContent = ui('copied');
+        const text = local ? window.GNXOfflineExamples.files[source] : await read(path);
+        if (typeof text !== 'string') throw new Error(path);
+        if (action === 'view') {
+          pre.textContent = text;
+          pre.hidden = false;
+          button.textContent = ui('Ocultar', 'Hide');
+          button.setAttribute('aria-expanded', 'true');
+        } else if (action === 'copy') {
+          await copyText(text);
+          feedback.textContent = ui('✓ Copiado', '✓ Copied');
+        } else if (action === 'download') {
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(new Blob([text], {type:'application/' + this.format}));
+          link.href = url;
+          link.download = path.split('/').pop();
+          document.body.append(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
       } catch (error) {
-        btn.textContent = '✗';
+        feedback.textContent = ui('No se pudo completar la acción', 'Action failed') + ' · ' + error.message;
+      } finally {
+        button.disabled = false;
       }
-      setTimeout(() => { btn.textContent = label; }, 1500);
     }
   }
 
