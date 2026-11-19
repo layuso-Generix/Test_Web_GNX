@@ -141,10 +141,15 @@
         if (token !== renderToken) return;   // Ha empezado otra navegación
       }
     // Sin pestaña en la URL → pestaña principal
-    const activeTab = tab || getDefaultTab();
-    if (activeTab && typeof window.activateDetailTab === 'function') {
-      window.activateDetailTab(activeTab);
+    if (card.group === 'Examples') {
+      // #xml/examples-xml/C036 → selecciona el caso
+      if (window.ExamplesView) window.ExamplesView.select(tab);
+    } else {
+      const activeTab = tab || getDefaultTab();
+      if (activeTab && typeof window.activateDetailTab === 'function') {
+        window.activateDetailTab(activeTab);
       }
+    }
     if (anchor && typeof window.scrollToElementId === 'function') {
       window.scrollToElementId(anchor);
     } else if (!needsRender && !tab) {

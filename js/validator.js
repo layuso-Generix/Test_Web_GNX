@@ -412,6 +412,21 @@
 
     refresh();
     if (!lastFile) renderSummary('info', '', []);
+
+    const pending = window._pendingValidation;
+    if (pending) {
+      window._pendingValidation = null;
+      const want = pending.format === 'xml' ? /\.xsd$/i : /\.json$/i;
+      const opt = [...sel.options].find((o) => o.value && want.test(o.value) && /invoice/i.test(o.value))
+        || [...sel.options].find((o) => o.value && want.test(o.value));
+      if (opt) {
+        sel.value = opt.value;
+        refresh();
+        lastFile = { name: pending.name, text: pending.text };
+        run(lastFile);
+      }
+    }
+
   }
 
   async function readFile(file) {
