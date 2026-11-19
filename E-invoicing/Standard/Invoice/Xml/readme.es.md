@@ -22,14 +22,14 @@ Si trabajas con JSON, consulta **Factura JSON**.
 InvoiceGNX
 └── Invoices                  Lote de facturas
     └── Invoice               Una factura
-        ├── InvoiceHeader       Número, fecha, tipo, rectificativa
-        ├── Parties             Emisor, receptor y tercero
+        ├── InvoiceHeader     Número, fecha, tipo, rectificativa
+        ├── Parties           Emisor, receptor y tercero
         ├── TaxesOutputs      Impuestos repercutidos
         ├── TaxesWithheld     Retenciones
-        ├── InvoiceTotals       Totales, descuentos y cargos generales
+        ├── InvoiceTotals     Totales, descuentos y cargos generales
         ├── Items             Líneas de factura
         ├── PaymentDetails    Vencimientos y medio de pago
-        └── AdditionalData      Documentos relacionados y anexos
+        └── AdditionalData    Documentos relacionados y anexos
 ```
 <!-- REVISAR: completar con los bloques de primer nivel que falten (p. ej. FileHeader) -->
 

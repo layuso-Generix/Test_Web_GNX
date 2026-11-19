@@ -135,28 +135,27 @@ class InvoiceRenderer extends BaseRenderer {
     if (endpoint.version) { specs.push({ label: t("spec.version"), value: endpoint.version,});}
     if (endpoint.releaseDate) {specs.push({ label: t("spec.releaseDate"), value: endpoint.releaseDate,});}
     if (endpoint.path) { specs.push({ label: t("spec.path"), value: endpoint.path,}); }
-    (examplesData || []).forEach((example, index) => {
-      specs.push({
-        label: examplesData.length > 1
-          ? t("spec.exampleN", { n: index + 1 })
-          : t("spec.example"),
-        value: example.name,
-        dlIdx: index,
-      });
-    });
+    // Enlace a la card de Ejemplos del mismo formato (en lugar de los ficheros sueltos)
+      const exCard = typeof findCardById === "function"
+        ? findCardById(`examples-${String(card.format || "").toLowerCase()}`)
+        : null;
+      if (exCard && !exCard.comingSoon) {
+        specs.push({
+          label: LANG === "en" ? "Examples" : "Ejemplos",
+          value: LANG === "en" ? `View ${card.format} examples →` : `Ver casos de ejemplo ${card.format} →`,
+          route: window.Router ? Router.buildRoute(exCard.id) : exCard.id,
+        });
+      }
     if (specs.length) {
       html += `
         <div class="spec-card">
           ${specs.map((spec) => {
-            if (spec.dlIdx !== undefined) {
+            if (spec.route) {
               return `
                 <div class="spec-item">
                   <span class="spec-label">${this.escape(spec.label)}</span>
                   <span class="spec-value">
-                    <a
-                      href="#" onclick="downloadExample(${spec.dlIdx}, '${this.escape(spec.value)}'); return false;"
-                      class="download-link" style="font-family:monospace;font-size:.85rem"
-                    > ${this.escape(spec.value)} </a>
+                    <a href="#${this.escape(spec.route)}" class="download-link">${this.escape(spec.value)}</a>
                   </span>
                 </div>
               `;

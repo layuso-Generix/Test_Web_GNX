@@ -22,14 +22,14 @@ If you work with JSON, see **Invoice JSON**.
 InvoiceGNX
 └── Invoices                  Invoice batch
     └── Invoice               One invoice
-        ├── InvoiceHeader       Number, date, type, correction
-        ├── Parties             Issuer, recipient and third party
+        ├── InvoiceHeader     Number, date, type, correction
+        ├── Parties           Issuer, recipient and third party
         ├── TaxesOutputs      Output taxes
         ├── TaxesWithheld     Withholdings
-        ├── InvoiceTotals       Totals, general discounts and charges
+        ├── InvoiceTotals     Totals, general discounts and charges
         ├── Items             Invoice lines
         ├── PaymentDetails    Instalments and payment means
-        └── AdditionalData      Related documents and attachments
+        └── AdditionalData    Related documents and attachments
 ```
 <!-- REVISAR: completar con los bloques de primer nivel que falten (p. ej. FileHeader) -->
 
