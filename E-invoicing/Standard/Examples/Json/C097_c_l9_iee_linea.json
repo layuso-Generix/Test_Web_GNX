@@ -17,11 +17,12 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
@@ -33,10 +34,10 @@
               "CorporateName": "Cliente Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -58,20 +59,20 @@
                   "TaxOperationType": "S",
                   "TaxRate": 21,
                   "TaxableBase": {
-                    "TotalAmount": 105
+                    "TotalAmount": 105.11
                   },
                   "TaxAmount": {
-                    "TotalAmount": 22.05
+                    "TotalAmount": 22.07
                   }
                 }
               }
             ],
             "InvoiceTotals": {
-              "TotalNetAmount": 105,
-              "TotalGrossAmount": 105,
-              "TotalTaxOutputs": 22.05,
-              "InvoiceTotal": 127.05,
-              "TotalPayableAmount": 127.05
+              "TotalNetAmount": 105.11,
+              "TotalGrossAmount": 105.11,
+              "TotalTaxOutputs": 22.07,
+              "InvoiceTotal": 127.18,
+              "TotalPayableAmount": 127.18
             },
             "Items": [
               {
@@ -80,7 +81,16 @@
                   "ItemDescription": "Servicio de mantenimiento",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
+                  "Charges": [
+                    {
+                      "Charge": {
+                        "ChargeReason": "Impuesto especial sobre la electricidad.",
+                        "ChargeTaxTypeCode": "IEE",
+                        "ChargeAmount": 5.11,
+                        "ChargeBase": 100
+                      }
+                    }
+                  ],
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -91,18 +101,8 @@
                       }
                     }
                   ],
-                  "Charges": [
-                    {
-                      "Charge": {
-                        "ChargeReason": "Impuesto especial sobre la electricidad.",
-                        "ChargeTaxTypeCode": "IEE",
-                        "ChargeRate": 5,
-                        "ChargeBase": 100,
-                        "ChargeAmount": 5
-                      }
-                    }
-                  ],
-                  "TotalCost": 105
+                  "NetUnitPrice": 100,
+                  "TotalCost": 105.11
                 }
               }
             ],

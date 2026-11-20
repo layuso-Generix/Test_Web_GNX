@@ -477,8 +477,8 @@
       "title_en": "Corrective invoice by replacement with equivalence surcharge",
       "description": "Se documenta el importe correcto que sustituye al anterior; este ejemplo informa los importes originales. Motivo R4: Factura Rectificativa (Resto).",
       "description_en": "The correct amount replacing the previous one is documented; this example reports the original amounts. Reason R4: Corrective invoice (Other).",
-      "send": "Número y fecha de la rectificada; motivo R4 y modalidad S. Indicar base y cuota correctas y, para esta modalidad con documento único, la base y cuota originales rectificadas; añadir el recargo original si procede.",
-      "send_en": "Provide the number and date of the corrected invoice; reason R4 and method S. Specify the correct taxable base and tax amount and, for this single-document method, the original corrected taxable base and tax amount; add the original surcharge where applicable.",
+      "send": "Informar los dos desgloses N y los importes rectificados originales de la sustitución.",
+      "send_en": "Report both N breakdowns and the original corrected amounts.",
       "check": "Conciliar los valores nuevos con los originales; no contabilizar los dos como ventas adicionales. Validar el motivo de rectificación.",
       "check_en": "Reconcile the new values with the originals; do not post both as additional sales. Validate the reason for correction.",
       "issuer": "Vendedor (EM)",
@@ -789,8 +789,8 @@
       "label": "GNX-LAB-041",
       "file": "C041_c_l3a_03",
       "amounts": [
-        "IVA · base: 100,00 €; tipo: 21 %; cuota: 21,00 €.",
-        "Total factura: 121,00 €."
+        "Categoría F: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "iva",
       "tags": [
@@ -821,8 +821,8 @@
       "label": "GNX-LAB-024",
       "file": "C024_12_categoria_f",
       "amounts": [
-        "IVA · base: 100,00 €; tipo: 21 %; cuota: 21,00 €.",
-        "Total factura: 121,00 €."
+        "Categoría F: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "iva",
       "tags": [
@@ -885,8 +885,8 @@
       "label": "GNX-LAB-043",
       "file": "C043_c_l3a_05",
       "amounts": [
-        "IVA · base: 100,00 €; tipo: 21 %; cuota: 21,00 €.",
-        "Total factura: 121,00 €."
+        "Categoría D: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "iva",
       "tags": [
@@ -917,8 +917,8 @@
       "label": "GNX-LAB-023",
       "file": "C023_12_categoria_d",
       "amounts": [
-        "IVA · base: 100,00 €; tipo: 21 %; cuota: 21,00 €.",
-        "Total factura: 121,00 €."
+        "Categoría D: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "iva",
       "tags": [
@@ -981,13 +981,13 @@
       "label": "GNX-LAB-046",
       "file": "C046_c_l3a_08",
       "amounts": [
-        "IGIC · base: 100,00 €; tipo: 7 %; cuota: 7,00 €.",
-        "Total factura: 107,00 €."
+        "Categoría O: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "iva",
       "tags": [
         "380",
-        "IGIC",
+        "IVA",
         "EM"
       ],
       "codes": {
@@ -1241,8 +1241,8 @@
       "label": "GNX-LAB-053",
       "file": "C053_c_l3b_03",
       "amounts": [
-        "IGIC · base: 100,00 €; tipo: 7 %; cuota: 7,00 €.",
-        "Total factura: 107,00 €."
+        "Categoría F: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "igic",
       "tags": [
@@ -1305,8 +1305,8 @@
       "label": "GNX-LAB-055",
       "file": "C055_c_l3b_05",
       "amounts": [
-        "IGIC · base: 100,00 €; tipo: 7 %; cuota: 7,00 €.",
-        "Total factura: 107,00 €."
+        "Categoría D: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "igic",
       "tags": [
@@ -1337,8 +1337,8 @@
       "label": "GNX-LAB-056",
       "file": "C056_c_l3b_06",
       "amounts": [
-        "IGIC · base: 100,00 €; tipo: 7 %; cuota: 7,00 €.",
-        "Total factura: 107,00 €."
+        "Categoría N, clave 06: base declarada 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "igic",
       "tags": [
@@ -1401,13 +1401,13 @@
       "label": "GNX-LAB-058",
       "file": "C058_c_l3b_08",
       "amounts": [
-        "IPSI · base: 100,00 €; tipo: 4 %; cuota: 4,00 €.",
-        "Total factura: 104,00 €."
+        "Categoría O: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "igic",
       "tags": [
         "380",
-        "IPSI",
+        "IGIC",
         "EM"
       ],
       "codes": {
@@ -1757,13 +1757,13 @@
       "label": "GNX-LAB-067",
       "file": "C067_c_l3c_08",
       "amounts": [
-        "IGIC · base: 100,00 €; tipo: 7 %; cuota: 7,00 €.",
-        "Total factura: 107,00 €."
+        "Categoría O: base 100,00 €, cuota 0,00 €.",
+        "Total factura: 100,00 €."
       ],
       "topic": "ipsi",
       "tags": [
         "380",
-        "IGIC",
+        "IPSI",
         "EM"
       ],
       "codes": {
@@ -2067,8 +2067,8 @@
       "title_en": "Sale with IVA and equivalence surcharge",
       "description": "El cliente soporta la cuota de IVA y otra cuota por el recargo.",
       "description_en": "The customer bears the IVA amount and an additional equivalence surcharge amount.",
-      "send": "Indicar base, tipo y cuota de IVA; además, porcentaje y cuota de recargo en el desglose.",
-      "send_en": "Specify the IVA taxable base, rate and tax amount; also report the surcharge rate and amount in the breakdown.",
+      "send": "Informar dos desgloses N con la misma base, uno de IVA y otro de recargo REEQ.",
+      "send_en": "Report both N breakdowns, including the REEQ surcharge.",
       "check": "Comprobar que el recargo se ha sumado una sola vez y que corresponde al cliente y al artículo.",
       "check_en": "Check that the surcharge has been added only once and that it applies to the customer and the item.",
       "issuer": "Vendedor (EM)",
@@ -2546,8 +2546,8 @@
       "title_en": "IEE · line-level charge",
       "description": "Impuesto especial sobre la electricidad.",
       "description_en": "Excise duty on electricity.",
-      "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
-      "send_en": "At line level, report the reason, tax/charge code, taxable base, rate and amount of the charge, as applicable.",
+      "send": "Informar código IEE, base e importe del cargo. Omitir ChargeRate (BR-ES-CO-16).",
+      "send_en": "Provide the IEE code, base and charge amount. Omit ChargeRate (BR-ES-CO-16).",
       "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
       "check_en": "Confirm the actual nature, calculation unit and tax amount; the case uses test values. Do not report the same charge at both line and invoice level.",
       "issuer": "Vendedor (EM)",
@@ -2556,9 +2556,9 @@
       "label": "GNX-LAB-028",
       "file": "C028_16_iee_linea",
       "amounts": [
-        "IVA · base: 105,00 €; tipo: 21 %; cuota: 22,05 €.",
-        "Cargo en la línea: Impuesto especial sobre la electricidad · 5,00 €.",
-        "Total factura: 127,05 €."
+        "Cargo IEE sobre 100,00 €: 5,11 €.",
+        "IVA sobre 105,11 € al 21 %: 22,07 €.",
+        "Total factura: 127,18 €."
       ],
       "topic": "especiales",
       "tags": [
@@ -2582,8 +2582,8 @@
       "title_en": "IEE · line-level charge",
       "description": "Impuesto especial sobre la electricidad.",
       "description_en": "Excise duty on electricity.",
-      "send": "En la línea: informar motivo, código de impuesto/cargo, base, tipo e importe de ese cargo según proceda.",
-      "send_en": "At line level, report the reason, tax/charge code, taxable base, rate and amount of the charge, as applicable.",
+      "send": "Informar código IEE, base e importe del cargo. Omitir ChargeRate (BR-ES-CO-16).",
+      "send_en": "Provide the IEE code, base and charge amount. Omit ChargeRate (BR-ES-CO-16).",
       "check": "Confirmar naturaleza, unidad de cálculo y cuota reales; el caso usa valores de prueba. No declarar el mismo cargo a la vez en la línea y en la factura.",
       "check_en": "Confirm the actual nature, calculation unit and tax amount; the case uses test values. Do not report the same charge at both line and invoice level.",
       "issuer": "Vendedor (EM)",
@@ -2592,9 +2592,9 @@
       "label": "GNX-LAB-097",
       "file": "C097_c_l9_iee_linea",
       "amounts": [
-        "IVA · base: 105,00 €; tipo: 21 %; cuota: 22,05 €.",
-        "Cargo en la línea: Impuesto especial sobre la electricidad. · 5,00 €.",
-        "Total factura: 127,05 €."
+        "Cargo IEE sobre 100,00 €: 5,11 €.",
+        "IVA sobre 105,11 € al 21 %: 22,07 €.",
+        "Total factura: 127,18 €."
       ],
       "topic": "especiales",
       "tags": [
@@ -3632,10 +3632,10 @@
       "title_en": "Location 04 · property abroad",
       "description": "Inmueble situado en el extranjero.",
       "description_en": "Property located abroad.",
-      "send": "Identificar el inmueble y, al informar el bloque catastral, su referencia y la clave de situación 04.",
-      "send_en": "Identify the property and, when reporting the cadastral block, specify its reference and location code 04.",
-      "check": "Comprobar la localización y que la referencia corresponde al inmueble.",
-      "check_en": "Check the location and that the reference corresponds to the property.",
+      "send": "Informar la situación y el literal «-» en CadastralReferenceNumber.",
+      "send_en": "Provide the location code and a single hyphen in CadastralReferenceNumber.",
+      "check": "Verificar el guion en la referencia catastral (BR-ES-25).",
+      "check_en": "Check for the hyphen in the cadastral reference (BR-ES-25).",
       "issuer": "Vendedor (EM)",
       "issuer_en": "Seller (EM)",
       "docType": "380",
@@ -3660,14 +3660,14 @@
     },
     {
       "id": "C109",
-      "title": "Inmueble sin referencia catastral en España · caso pendiente",
+      "title": "Inmueble sin referencia catastral en España",
       "title_en": "Location 03 · no cadastral reference",
       "description": "Inmueble en cualquiera de las situaciones anteriores pero sin referencia catastral.",
       "description_en": "Property in any of the preceding locations but without a cadastral reference.",
-      "send": "Sería necesario identificar la situación 03 sin inventar un número catastral; el esquema exige número si se abre el bloque.",
-      "send_en": "Location 03 would need to be identified without inventing a cadastral number; the schema requires a number if the block is included.",
-      "check": "No aprobar como cubierto. Consultar la representación y probarla antes de implantarla.",
-      "check_en": "Do not approve this as covered. Confirm the representation and test it before implementation.",
+      "send": "Informar la situación y el literal «-» en CadastralReferenceNumber.",
+      "send_en": "Provide the location code and a single hyphen in CadastralReferenceNumber.",
+      "check": "Verificar el guion en la referencia catastral (BR-ES-25).",
+      "check_en": "Check for the hyphen in the cadastral reference (BR-ES-25).",
       "issuer": "Vendedor (EM)",
       "issuer_en": "Seller (EM)",
       "docType": "380",
@@ -3677,7 +3677,6 @@
         "IVA · base: 100,00 €; tipo: 21 %; cuota: 21,00 €.",
         "Total factura: 121,00 €."
       ],
-      "pending": "La situación 03 no está informada en el fichero; el ejemplo no acredita este supuesto.",
       "topic": "inmuebles",
       "tags": [
         "380",

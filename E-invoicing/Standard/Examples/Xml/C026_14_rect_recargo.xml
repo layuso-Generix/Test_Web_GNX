@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -46,10 +47,10 @@
         <InvoiceDocumentType>384</InvoiceDocumentType>
         <InvoiceClass>ORIGINAL</InvoiceClass>
         <Corrective>
-          <ReasonCode>R4</ReasonCode>
-          <CorrectionMethod>S</CorrectionMethod>
           <InvoiceNumber>RE-2026-001</InvoiceNumber>
+          <ReasonCode>R4</ReasonCode>
           <InvoiceIssueDate>2026-11-10</InvoiceIssueDate>
+          <CorrectionMethod>S</CorrectionMethod>
           <CorrectiveAmounts>
             <GrossAmount>100</GrossAmount>
             <TaxAmount>21</TaxAmount>
@@ -63,7 +64,7 @@
       </InvoiceIssueData>
       <TaxesOutputs>
         <Tax>
-          <TaxOperationType>S</TaxOperationType>
+          <TaxOperationType>N</TaxOperationType>
           <TaxRate>21</TaxRate>
           <TaxableBase>
             <TotalAmount>80</TotalAmount>
@@ -71,10 +72,19 @@
           <TaxAmount>
             <TotalAmount>16.8</TotalAmount>
           </TaxAmount>
-          <EquivalenceSurchargeRate>5.2</EquivalenceSurchargeRate>
-          <EquivalenceSurchargeAmount>
+        </Tax>
+      </TaxesOutputs>
+      <TaxesOutputs>
+        <Tax>
+          <TaxTypeCode>REEQ</TaxTypeCode>
+          <TaxOperationType>N</TaxOperationType>
+          <TaxRate>5.2</TaxRate>
+          <TaxableBase>
+            <TotalAmount>80</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
             <TotalAmount>4.16</TotalAmount>
-          </EquivalenceSurchargeAmount>
+          </TaxAmount>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -90,15 +100,15 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>80</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
               <TaxRegimeCode>01</TaxRegimeCode>
-              <TaxOperationType>S</TaxOperationType>
+              <TaxOperationType>N</TaxOperationType>
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>80</NetUnitPrice>
           <TotalCost>80</TotalCost>
         </InvoiceLine>
       </Items>

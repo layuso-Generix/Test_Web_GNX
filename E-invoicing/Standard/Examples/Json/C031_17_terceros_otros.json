@@ -17,11 +17,12 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
@@ -33,10 +34,10 @@
               "CorporateName": "Cliente Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -70,9 +71,9 @@
               "GeneralCharges": [
                 {
                   "Charge": {
+                    "ChargeReason": "Tasa recaudada por cuenta de tercero",
                     "ChargeTypeCode": "OTROS",
                     "ChargeAmount": 10,
-                    "ChargeReason": "Tasa recaudada por cuenta de tercero",
                     "ThirdPartyTaxBreakdown": [
                       {
                         "TaxableBase": 100,
@@ -96,7 +97,6 @@
                   "ItemDescription": "Servicio de mantenimiento",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -107,6 +107,7 @@
                       }
                     }
                   ],
+                  "NetUnitPrice": 100,
                   "TotalCost": 100
                 }
               }

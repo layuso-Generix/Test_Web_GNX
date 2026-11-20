@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -46,10 +47,10 @@
         <InvoiceDocumentType>471</InvoiceDocumentType>
         <InvoiceClass>ORIGINAL</InvoiceClass>
         <Corrective>
-          <ReasonCode>R4</ReasonCode>
-          <CorrectionMethod>I</CorrectionMethod>
           <InvoiceNumber>AF-2026-009</InvoiceNumber>
+          <ReasonCode>R4</ReasonCode>
           <InvoiceIssueDate>2026-11-10</InvoiceIssueDate>
+          <CorrectionMethod>I</CorrectionMethod>
         </Corrective>
         <Notes>
           <Note>
@@ -87,7 +88,6 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>-1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>20</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -96,6 +96,7 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>20</NetUnitPrice>
           <TotalCost>-20</TotalCost>
         </InvoiceLine>
       </Items>

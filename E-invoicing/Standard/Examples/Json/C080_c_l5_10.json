@@ -17,11 +17,12 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
@@ -33,10 +34,10 @@
               "CorporateName": "Cliente Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -70,23 +71,23 @@
               {
                 "Tax": {
                   "TaxTypeCode": "RIS",
-                  "WithholdingConceptCode": "10",
+                  "TaxRate": 15,
                   "TaxableBase": {
                     "TotalAmount": 100
                   },
-                  "TaxRate": 15,
                   "TaxAmount": {
                     "TotalAmount": 15
-                  }
+                  },
+                  "WithholdingConceptCode": "10"
                 }
               }
             ],
             "InvoiceTotals": {
-              "TotalTaxesWithheld": 15,
-              "TaxesWithheldDescription": " Artículo 60.1.e) RIS - Las rentas procedentes del arrendamiento o subarrendamiento de inmuebles urbanos, aun cuando constituyan ingresos derivados de explotaciones económicas.",
               "TotalNetAmount": 100,
               "TotalGrossAmount": 100,
               "TotalTaxOutputs": 21,
+              "TotalTaxesWithheld": 15,
+              "TaxesWithheldDescription": " Artículo 60.1.e) RIS - Las rentas procedentes del arrendamiento o subarrendamiento de inmuebles urbanos, aun cuando constituyan ingresos derivados de explotaciones económicas.",
               "InvoiceTotal": 121,
               "TotalPayableAmount": 106
             },
@@ -97,7 +98,6 @@
                   "ItemDescription": "Operación de prueba con retención: 10",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -108,6 +108,7 @@
                       }
                     }
                   ],
+                  "NetUnitPrice": 100,
                   "TotalCost": 100
                 }
               }

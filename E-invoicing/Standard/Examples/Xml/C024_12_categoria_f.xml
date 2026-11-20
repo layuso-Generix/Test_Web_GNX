@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -59,21 +60,21 @@
       <TaxesOutputs>
         <Tax>
           <TaxOperationType>F</TaxOperationType>
-          <TaxRate>21</TaxRate>
+          <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
           </TaxableBase>
           <TaxAmount>
-            <TotalAmount>21</TotalAmount>
+            <TotalAmount>0</TotalAmount>
           </TaxAmount>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
         <TotalNetAmount>100</TotalNetAmount>
         <TotalGrossAmount>100</TotalGrossAmount>
-        <TotalTaxOutputs>21</TotalTaxOutputs>
-        <InvoiceTotal>121</InvoiceTotal>
-        <TotalPayableAmount>121</TotalPayableAmount>
+        <TotalTaxOutputs>0</TotalTaxOutputs>
+        <InvoiceTotal>100</InvoiceTotal>
+        <TotalPayableAmount>100</TotalPayableAmount>
       </InvoiceTotals>
       <Items>
         <InvoiceLine>
@@ -81,15 +82,15 @@
           <ItemDescription>Operación de ensayo de mapeo IVA / 03</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
               <TaxRegimeCode>03</TaxRegimeCode>
               <TaxOperationType>F</TaxOperationType>
-              <TaxRate>21</TaxRate>
+              <TaxRate>0</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

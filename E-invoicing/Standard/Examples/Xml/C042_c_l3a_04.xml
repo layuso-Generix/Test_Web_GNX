@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -53,6 +54,8 @@
       <TaxesOutputs>
         <Tax>
           <TaxOperationType>E</TaxOperationType>
+          <TaxExemptionReason>Operación exenta de oro de inversión.</TaxExemptionReason>
+          <TaxExemptionReasonCode>VATEX-ES-IVA140BIS</TaxExemptionReasonCode>
           <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
@@ -60,7 +63,6 @@
           <TaxAmount>
             <TotalAmount>0</TotalAmount>
           </TaxAmount>
-          <TaxExemptionReason>Operación exenta bajo el régimen de prueba IVA / 04. Determinar la causa legal del supuesto real.</TaxExemptionReason>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -76,15 +78,16 @@
           <ItemDescription>Operación de ensayo de mapeo IVA / 04</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
               <TaxRegimeCode>04</TaxRegimeCode>
               <TaxOperationType>E</TaxOperationType>
+              <TaxExemptionReasonCode>VATEX-ES-IVA140BIS</TaxExemptionReasonCode>
               <TaxRate>0</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

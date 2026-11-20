@@ -15,11 +15,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -30,10 +31,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -73,7 +74,6 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IPSI</TaxTypeCode>
@@ -82,6 +82,7 @@
               <TaxRate>4</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

@@ -17,26 +17,27 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
             "TaxIdentification": {
-              "TaxIdentificationNumber": "ESB00000026"
+              "TaxIdentificationNumber": "ESP2807900B"
             },
-            "PartyIdentification": "B00000026",
+            "PartyIdentification": "P2807900B",
             "LegalEntity": {
-              "CorporateName": "Cliente Ejemplo SL",
+              "CorporateName": "Ayuntamiento de Ejemplo",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -58,7 +59,8 @@
             },
             "InvoiceIssueData": {
               "IssueDate": "2026-11-14",
-              "InvoiceCurrencyCode": "EUR"
+              "InvoiceCurrencyCode": "EUR",
+              "TaxPointDate": "2026-11-25"
             },
             "TaxesOutputs": [
               {
@@ -88,7 +90,6 @@
                   "ItemDescription": "Operación de ensayo de mapeo IVA / 14",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -99,6 +100,7 @@
                       }
                     }
                   ],
+                  "NetUnitPrice": 100,
                   "TotalCost": 100
                 }
               }

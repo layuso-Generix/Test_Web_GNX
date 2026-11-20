@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -46,10 +47,10 @@
         <InvoiceDocumentType>384</InvoiceDocumentType>
         <InvoiceClass>ORIGINAL</InvoiceClass>
         <Corrective>
-          <ReasonCode>R4</ReasonCode>
-          <CorrectionMethod>S</CorrectionMethod>
           <InvoiceNumber>F-2026-014</InvoiceNumber>
+          <ReasonCode>R4</ReasonCode>
           <InvoiceIssueDate>2026-11-10</InvoiceIssueDate>
+          <CorrectionMethod>S</CorrectionMethod>
           <CorrectiveAmounts>
             <GrossAmount>100</GrossAmount>
             <TaxAmount>21</TaxAmount>
@@ -85,7 +86,6 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>80</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -94,6 +94,7 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>80</NetUnitPrice>
           <TotalCost>80</TotalCost>
         </InvoiceLine>
       </Items>

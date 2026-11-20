@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -52,7 +53,7 @@
       </InvoiceIssueData>
       <TaxesOutputs>
         <Tax>
-          <TaxOperationType>S</TaxOperationType>
+          <TaxOperationType>N</TaxOperationType>
           <TaxRate>21</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
@@ -60,10 +61,19 @@
           <TaxAmount>
             <TotalAmount>21</TotalAmount>
           </TaxAmount>
-          <EquivalenceSurchargeRate>5.2</EquivalenceSurchargeRate>
-          <EquivalenceSurchargeAmount>
+        </Tax>
+      </TaxesOutputs>
+      <TaxesOutputs>
+        <Tax>
+          <TaxTypeCode>REEQ</TaxTypeCode>
+          <TaxOperationType>N</TaxOperationType>
+          <TaxRate>5.2</TaxRate>
+          <TaxableBase>
+            <TotalAmount>100</TotalAmount>
+          </TaxableBase>
+          <TaxAmount>
             <TotalAmount>5.2</TotalAmount>
-          </EquivalenceSurchargeAmount>
+          </TaxAmount>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -79,15 +89,15 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
               <TaxRegimeCode>01</TaxRegimeCode>
-              <TaxOperationType>S</TaxOperationType>
+              <TaxOperationType>N</TaxOperationType>
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

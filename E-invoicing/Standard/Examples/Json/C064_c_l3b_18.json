@@ -16,11 +16,12 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
@@ -31,10 +32,10 @@
               "CorporateName": "Cliente Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -54,14 +55,14 @@
               {
                 "Tax": {
                   "TaxOperationType": "E",
+                  "TaxExemptionReason": "Operación exenta bajo el régimen de prueba IGIC / 18. Determinar la causa legal del supuesto real.",
                   "TaxRate": 0,
                   "TaxableBase": {
                     "TotalAmount": 100
                   },
                   "TaxAmount": {
                     "TotalAmount": 0
-                  },
-                  "TaxExemptionReason": "Operación exenta bajo el régimen de prueba IGIC / 18. Determinar la causa legal del supuesto real."
+                  }
                 }
               }
             ],
@@ -79,7 +80,6 @@
                   "ItemDescription": "Operación de ensayo de mapeo IGIC / 18",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -90,6 +90,7 @@
                       }
                     }
                   ],
+                  "NetUnitPrice": 100,
                   "TotalCost": 100
                 }
               }

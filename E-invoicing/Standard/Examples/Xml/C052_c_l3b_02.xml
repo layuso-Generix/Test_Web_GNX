@@ -15,11 +15,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -30,10 +31,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -51,6 +52,8 @@
       <TaxesOutputs>
         <Tax>
           <TaxOperationType>G</TaxOperationType>
+          <TaxExemptionReason>Exportación de bienes fuera de la Unión.</TaxExemptionReason>
+          <TaxExemptionReasonCode>VATEX-EU-G</TaxExemptionReasonCode>
           <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
@@ -58,8 +61,6 @@
           <TaxAmount>
             <TotalAmount>0</TotalAmount>
           </TaxAmount>
-          <TaxExemptionReason>Exportación de bienes fuera de la Unión.</TaxExemptionReason>
-          <TaxExemptionReasonCode>VATEX-EU-G</TaxExemptionReasonCode>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -75,16 +76,16 @@
           <ItemDescription>Bien de prueba destinado a exportación</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IGIC</TaxTypeCode>
               <TaxRegimeCode>02</TaxRegimeCode>
               <TaxOperationType>G</TaxOperationType>
-              <TaxRate>0</TaxRate>
               <TaxExemptionReasonCode>VATEX-EU-G</TaxExemptionReasonCode>
+              <TaxRate>0</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

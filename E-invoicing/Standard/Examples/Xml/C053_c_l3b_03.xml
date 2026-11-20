@@ -15,11 +15,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -30,10 +31,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -56,22 +57,22 @@
       </InvoiceIssueData>
       <TaxesOutputs>
         <Tax>
-          <TaxOperationType>L</TaxOperationType>
-          <TaxRate>7</TaxRate>
+          <TaxOperationType>F</TaxOperationType>
+          <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
           </TaxableBase>
           <TaxAmount>
-            <TotalAmount>7</TotalAmount>
+            <TotalAmount>0</TotalAmount>
           </TaxAmount>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
         <TotalNetAmount>100</TotalNetAmount>
         <TotalGrossAmount>100</TotalGrossAmount>
-        <TotalTaxOutputs>7</TotalTaxOutputs>
-        <InvoiceTotal>107</InvoiceTotal>
-        <TotalPayableAmount>107</TotalPayableAmount>
+        <TotalTaxOutputs>0</TotalTaxOutputs>
+        <InvoiceTotal>100</InvoiceTotal>
+        <TotalPayableAmount>100</TotalPayableAmount>
       </InvoiceTotals>
       <Items>
         <InvoiceLine>
@@ -79,15 +80,15 @@
           <ItemDescription>Operación de ensayo de mapeo IGIC / 03</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IGIC</TaxTypeCode>
               <TaxRegimeCode>03</TaxRegimeCode>
-              <TaxOperationType>L</TaxOperationType>
-              <TaxRate>7</TaxRate>
+              <TaxOperationType>F</TaxOperationType>
+              <TaxRate>0</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

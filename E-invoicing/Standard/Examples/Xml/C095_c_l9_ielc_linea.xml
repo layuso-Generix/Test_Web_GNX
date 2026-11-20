@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -75,7 +76,15 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
+          <Charges>
+            <Charge>
+              <ChargeReason>Impuesto sobre los líquidos para cigarrillos electrónicos y otros productos relacionados con el tabaco.</ChargeReason>
+              <ChargeTaxTypeCode>IELC</ChargeTaxTypeCode>
+              <ChargeRate>5</ChargeRate>
+              <ChargeAmount>5</ChargeAmount>
+              <ChargeBase>100</ChargeBase>
+            </Charge>
+          </Charges>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -84,15 +93,7 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <Charges>
-            <Charge>
-              <ChargeReason>Impuesto sobre los líquidos para cigarrillos electrónicos y otros productos relacionados con el tabaco.</ChargeReason>
-              <ChargeTaxTypeCode>IELC</ChargeTaxTypeCode>
-              <ChargeRate>5</ChargeRate>
-              <ChargeBase>100</ChargeBase>
-              <ChargeAmount>5</ChargeAmount>
-            </Charge>
-          </Charges>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>105</TotalCost>
         </InvoiceLine>
       </Items>

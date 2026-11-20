@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -65,22 +66,22 @@
       <TaxesWithheld>
         <Tax>
           <TaxTypeCode>IRPF</TaxTypeCode>
-          <WithholdingConceptCode>02</WithholdingConceptCode>
+          <TaxRate>15</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
           </TaxableBase>
-          <TaxRate>15</TaxRate>
           <TaxAmount>
             <TotalAmount>15</TotalAmount>
           </TaxAmount>
+          <WithholdingConceptCode>02</WithholdingConceptCode>
         </Tax>
       </TaxesWithheld>
       <InvoiceTotals>
-        <TotalTaxesWithheld>15</TotalTaxesWithheld>
-        <TaxesWithheldDescription>Artículo 75.1.c) Inciso segundo RIRPF – Rendimiento de actividades agrícolas y ganaderas.</TaxesWithheldDescription>
         <TotalNetAmount>100</TotalNetAmount>
         <TotalGrossAmount>100</TotalGrossAmount>
         <TotalTaxOutputs>21</TotalTaxOutputs>
+        <TotalTaxesWithheld>15</TotalTaxesWithheld>
+        <TaxesWithheldDescription>Artículo 75.1.c) Inciso segundo RIRPF – Rendimiento de actividades agrícolas y ganaderas.</TaxesWithheldDescription>
         <InvoiceTotal>121</InvoiceTotal>
         <TotalPayableAmount>106</TotalPayableAmount>
       </InvoiceTotals>
@@ -90,7 +91,6 @@
           <ItemDescription>Operación de prueba con retención: 02</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -99,6 +99,7 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
+          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

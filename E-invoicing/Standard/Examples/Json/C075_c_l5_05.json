@@ -17,11 +17,12 @@
               "CorporateName": "Proveedor Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 1",
-                "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES",
-                "Province": "Madrid"
-              }
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
+              },
+              "LegalRegistrationIdentifier": "B00000018"
             }
           },
           "BuyerParty": {
@@ -33,10 +34,10 @@
               "CorporateName": "Cliente Ejemplo SL",
               "Address": {
                 "Address": "Calle de la Muestra 2",
-                "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES",
-                "Province": "Madrid"
+                "Town": "Madrid",
+                "Province": "Madrid",
+                "CountryCode": "ES"
               }
             }
           }
@@ -70,23 +71,23 @@
               {
                 "Tax": {
                   "TaxTypeCode": "IRPF",
-                  "WithholdingConceptCode": "05",
+                  "TaxRate": 15,
                   "TaxableBase": {
                     "TotalAmount": 100
                   },
-                  "TaxRate": 15,
                   "TaxAmount": {
                     "TotalAmount": 15
-                  }
+                  },
+                  "WithholdingConceptCode": "05"
                 }
               }
             ],
             "InvoiceTotals": {
-              "TotalTaxesWithheld": 15,
-              "TaxesWithheldDescription": "Artículo 75.1. d) Inciso segundo RIRPF – Ganancias patrimoniales de los aprovechamientos forestales de los vecinos en montes públicos.",
               "TotalNetAmount": 100,
               "TotalGrossAmount": 100,
               "TotalTaxOutputs": 21,
+              "TotalTaxesWithheld": 15,
+              "TaxesWithheldDescription": "Artículo 75.1. d) Inciso segundo RIRPF – Ganancias patrimoniales de los aprovechamientos forestales de los vecinos en montes públicos.",
               "InvoiceTotal": 121,
               "TotalPayableAmount": 106
             },
@@ -97,7 +98,6 @@
                   "ItemDescription": "Operación de prueba con retención: 05",
                   "Quantity": 1,
                   "UnitOfMeasure": "C62",
-                  "NetUnitPrice": 100,
                   "TaxesOutputs": [
                     {
                       "Tax": {
@@ -108,6 +108,7 @@
                       }
                     }
                   ],
+                  "NetUnitPrice": 100,
                   "TotalCost": 100
                 }
               }

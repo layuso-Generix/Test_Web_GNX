@@ -16,11 +16,12 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <Town>Madrid</Town>
             <PostCode>28001</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
+          <LegalRegistrationIdentifier>B00000018</LegalRegistrationIdentifier>
         </LegalEntity>
       </SellerParty>
       <BuyerParty>
@@ -32,10 +33,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <Town>Madrid</Town>
             <PostCode>28002</PostCode>
-            <CountryCode>ES</CountryCode>
+            <Town>Madrid</Town>
             <Province>Madrid</Province>
+            <CountryCode>ES</CountryCode>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -55,19 +56,19 @@
           <TaxOperationType>S</TaxOperationType>
           <TaxRate>21</TaxRate>
           <TaxableBase>
-            <TotalAmount>105</TotalAmount>
+            <TotalAmount>105.11</TotalAmount>
           </TaxableBase>
           <TaxAmount>
-            <TotalAmount>22.05</TotalAmount>
+            <TotalAmount>22.07</TotalAmount>
           </TaxAmount>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
-        <TotalNetAmount>105</TotalNetAmount>
-        <TotalGrossAmount>105</TotalGrossAmount>
-        <TotalTaxOutputs>22.05</TotalTaxOutputs>
-        <InvoiceTotal>127.05</InvoiceTotal>
-        <TotalPayableAmount>127.05</TotalPayableAmount>
+        <TotalNetAmount>105.11</TotalNetAmount>
+        <TotalGrossAmount>105.11</TotalGrossAmount>
+        <TotalTaxOutputs>22.07</TotalTaxOutputs>
+        <InvoiceTotal>127.18</InvoiceTotal>
+        <TotalPayableAmount>127.18</TotalPayableAmount>
       </InvoiceTotals>
       <Items>
         <InvoiceLine>
@@ -75,7 +76,14 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <NetUnitPrice>100</NetUnitPrice>
+          <Charges>
+            <Charge>
+              <ChargeReason>Impuesto especial sobre la electricidad</ChargeReason>
+              <ChargeTaxTypeCode>IEE</ChargeTaxTypeCode>
+              <ChargeAmount>5.11</ChargeAmount>
+              <ChargeBase>100</ChargeBase>
+            </Charge>
+          </Charges>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -84,16 +92,8 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <Charges>
-            <Charge>
-              <ChargeReason>Impuesto especial sobre la electricidad</ChargeReason>
-              <ChargeTaxTypeCode>IEE</ChargeTaxTypeCode>
-              <ChargeRate>5</ChargeRate>
-              <ChargeBase>100</ChargeBase>
-              <ChargeAmount>5</ChargeAmount>
-            </Charge>
-          </Charges>
-          <TotalCost>105</TotalCost>
+          <NetUnitPrice>100</NetUnitPrice>
+          <TotalCost>105.11</TotalCost>
         </InvoiceLine>
       </Items>
       <PaymentDetails>
