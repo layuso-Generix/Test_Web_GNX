@@ -19,7 +19,8 @@
                 "Address": "Calle de la Muestra 1",
                 "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           },
@@ -34,7 +35,8 @@
                 "Address": "Calle de la Muestra 2",
                 "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           }
@@ -55,6 +57,27 @@
             "InvoiceIssueData": {
               "IssueDate": "2026-11-14",
               "InvoiceCurrencyCode": "EUR"
+            },
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "S",
+                  "TaxRate": 21,
+                  "TaxableBase": {
+                    "TotalAmount": -20
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": -4.2
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": -20,
+              "TotalGrossAmount": -20,
+              "TotalTaxOutputs": -4.2,
+              "InvoiceTotal": -24.2,
+              "TotalPayableAmount": -24.2
             },
             "Items": [
               {
@@ -77,28 +100,7 @@
                   "TotalCost": -20
                 }
               }
-            ],
-            "TaxesOutputs": [
-              {
-                "Tax": {
-                  "TaxOperationType": "S",
-                  "TaxRate": 21,
-                  "TaxableBase": {
-                    "TotalAmount": -20
-                  },
-                  "TaxAmount": {
-                    "TotalAmount": -4.2
-                  }
-                }
-              }
-            ],
-            "InvoiceTotals": {
-              "TotalNetAmount": -20,
-              "TotalGrossAmount": -20,
-              "TotalTaxOutputs": -4.2,
-              "InvoiceTotal": -24.2,
-              "TotalPayableAmount": -24.2
-            }
+            ]
           }
         ]
       }

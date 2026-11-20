@@ -18,7 +18,8 @@
                 "Address": "Calle de la Muestra 1",
                 "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           },
@@ -32,7 +33,8 @@
                 "Address": "Calle de la Muestra 2",
                 "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           }
@@ -47,6 +49,27 @@
             "InvoiceIssueData": {
               "IssueDate": "2026-11-14",
               "InvoiceCurrencyCode": "EUR"
+            },
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "L",
+                  "TaxRate": 7,
+                  "TaxableBase": {
+                    "TotalAmount": 100
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": 7
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": 100,
+              "TotalGrossAmount": 100,
+              "TotalTaxOutputs": 7,
+              "InvoiceTotal": 107,
+              "TotalPayableAmount": 107
             },
             "Items": [
               {
@@ -78,27 +101,6 @@
                 }
               }
             ],
-            "TaxesOutputs": [
-              {
-                "Tax": {
-                  "TaxOperationType": "L",
-                  "TaxRate": 7,
-                  "TaxableBase": {
-                    "TotalAmount": 100
-                  },
-                  "TaxAmount": {
-                    "TotalAmount": 7
-                  }
-                }
-              }
-            ],
-            "InvoiceTotals": {
-              "TotalNetAmount": 100,
-              "TotalGrossAmount": 100,
-              "TotalTaxOutputs": 7,
-              "InvoiceTotal": 107,
-              "TotalPayableAmount": 107
-            },
             "PaymentDetails": [
               {
                 "Installment": {

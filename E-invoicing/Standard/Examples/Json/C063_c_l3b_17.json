@@ -18,7 +18,8 @@
                 "Address": "Calle de la Muestra 1",
                 "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           },
@@ -32,7 +33,8 @@
                 "Address": "Calle de la Muestra 2",
                 "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           }
@@ -47,6 +49,28 @@
             "InvoiceIssueData": {
               "IssueDate": "2026-11-14",
               "InvoiceCurrencyCode": "EUR"
+            },
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "E",
+                  "TaxRate": 0,
+                  "TaxableBase": {
+                    "TotalAmount": 100
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": 0
+                  },
+                  "TaxExemptionReason": "Operación exenta bajo el régimen de prueba IGIC / 17. Determinar la causa legal del supuesto real."
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": 100,
+              "TotalGrossAmount": 100,
+              "TotalTaxOutputs": 0,
+              "InvoiceTotal": 100,
+              "TotalPayableAmount": 100
             },
             "Items": [
               {
@@ -70,28 +94,6 @@
                 }
               }
             ],
-            "TaxesOutputs": [
-              {
-                "Tax": {
-                  "TaxOperationType": "E",
-                  "TaxRate": 0,
-                  "TaxableBase": {
-                    "TotalAmount": 100
-                  },
-                  "TaxAmount": {
-                    "TotalAmount": 0
-                  },
-                  "TaxExemptionReason": "Operación exenta bajo el régimen de prueba IGIC / 17. Determinar la causa legal del supuesto real."
-                }
-              }
-            ],
-            "InvoiceTotals": {
-              "TotalNetAmount": 100,
-              "TotalGrossAmount": 100,
-              "TotalTaxOutputs": 0,
-              "InvoiceTotal": 100,
-              "TotalPayableAmount": 100
-            },
             "PaymentDetails": [
               {
                 "Installment": {

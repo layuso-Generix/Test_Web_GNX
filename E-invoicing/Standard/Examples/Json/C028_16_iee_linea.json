@@ -19,7 +19,8 @@
                 "Address": "Calle de la Muestra 1",
                 "Town": "Madrid",
                 "PostCode": "28001",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           },
@@ -34,7 +35,8 @@
                 "Address": "Calle de la Muestra 2",
                 "Town": "Madrid",
                 "PostCode": "28002",
-                "CountryCode": "ES"
+                "CountryCode": "ES",
+                "Province": "Madrid"
               }
             }
           }
@@ -49,6 +51,27 @@
             "InvoiceIssueData": {
               "IssueDate": "2026-11-14",
               "InvoiceCurrencyCode": "EUR"
+            },
+            "TaxesOutputs": [
+              {
+                "Tax": {
+                  "TaxOperationType": "S",
+                  "TaxRate": 21,
+                  "TaxableBase": {
+                    "TotalAmount": 105
+                  },
+                  "TaxAmount": {
+                    "TotalAmount": 22.05
+                  }
+                }
+              }
+            ],
+            "InvoiceTotals": {
+              "TotalNetAmount": 105,
+              "TotalGrossAmount": 105,
+              "TotalTaxOutputs": 22.05,
+              "InvoiceTotal": 127.05,
+              "TotalPayableAmount": 127.05
             },
             "Items": [
               {
@@ -83,27 +106,6 @@
                 }
               }
             ],
-            "TaxesOutputs": [
-              {
-                "Tax": {
-                  "TaxOperationType": "S",
-                  "TaxRate": 21,
-                  "TaxableBase": {
-                    "TotalAmount": 105
-                  },
-                  "TaxAmount": {
-                    "TotalAmount": 22.05
-                  }
-                }
-              }
-            ],
-            "InvoiceTotals": {
-              "TotalNetAmount": 105,
-              "TotalGrossAmount": 105,
-              "TotalTaxOutputs": 22.05,
-              "InvoiceTotal": 127.05,
-              "TotalPayableAmount": 127.05
-            },
             "PaymentDetails": [
               {
                 "Installment": {

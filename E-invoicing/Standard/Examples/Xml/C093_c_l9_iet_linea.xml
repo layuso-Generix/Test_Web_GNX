@@ -16,9 +16,10 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <PostCode>28001</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28001</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </SellerParty>
@@ -31,9 +32,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <PostCode>28002</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28002</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -73,15 +75,7 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
-          <Charges>
-            <Charge>
-              <ChargeAmount>5</ChargeAmount>
-              <ChargeBase>100</ChargeBase>
-              <ChargeRate>5</ChargeRate>
-              <ChargeTaxTypeCode>IET</ChargeTaxTypeCode>
-              <ChargeReason>Impuesto especial sobre las labores del tabaco.</ChargeReason>
-            </Charge>
-          </Charges>
+          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -90,7 +84,15 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <NetUnitPrice>100</NetUnitPrice>
+          <Charges>
+            <Charge>
+              <ChargeReason>Impuesto especial sobre las labores del tabaco.</ChargeReason>
+              <ChargeTaxTypeCode>IET</ChargeTaxTypeCode>
+              <ChargeRate>5</ChargeRate>
+              <ChargeBase>100</ChargeBase>
+              <ChargeAmount>5</ChargeAmount>
+            </Charge>
+          </Charges>
           <TotalCost>105</TotalCost>
         </InvoiceLine>
       </Items>

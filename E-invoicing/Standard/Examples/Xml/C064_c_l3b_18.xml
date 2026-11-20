@@ -15,9 +15,10 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <PostCode>28001</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28001</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </SellerParty>
@@ -29,9 +30,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <PostCode>28002</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28002</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -49,7 +51,6 @@
       <TaxesOutputs>
         <Tax>
           <TaxOperationType>E</TaxOperationType>
-          <TaxExemptionReason>Operación exenta bajo el régimen de prueba IGIC / 18. Determinar la causa legal del supuesto real.</TaxExemptionReason>
           <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
@@ -57,6 +58,7 @@
           <TaxAmount>
             <TotalAmount>0</TotalAmount>
           </TaxAmount>
+          <TaxExemptionReason>Operación exenta bajo el régimen de prueba IGIC / 18. Determinar la causa legal del supuesto real.</TaxExemptionReason>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -72,6 +74,7 @@
           <ItemDescription>Operación de ensayo de mapeo IGIC / 18</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
+          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IGIC</TaxTypeCode>
@@ -80,7 +83,6 @@
               <TaxRate>0</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

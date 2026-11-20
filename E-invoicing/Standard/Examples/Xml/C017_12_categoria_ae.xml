@@ -16,9 +16,10 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <PostCode>28001</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28001</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </SellerParty>
@@ -31,9 +32,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <PostCode>28002</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28002</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -57,8 +59,6 @@
       <TaxesOutputs>
         <Tax>
           <TaxOperationType>AE</TaxOperationType>
-          <TaxExemptionReason>Inversión del sujeto pasivo.</TaxExemptionReason>
-          <TaxExemptionReasonCode>VATEX-EU-AE</TaxExemptionReasonCode>
           <TaxRate>0</TaxRate>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
@@ -66,6 +66,8 @@
           <TaxAmount>
             <TotalAmount>0</TotalAmount>
           </TaxAmount>
+          <TaxExemptionReason>Inversión del sujeto pasivo.</TaxExemptionReason>
+          <TaxExemptionReasonCode>VATEX-EU-AE</TaxExemptionReasonCode>
         </Tax>
       </TaxesOutputs>
       <InvoiceTotals>
@@ -81,16 +83,16 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
+          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
               <TaxRegimeCode>01</TaxRegimeCode>
               <TaxOperationType>AE</TaxOperationType>
-              <TaxExemptionReasonCode>VATEX-EU-AE</TaxExemptionReasonCode>
               <TaxRate>0</TaxRate>
+              <TaxExemptionReasonCode>VATEX-EU-AE</TaxExemptionReasonCode>
             </Tax>
           </TaxesOutputs>
-          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

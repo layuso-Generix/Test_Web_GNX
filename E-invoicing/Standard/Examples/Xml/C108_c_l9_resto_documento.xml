@@ -16,9 +16,10 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <PostCode>28001</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28001</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </SellerParty>
@@ -31,9 +32,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <PostCode>28002</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28002</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -71,9 +73,9 @@
             </ChargeTax>
             <SpecificTax>
               <TaxTypeCode>RESTO</TaxTypeCode>
+              <TaxAmount>5</TaxAmount>
               <TaxableBase>100</TaxableBase>
               <TaxRate>5</TaxRate>
-              <TaxAmount>5</TaxAmount>
             </SpecificTax>
           </Charge>
         </GeneralCharges>
@@ -90,6 +92,7 @@
           <ItemDescription>Servicio de mantenimiento</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
+          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -98,7 +101,6 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>

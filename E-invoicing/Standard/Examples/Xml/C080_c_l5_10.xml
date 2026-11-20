@@ -16,9 +16,10 @@
           <CorporateName>Proveedor Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 1</Address>
-            <PostCode>28001</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28001</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </SellerParty>
@@ -31,9 +32,10 @@
           <CorporateName>Cliente Ejemplo SL</CorporateName>
           <Address>
             <Address>Calle de la Muestra 2</Address>
-            <PostCode>28002</PostCode>
             <Town>Madrid</Town>
+            <PostCode>28002</PostCode>
             <CountryCode>ES</CountryCode>
+            <Province>Madrid</Province>
           </Address>
         </LegalEntity>
       </BuyerParty>
@@ -63,22 +65,22 @@
       <TaxesWithheld>
         <Tax>
           <TaxTypeCode>RIS</TaxTypeCode>
-          <TaxRate>15</TaxRate>
+          <WithholdingConceptCode>10</WithholdingConceptCode>
           <TaxableBase>
             <TotalAmount>100</TotalAmount>
           </TaxableBase>
+          <TaxRate>15</TaxRate>
           <TaxAmount>
             <TotalAmount>15</TotalAmount>
           </TaxAmount>
-          <WithholdingConceptCode>10</WithholdingConceptCode>
         </Tax>
       </TaxesWithheld>
       <InvoiceTotals>
+        <TotalTaxesWithheld>15</TotalTaxesWithheld>
+        <TaxesWithheldDescription> Artículo 60.1.e) RIS - Las rentas procedentes del arrendamiento o subarrendamiento de inmuebles urbanos, aun cuando constituyan ingresos derivados de explotaciones económicas.</TaxesWithheldDescription>
         <TotalNetAmount>100</TotalNetAmount>
         <TotalGrossAmount>100</TotalGrossAmount>
         <TotalTaxOutputs>21</TotalTaxOutputs>
-        <TotalTaxesWithheld>15</TotalTaxesWithheld>
-        <TaxesWithheldDescription> Artículo 60.1.e) RIS - Las rentas procedentes del arrendamiento o subarrendamiento de inmuebles urbanos, aun cuando constituyan ingresos derivados de explotaciones económicas.</TaxesWithheldDescription>
         <InvoiceTotal>121</InvoiceTotal>
         <TotalPayableAmount>106</TotalPayableAmount>
       </InvoiceTotals>
@@ -88,6 +90,7 @@
           <ItemDescription>Operación de prueba con retención: 10</ItemDescription>
           <Quantity>1</Quantity>
           <UnitOfMeasure>C62</UnitOfMeasure>
+          <NetUnitPrice>100</NetUnitPrice>
           <TaxesOutputs>
             <Tax>
               <TaxTypeCode>IVA</TaxTypeCode>
@@ -96,7 +99,6 @@
               <TaxRate>21</TaxRate>
             </Tax>
           </TaxesOutputs>
-          <NetUnitPrice>100</NetUnitPrice>
           <TotalCost>100</TotalCost>
         </InvoiceLine>
       </Items>
